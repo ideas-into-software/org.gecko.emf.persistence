@@ -1,0 +1,15 @@
+-buildpath: \
+	org.osgi.service.jdbc,\
+	org.eclipse.emf.common,\
+	org.gecko.emf.persistence,\
+	org.eclipse.emf.ecore,\
+	org.gecko.emf.osgi.api,\
+	org.gecko.emf.util.model,\
+	org.gecko.emf.collections,\
+	org.osgi.framework
+-privatepackage: \
+	org.gecko.emf.persistence.jdbc,\
+	org.gecko.emf.persistence.jdbc.converter,\
+	org.gecko.emf.persistence.jdbc.handler,\
+	org.gecko.emf.persistence.jdbc.query,\
+	org.gecko.emf.persistence.jdbc.streams

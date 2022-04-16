@@ -1,0 +1,5 @@
+-buildpath: \
+	derby;version=latest,\
+	derbyclient;version=latest,\
+	org.osgi.service.jdbc;version=latest,\
+	org.ops4j.pax.jdbc.derby

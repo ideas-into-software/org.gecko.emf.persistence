@@ -1,0 +1,10 @@
+-enable-emf: true
+
+-buildpath: \
+	org.osgi.framework;version=latest,\
+	org.gecko.emf.persistence;version=project
+Export-Package: \
+	org.gecko.emf.repository,\
+	org.gecko.emf.repository.file,\
+	org.gecko.emf.repository.file.annotations,\
+	org.gecko.emf.repository.query

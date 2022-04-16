@@ -1,0 +1,37 @@
+src src,src-gen
+
+# The code generation takes a bit of time and makes the build a bit slower.
+# It might be a good idea to put comments around it, when you don't need it
+-generate:\
+	model/mongo.genmodel;\
+		generate=geckoEMF;\
+		genmodel=model/mongo.genmodel;\
+		output=src-gen
+		
+-buildpath: \
+	${emf.lib},\
+	org.mongodb.driver-sync,\
+	org.mongodb.bson,\
+	org.gecko.emf.persistence;version=latest,\
+	org.gecko.emf.persistence,\
+	org.mongodb.driver-core,\
+	org.gecko.emf.osgi.api,\
+	org.gecko.emf.collections,\
+	org.gecko.persistence.mongo
+
+-includeresource.model: model=model
+Bundle-Name: Gecko Mongo EMF Persistence
+Bundle-Description: EMF Persistence using MongoDB
+Export-Package: \
+	org.gecko.emf.persistence.model.mongo,\
+	org.gecko.emf.persistence.model.mongo.util
+-privatepackage: \
+	org.gecko.emf.persistence.model.mongo.configuration,\
+	org.gecko.emf.persistence.model.mongo.impl,\
+	org.gecko.emf.persistence.mongo.codecs,\
+	org.gecko.emf.persistence.mongo.codecs.builder,\
+	org.gecko.emf.persistence.mongo.converter,\
+	org.gecko.emf.persistence.mongo.handler,\
+	org.gecko.emf.persistence.mongo.streams,\
+	org.gecko.emf.persistence.mongo.util,\
+	org.gecko.emf.persistence.mongo.query

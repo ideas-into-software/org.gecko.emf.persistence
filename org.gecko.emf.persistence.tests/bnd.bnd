@@ -1,0 +1,20 @@
+javac.source: 11
+javac.target: 11
+
+# enables JUnit 5 support for this project
+-enable-junit5: true
+
+# sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
+-buildpath: \
+	org.osgi.framework,\
+	org.osgi.service.cm,\
+	org.apache.commons.commons-io
+
+Private-Package: org.gecko.emf.persistence.api.tests
+
+Bundle-Version: 1.0.0.SNAPSHOT
+
+-includeresource: data=data
+
+# Sometimes without DynamicImport Mockito will not find certain classes
+#DynamicImport-Package: *
