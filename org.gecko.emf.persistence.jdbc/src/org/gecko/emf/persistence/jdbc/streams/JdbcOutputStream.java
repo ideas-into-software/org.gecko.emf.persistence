@@ -32,7 +32,6 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.PrimaryKeyFactory;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.gecko.emf.collection.CollectionFactory;
 import org.gecko.emf.collection.ECollection;
 import org.gecko.emf.collection.EReferenceCollection;
@@ -45,7 +44,7 @@ import org.gecko.emf.collection.EReferenceCollection;
  */
 public class JdbcOutputStream extends ByteArrayOutputStream implements URIConverter.Saveable {
 
-	private DataSourceFactory dataSourceFactory;
+	private Connection connection;
 	private final Map<Object, Object> mergedOptions = new HashMap<>();
 	private final ConverterService converterService;
 	private Resource resource;
@@ -55,15 +54,15 @@ public class JdbcOutputStream extends ByteArrayOutputStream implements URIConver
 	private final boolean forceInsert;
 	private final boolean clearResourceAfterInsert;
 
-	public JdbcOutputStream(ConverterService converterService, DataSourceFactory dataSourceFactory, URI uri, Map<String, PrimaryKeyFactory> idProviders, Map<?, ?> options, Map<Object, Object> response) {
+	public JdbcOutputStream(ConverterService converterService, Connection connection, URI uri, Map<String, PrimaryKeyFactory> idProviders, Map<?, ?> options, Map<Object, Object> response) {
 		if (converterService == null) {
 			throw new NullPointerException("The converter service must not be null");
 		}
 		this.converterService = converterService;
-		if (dataSourceFactory == null) {
+		if (connection == null) {
 			throw new NullPointerException("The database connection must not be null");
 		}
-		this.dataSourceFactory = dataSourceFactory;
+		this.connection = connection;
 		this.uri = uri;
 		this.idFactories = idProviders;
 		normalizeOptions(options);

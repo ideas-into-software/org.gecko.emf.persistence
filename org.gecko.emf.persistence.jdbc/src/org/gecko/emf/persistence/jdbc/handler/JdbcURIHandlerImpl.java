@@ -16,6 +16,7 @@ package org.gecko.emf.persistence.jdbc.handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -53,7 +54,7 @@ public class JdbcURIHandlerImpl extends URIHandlerImpl {
 	 * @param inputStreamFactory an instance of the input stream factory service
 	 * @param outputStreamFactory an instance of the output stream factory service
 	 */
-	public JdbcURIHandlerImpl(Map<String, DataSourceFactory> databases, InputStreamFactory<DataSourceFactory> inputStreamFactory, OutputStreamFactory<DataSourceFactory> outputStreamFactory) {
+	public JdbcURIHandlerImpl(Map<String, DataSourceFactory> databases, InputStreamFactory<Connection> inputStreamFactory, OutputStreamFactory<Connection> outputStreamFactory) {
 
 		this.connections = databases;
 		this.inputStreamFactory = inputStreamFactory;
@@ -129,12 +130,20 @@ public class JdbcURIHandlerImpl extends URIHandlerImpl {
 		return uri.segment(0);
 	}
 	
-	private DataSourceFactory getConnection(URI uri, Map<?, ?> options) {
+	/**
+	 * @param uri
+	 * @param options
+	 * @return
+	 * TODO Create Database connection here
+	 */
+	private Connection getConnection(URI uri, Map<?, ?> options) {
+//		private DataSourceFactory getConnection(URI uri, Map<?, ?> options) {
 		String db = getDatabase(uri, options);
-		return connections.get(db);
+//		return connections.get(db);
+		return null;
 	}
 
 	private Map<String, DataSourceFactory> connections;
-	private InputStreamFactory<DataSourceFactory> inputStreamFactory;
-	private OutputStreamFactory<DataSourceFactory> outputStreamFactory;
+	private InputStreamFactory<Connection> inputStreamFactory;
+	private OutputStreamFactory<Connection> outputStreamFactory;
 }

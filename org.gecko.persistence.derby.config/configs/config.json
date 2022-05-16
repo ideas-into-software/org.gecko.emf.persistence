@@ -3,7 +3,7 @@
   
   "org.gecko.datasource": 
 	{
-    "dataSourceName": "Test", 
+    "dataSourceName": "Derby_Test", 
     "type": "Derby",
     "databaseName": "test",
     "user": "test", 

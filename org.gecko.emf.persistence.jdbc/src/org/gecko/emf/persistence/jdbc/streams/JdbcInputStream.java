@@ -15,6 +15,7 @@ package org.gecko.emf.persistence.jdbc.streams;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,21 +47,21 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	private URI uri;
 	private Map<Object, Object> mergedOptions = new HashMap<>();
 	private QueryEngine<JdbcQuery> queryEngine;
-	private DataSourceFactory dataSourceFactory;
+	private Connection connection;
 	private List<InputContentHandler<ResultSet>> contentHandler;
 	private Map<Object, Object> response;
 
-	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery>  queryEngine, DataSourceFactory dataSourceFactory, List<InputContentHandler<ResultSet>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery>  queryEngine, Connection connection, List<InputContentHandler<ResultSet>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
 		this.response = response;
 		if (converterService == null)
 			throw new NullPointerException("The converter service must not be null");
 		this.converterService = converterService;
-		if (dataSourceFactory == null)
+		if (connection == null)
 			throw new NullPointerException("The database connection must not be null");
 
 		this.contentHandler = contentHandler == null ? Collections.emptyList() : contentHandler;
 		this.queryEngine = queryEngine;
-		this.dataSourceFactory = dataSourceFactory;
+		this.connection = connection;
 		this.uri = uri;
 		normalizeOptions(options);
 	}

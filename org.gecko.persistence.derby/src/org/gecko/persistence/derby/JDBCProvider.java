@@ -11,15 +11,22 @@
  */
 package org.gecko.persistence.derby;
 
+import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource;
+import org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource40;
+import org.apache.derby.jdbc.EmbeddedDataSource;
+import org.apache.derby.jdbc.EmbeddedDriver;
+import org.apache.derby.jdbc.EmbeddedXADataSource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -35,6 +42,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
 public class JDBCProvider implements DataSourceFactory {
 	
 	private DerbyConfig config;
+	private static final String DB_TEMPLATE = "jdbc:derby:%s;create=true";
 
 	@interface DerbyConfig {
 		String user() default "test";
@@ -45,8 +53,17 @@ public class JDBCProvider implements DataSourceFactory {
 	}
 	
 	@Activate
-	public void activate(DerbyConfig config) {
+	public void activate(DerbyConfig config, Map<String, Object> properties) {
 		this.config = config;
+		Properties prop = new Properties();
+		prop.putAll(properties);
+		try {
+			String dbUrl = String.format(DB_TEMPLATE, config.databaseName());
+			Connection conn = createDriver(null).connect(dbUrl, null);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/* 
@@ -55,8 +72,7 @@ public class JDBCProvider implements DataSourceFactory {
 	 */
 	@Override
 	public DataSource createDataSource(Properties props) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new EmbeddedDataSource();
 	}
 
 	/* 
@@ -65,8 +81,7 @@ public class JDBCProvider implements DataSourceFactory {
 	 */
 	@Override
 	public ConnectionPoolDataSource createConnectionPoolDataSource(Properties props) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new EmbeddedConnectionPoolDataSource();
 	}
 
 	/* 
@@ -75,8 +90,7 @@ public class JDBCProvider implements DataSourceFactory {
 	 */
 	@Override
 	public XADataSource createXADataSource(Properties props) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new EmbeddedXADataSource();
 	}
 
 	/* 
@@ -85,8 +99,7 @@ public class JDBCProvider implements DataSourceFactory {
 	 */
 	@Override
 	public Driver createDriver(Properties props) throws SQLException {
-		String dbURL = String.format("jdbc:derby:memory:%s;create=true", config.databaseName());
-        return DriverManager.getDriver(dbURL);
+		return new EmbeddedDriver();
 	}
 
 }

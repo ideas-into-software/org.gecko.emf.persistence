@@ -11,6 +11,7 @@
  */
 package org.gecko.emf.persistence.jdbc.handler;
 
+import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,13 +27,15 @@ import org.osgi.service.jdbc.DataSourceFactory;
  * 
  * @author mark
  * @since 16.04.2022
+ * @TODO Make this configurable an create a java.sql.Connection out of the DataSourceFactory
+ * Change Generic type of the In- and Outputstrems from DataSourceFactory to Connection
  */
 @Component(service = UriHandlerProvider.class, property = RESOURCESET_CONFIG_PROP)
 public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	
 	private volatile JdbcURIHandlerImpl uriHandler;
-	private volatile InputStreamFactory<DataSourceFactory> inputStreamFactory;
-	private volatile OutputStreamFactory<DataSourceFactory> outputStreamFactory;
+	private volatile InputStreamFactory<Connection> inputStreamFactory;
+	private volatile OutputStreamFactory<Connection> outputStreamFactory;
 	private final Map<String,DataSourceFactory> connections = new ConcurrentHashMap<>();
 
 	/* 
@@ -61,14 +64,14 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	/**
 	 * @param outputStreamFactory
 	 */
-	public void setOutputStreamFactory(OutputStreamFactory<DataSourceFactory> outputStreamFactory) {
+	public void setOutputStreamFactory(OutputStreamFactory<Connection> outputStreamFactory) {
 		this.outputStreamFactory = outputStreamFactory;
 	}
 
 	/**
 	 * @param inputStreamFactory
 	 */
-	public void setInputStreamFactory(InputStreamFactory<DataSourceFactory> inputStreamFactory) {
+	public void setInputStreamFactory(InputStreamFactory<Connection> inputStreamFactory) {
 		this.inputStreamFactory = inputStreamFactory;
 	}
 
