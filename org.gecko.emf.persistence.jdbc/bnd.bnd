@@ -6,7 +6,8 @@
 	org.gecko.emf.osgi.api,\
 	org.gecko.emf.util.model,\
 	org.gecko.emf.collections,\
-	org.osgi.framework
+	org.osgi.framework,\
+	org.osgi.util.promise
 -privatepackage: \
 	org.gecko.emf.persistence.jdbc,\
 	org.gecko.emf.persistence.jdbc.converter,\

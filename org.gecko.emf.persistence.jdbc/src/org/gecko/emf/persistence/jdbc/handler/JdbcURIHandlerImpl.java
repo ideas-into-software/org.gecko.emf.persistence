@@ -17,13 +17,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
 import org.gecko.emf.persistence.InputStreamFactory;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.osgi.util.promise.Promise;
+import org.osgi.util.promise.PromiseFactory;
 
 /**
  * This EMF URI handler interfaces to JDBC. This URI handler can handle URIs with the "jdbc"
@@ -46,16 +50,19 @@ import org.osgi.service.jdbc.DataSourceFactory;
  * 
  */
 public class JdbcURIHandlerImpl extends URIHandlerImpl {
-	
+
 	private static final String SCHEMA_DB = "jdbc";
+	private static final String DB_TEMPLATE = "jdbc:%s:%s;create=true";
+	private final PromiseFactory pf;
 	/**
-	 * 
+	 * Creates a new instance.
 	 * @param databaseLocator an instance of the mongo locator service
 	 * @param inputStreamFactory an instance of the input stream factory service
 	 * @param outputStreamFactory an instance of the output stream factory service
+	 * @param promiseFactory the promise factory
 	 */
-	public JdbcURIHandlerImpl(Map<String, DataSourceFactory> databases, InputStreamFactory<Connection> inputStreamFactory, OutputStreamFactory<Connection> outputStreamFactory) {
-
+	public JdbcURIHandlerImpl(Map<String, DataSourceFactory> databases, InputStreamFactory<Promise<Connection>> inputStreamFactory, OutputStreamFactory<Promise<Connection>> outputStreamFactory, PromiseFactory promiseFactory) {
+		this.pf = promiseFactory;
 		this.connections = databases;
 		this.inputStreamFactory = inputStreamFactory;
 		this.outputStreamFactory = outputStreamFactory;
@@ -101,7 +108,7 @@ public class JdbcURIHandlerImpl extends URIHandlerImpl {
 	public void delete(URI uri, Map<?, ?> options) throws IOException {
 		inputStreamFactory.createDeleteRequest(uri, options, getConnection(uri, options), getResponse(options));
 	}
-	
+
 	/* 
 	 * (non-Javadoc)
 	 * @see org.eclipse.emf.ecore.resource.impl.URIHandlerImpl#exists(org.eclipse.emf.common.util.URI, java.util.Map)
@@ -112,8 +119,8 @@ public class JdbcURIHandlerImpl extends URIHandlerImpl {
 			return false;
 		try
 		{
-//			MongoCollection<Document> collection = doGetCollection(uri, options);
-//			return collection.find(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri))) != null;
+			//			MongoCollection<Document> collection = doGetCollection(uri, options);
+			//			return collection.find(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri))) != null;
 			return false;
 		}
 		catch (Throwable exception)
@@ -121,29 +128,36 @@ public class JdbcURIHandlerImpl extends URIHandlerImpl {
 			return false;
 		}
 	}
-	
+
 	protected String getTable(URI uri, Map<?, ?> options) {
 		return uri.segment(1);
 	}
-	
+
 	protected String getDatabase(URI uri, Map<?, ?> options) {
 		return uri.segment(0);
 	}
-	
+
 	/**
 	 * @param uri
 	 * @param options
 	 * @return
 	 * TODO Create Database connection here
+	 * @throws SQLException 
 	 */
-	private Connection getConnection(URI uri, Map<?, ?> options) {
-//		private DataSourceFactory getConnection(URI uri, Map<?, ?> options) {
-		String db = getDatabase(uri, options);
-//		return connections.get(db);
-		return null;
+	private Promise<Connection> getConnection(URI uri, Map<?, ?> options) {
+		String name = (String) options.get("name");
+		DataSourceFactory dataSourceFactory = connections.get(name);
+		String database = (String) options.get("databaseName");
+		String type = (String) options.get("type");
+		type = type.toLowerCase();
+		Properties prop = new Properties();
+		prop.putAll(options);
+		String dbUrl = String.format(DB_TEMPLATE, type, database);
+		Promise<Connection> connectionP = pf.submit(()->dataSourceFactory.createDriver(null).connect(dbUrl, null));
+		return connectionP;
 	}
 
 	private Map<String, DataSourceFactory> connections;
-	private InputStreamFactory<Connection> inputStreamFactory;
-	private OutputStreamFactory<Connection> outputStreamFactory;
+	private InputStreamFactory<Promise<Connection>> inputStreamFactory;
+	private OutputStreamFactory<Promise<Connection>> outputStreamFactory;
 }

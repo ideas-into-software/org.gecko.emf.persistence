@@ -11,17 +11,22 @@
  */
 package org.gecko.emf.persistence.jdbc.handler;
 
+import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.RESOURCESET_CONFIG_PROP;
+
 import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.gecko.emf.osgi.UriHandlerProvider;
 import org.gecko.emf.persistence.InputStreamFactory;
 import org.gecko.emf.persistence.OutputStreamFactory;
-import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.*;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.osgi.util.promise.Promise;
+import org.osgi.util.promise.PromiseFactory;
 
 /**
  * 
@@ -34,10 +39,11 @@ import org.osgi.service.jdbc.DataSourceFactory;
 public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	
 	private volatile JdbcURIHandlerImpl uriHandler;
-	private volatile InputStreamFactory<Connection> inputStreamFactory;
-	private volatile OutputStreamFactory<Connection> outputStreamFactory;
+	private volatile InputStreamFactory<Promise<Connection>> inputStreamFactory;
+	private volatile OutputStreamFactory<Promise<Connection>> outputStreamFactory;
 	private final Map<String,DataSourceFactory> connections = new ConcurrentHashMap<>();
-
+	private final PromiseFactory pf = new PromiseFactory(Executors.newCachedThreadPool(), Executors.newScheduledThreadPool(2));
+	
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.osgi.UriHandlerProvider#getURIHandler()
@@ -45,7 +51,7 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	@Override
 	public URIHandler getURIHandler() {
 		if (uriHandler == null) {
-			uriHandler = new JdbcURIHandlerImpl(connections, inputStreamFactory, outputStreamFactory);
+			uriHandler = new JdbcURIHandlerImpl(connections, inputStreamFactory, outputStreamFactory, pf);
 		}
 		return uriHandler;
 	}
@@ -64,15 +70,16 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	/**
 	 * @param outputStreamFactory
 	 */
-	public void setOutputStreamFactory(OutputStreamFactory<Connection> outputStreamFactory) {
+	@Reference
+	public void setOutputStreamFactory(OutputStreamFactory<Promise<Connection>> outputStreamFactory) {
 		this.outputStreamFactory = outputStreamFactory;
 	}
 
 	/**
 	 * @param inputStreamFactory
 	 */
-	public void setInputStreamFactory(InputStreamFactory<Connection> inputStreamFactory) {
+	public void setInputStreamFactory(InputStreamFactory<Promise<Connection>> inputStreamFactory) {
 		this.inputStreamFactory = inputStreamFactory;
 	}
-
+	
 }

@@ -35,6 +35,7 @@ import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.QueryEngine;
 import org.gecko.emf.persistence.jdbc.query.JdbcQuery;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.osgi.util.promise.Promise;
 
 /**
  * Input stream implementation that handles loading of {@link Resource}
@@ -47,11 +48,11 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	private URI uri;
 	private Map<Object, Object> mergedOptions = new HashMap<>();
 	private QueryEngine<JdbcQuery> queryEngine;
-	private Connection connection;
+	private Promise<Connection> connection;
 	private List<InputContentHandler<ResultSet>> contentHandler;
 	private Map<Object, Object> response;
 
-	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery>  queryEngine, Connection connection, List<InputContentHandler<ResultSet>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery>  queryEngine, Promise<Connection> connection, List<InputContentHandler<ResultSet>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
 		this.response = response;
 		if (converterService == null)
 			throw new NullPointerException("The converter service must not be null");

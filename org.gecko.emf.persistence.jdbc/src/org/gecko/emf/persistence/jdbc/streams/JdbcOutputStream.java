@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.PrimaryKeyFactory;
+import org.osgi.util.promise.Promise;
 import org.gecko.emf.collection.CollectionFactory;
 import org.gecko.emf.collection.ECollection;
 import org.gecko.emf.collection.EReferenceCollection;
@@ -44,7 +45,7 @@ import org.gecko.emf.collection.EReferenceCollection;
  */
 public class JdbcOutputStream extends ByteArrayOutputStream implements URIConverter.Saveable {
 
-	private Connection connection;
+	private Promise<Connection> connection;
 	private final Map<Object, Object> mergedOptions = new HashMap<>();
 	private final ConverterService converterService;
 	private Resource resource;
@@ -54,7 +55,7 @@ public class JdbcOutputStream extends ByteArrayOutputStream implements URIConver
 	private final boolean forceInsert;
 	private final boolean clearResourceAfterInsert;
 
-	public JdbcOutputStream(ConverterService converterService, Connection connection, URI uri, Map<String, PrimaryKeyFactory> idProviders, Map<?, ?> options, Map<Object, Object> response) {
+	public JdbcOutputStream(ConverterService converterService, Promise<Connection> connection, URI uri, Map<String, PrimaryKeyFactory> idProviders, Map<?, ?> options, Map<Object, Object> response) {
 		if (converterService == null) {
 			throw new NullPointerException("The converter service must not be null");
 		}

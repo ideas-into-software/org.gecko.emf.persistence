@@ -35,25 +35,25 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.jdbc.DataSourceFactory;
+import org.osgi.util.promise.Promise;
 
 /**
- * Mongo stream factory
- * <TABLE> is of type {@link MongoCollection}
- * <QT> is of type {@link EMongoQuery}
- * <RT> is of type {@link FindIterable}
+ * Jdbc stream factory
+ * <TABLE> is of type {@link Promise<Connection>}
+ * <QT> is of type {@link JdbcQuery}
+ * <RT> is of type {@link ResultSet}
  * @author Mark Hoffmann
  * @since 08.04.2022
  */
 @Component(name="JdbcStreamFactory", immediate=true, service= {InputStreamFactory.class, OutputStreamFactory.class}, property = PERSISTENCE_FILTER_PROP)
-public class JdbcStreamFactory extends DefaultStreamFactory<Connection, JdbcQuery, ResultSet> {
+public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>, JdbcQuery, ResultSet> {
 
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.OutputStreamFactory#createOutputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public OutputStream createOutputStream(URI uri, Map<?, ?> options, Connection connection, Map<Object, Object> response) {
+	public OutputStream createOutputStream(URI uri, Map<?, ?> options, Promise<Connection> connection, Map<Object, Object> response) {
 		return new JdbcOutputStream(converterService, connection, uri, idFactories, options, response);
 	}
 
@@ -62,7 +62,7 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Connection, JdbcQuer
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public InputStream createInputStream(URI uri, Map<?, ?> options, Connection connection, Map<Object, Object> response) throws IOException {
+	public InputStream createInputStream(URI uri, Map<?, ?> options, Promise<Connection> connection, Map<Object, Object> response) throws IOException {
 		return new JdbcInputStream(converterService, queryEngine, connection, handlerList, uri, options, response);
 	}
 
@@ -71,7 +71,7 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Connection, JdbcQuer
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createDeleteRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void createDeleteRequest(URI uri, Map<?, ?> options, Connection connection,
+	public void createDeleteRequest(URI uri, Map<?, ?> options, Promise<Connection> connection,
 			Map<Object, Object> response) throws IOException {
 		normalizeOptions(options);
 //		boolean countResults = false;
