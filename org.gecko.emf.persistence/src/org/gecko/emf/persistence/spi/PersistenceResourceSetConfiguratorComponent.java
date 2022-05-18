@@ -71,7 +71,7 @@ public class PersistenceResourceSetConfiguratorComponent {
 	 * 
 	 * @param provider the provider to be added
 	 */
-	@Reference(name = "handlerProvider", policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE)
+	@Reference(name = "handlerProvider", policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE, target = "(type=persistence)")
 	public void addProvider(UriHandlerProvider provider, Map<String, Object> map) {
 		configurator.getPeristenceHandler().addProvider(provider);
 		String name = (String) map.get(EMFNamespaces.EMF_CONFIGURATOR_NAME);

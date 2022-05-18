@@ -145,9 +145,9 @@ public class JdbcURIHandlerImpl extends URIHandlerImpl {
 	 * @throws SQLException 
 	 */
 	private Promise<Connection> getConnection(URI uri, Map<?, ?> options) {
-		String name = (String) options.get("name");
+		String name = uri.host();
 		DataSourceFactory dataSourceFactory = connections.get(name);
-		String database = (String) options.get("databaseName");
+		String database = getDatabase(uri, options);
 		String type = (String) options.get("type");
 		type = type.toLowerCase();
 		Properties prop = new Properties();

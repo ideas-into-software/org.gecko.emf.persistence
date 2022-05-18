@@ -41,31 +41,6 @@ import org.osgi.service.jdbc.DataSourceFactory;
 @Component(immediate = true, configurationPid = "org.gecko.datasource", configurationPolicy = ConfigurationPolicy.REQUIRE)
 public class JDBCProvider implements DataSourceFactory {
 	
-	private DerbyConfig config;
-	private static final String DB_TEMPLATE = "jdbc:derby:%s;create=true";
-
-	@interface DerbyConfig {
-		String user() default "test";
-		String password() default "1234";
-		String databaseName() default "test";
-		String host() default "localhost";
-		int port() default 1527;
-	}
-	
-	@Activate
-	public void activate(DerbyConfig config, Map<String, Object> properties) {
-		this.config = config;
-		Properties prop = new Properties();
-		prop.putAll(properties);
-		try {
-			String dbUrl = String.format(DB_TEMPLATE, config.databaseName());
-			Connection conn = createDriver(null).connect(dbUrl, null);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	/* 
 	 * (non-Javadoc)
 	 * @see org.osgi.service.jdbc.DataSourceFactory#createDataSource(java.util.Properties)

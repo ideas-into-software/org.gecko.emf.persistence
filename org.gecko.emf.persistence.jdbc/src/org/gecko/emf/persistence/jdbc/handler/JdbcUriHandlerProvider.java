@@ -23,6 +23,7 @@ import org.gecko.emf.osgi.UriHandlerProvider;
 import org.gecko.emf.persistence.InputStreamFactory;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.promise.Promise;
@@ -35,7 +36,7 @@ import org.osgi.util.promise.PromiseFactory;
  * @TODO Make this configurable an create a java.sql.Connection out of the DataSourceFactory
  * Change Generic type of the In- and Outputstrems from DataSourceFactory to Connection
  */
-@Component(service = UriHandlerProvider.class, property = RESOURCESET_CONFIG_PROP)
+@Component(name = "org.gecko.persistence.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE, service = UriHandlerProvider.class, property = { RESOURCESET_CONFIG_PROP, "type=persistence"})
 public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	
 	private volatile JdbcURIHandlerImpl uriHandler;
@@ -55,16 +56,15 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 		}
 		return uriHandler;
 	}
-
-	/**
-	 * @param connection
-	 */
-	public void addDataSourceFactory(DataSourceFactory connection, String name) {
-			connections.put(name, connection);
-		
+	
+	@Reference(name="dataSource")
+	public void setDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String, Object> properties) {
+		String name = (String) properties.getOrDefault("name", "default");
+		connections.put(name, dataSourceFactory);
 	}
-	public void removeDataSourceFactory(DataSourceFactory connection, String name) {
-			connections.remove(name);
+	public void unsetDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String, Object> properties) {
+		String name = (String) properties.getOrDefault("name", "default");
+		connections.remove(name);
 	}
 
 	/**
@@ -78,6 +78,7 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	/**
 	 * @param inputStreamFactory
 	 */
+	@Reference
 	public void setInputStreamFactory(InputStreamFactory<Promise<Connection>> inputStreamFactory) {
 		this.inputStreamFactory = inputStreamFactory;
 	}

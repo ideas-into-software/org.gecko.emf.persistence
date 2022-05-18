@@ -1,0 +1,8 @@
+-resourceonly: true
+-includeresource: OSGI-INF/configurator/=configs/
+Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.configurator)'
+-buildpath: \
+	org.eclipse.emf.ecore,\
+	org.gecko.emf.osgi.example.model.basic,\
+	org.eclipse.emf.common
+-privatepackage: derby.test

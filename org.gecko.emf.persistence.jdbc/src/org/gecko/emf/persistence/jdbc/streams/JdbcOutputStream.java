@@ -15,7 +15,13 @@ package org.gecko.emf.persistence.jdbc.streams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +29,9 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
@@ -81,7 +89,57 @@ public class JdbcOutputStream extends ByteArrayOutputStream implements URIConver
 	public void close() throws IOException {
 		super.close();
 
-
+		try {
+			Connection c = connection.getValue();
+			EObject eObject = resource.getContents().get(0);
+			EClass eClass = eObject.eClass();
+			String table = eClass.getName();
+			EStructuralFeature fn = eClass.getEStructuralFeature("firstName");
+			EStructuralFeature ln = eClass.getEStructuralFeature("lastName");
+			EAttribute idAttribute = eClass.getEIDAttribute();
+			String firstName = (String) eObject.eGet(fn);
+			String lastName = (String) eObject.eGet(ln);
+			String id = (String) eObject.eGet(idAttribute);
+			String type = EcoreUtil.getURI(eClass).toString();
+			String CREATE = "CREATE TABLE %s (eTYPE VARCHAR(255), %s VARCHAR(255), %s VARCHAR(255), %s VARCHAR(255))";
+			
+			String INSERT = "INSERT INTO %s (eTYPE, %s, %s, %s) VALUES (?, ?, ?, ?)";
+			boolean execute;
+			try {
+				if (!isTableExist(c, table)) {
+					c.createStatement().executeUpdate(String.format(CREATE, table.toUpperCase(), idAttribute.getName(), fn.getName(), ln.getName()));
+				}
+				PreparedStatement pstmt = c.prepareStatement(String.format(INSERT, table.toUpperCase(), idAttribute.getName(), fn.getName(), ln.getName()),
+		                Statement.RETURN_GENERATED_KEYS);
+				pstmt.setString(1, type);
+				pstmt.setString(2, id);
+	            pstmt.setString(3, firstName);
+	            pstmt.setString(4, lastName);
+	            int affectedRows = pstmt.executeUpdate();
+	            long pid = 0;
+	            // check the affected rows 
+	            if (affectedRows > 0) {
+	                // get the ID back
+	                try (ResultSet rs = pstmt.getGeneratedKeys()) {
+	                    if (rs.next()) {
+	                        pid = rs.getLong(1);
+	                    }
+	                } catch (SQLException ex) {
+	                    System.out.println(ex.getMessage());
+	                }
+	            }
+				System.out.println("Executed INSERT " + pid);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 //		EObjectCodecProvider codecProvider = new EObjectCodecProvider(resource, mergedOptions, null);
 //		codecProvider.setConverterService(converterService);
 //		CodecRegistry eobjectRegistry = CodecRegistries.fromProviders(codecProvider);
@@ -134,6 +192,25 @@ public class JdbcOutputStream extends ByteArrayOutputStream implements URIConver
 	@Override
 	public void saveResource(Resource resource) {
 		this.resource = resource;
+	}
+	
+	public static boolean isTableExist(Connection connection, String sTablename) throws SQLException{
+	    if(connection!=null)
+	    {
+	        DatabaseMetaData dbmd = connection.getMetaData();
+	        ResultSet rs = dbmd.getTables(null, null, sTablename.toUpperCase(),null);
+	        if(rs.next())
+	        {
+	            System.out.println("Table "+rs.getString("TABLE_NAME")+"already exists !!");
+	        }
+	        else
+	        {
+	            System.out.println("Write your create table function here !!!");
+	            return false;
+	        }
+	        return true;
+	    }
+	    return false;
 	}
 
 //	/**
