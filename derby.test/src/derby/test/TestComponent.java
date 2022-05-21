@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component
 public class TestComponent {
 	
-	@Reference(target = "(emf.configurator.name=emf.persistence.jdbc)")
+	@Reference(target = "(&(emf.configurator.name=emf.persistence.jdbc)(emf.model.name=basic))")
 	private ResourceSet resourceSet;
 	
 	@Activate
@@ -46,15 +46,15 @@ public class TestComponent {
 		Resource saveResource = resourceSet.createResource(URI.createURI("jdbc://Derby_Test/testdb/Person/" + p.getId()));
 		System.out.println("Resource r " + saveResource);
 		saveResource.getContents().add(p);
-		try {
+//		try {
 			Map<String, Object> saveOptions = new HashMap<String, Object>();
 			saveOptions.put("type", "derby");
-			saveResource.save(saveOptions);
+//			saveResource.save(saveOptions);
 			System.out.println("Resource r saved " + saveResource);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		Resource loadResource = resourceSet.createResource(URI.createURI("jdbc://Derby_Test/testdb/Person/"));
 		Map<String, Object> loadOptions = new HashMap<String, Object>();
 		loadOptions.put("type", "derby");

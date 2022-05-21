@@ -18,14 +18,19 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -58,7 +63,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	private URI uri;
 	private Map<Object, Object> mergedOptions = new HashMap<>();
 	private QueryEngine<JdbcQuery> queryEngine;
-	private Promise<Connection> connection;
+	private Promise<Connection> connectionPromise;
 	private List<InputContentHandler<ResultSet>> contentHandler;
 	private Map<Object, Object> response;
 
@@ -72,7 +77,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 
 		this.contentHandler = contentHandler == null ? Collections.emptyList() : contentHandler;
 		this.queryEngine = queryEngine;
-		this.connection = connection;
+		this.connectionPromise = connection;
 		this.uri = uri;
 		normalizeOptions(options);
 	}
@@ -103,26 +108,26 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		}
 
 		try {
-			Connection c = connection.getValue();
-			Statement s = c.createStatement();
+			Connection connection = connectionPromise.getValue();
+			Statement s = connection.createStatement();
 			ResultSet resultSet = s.executeQuery("SELECT * FROM PERSON");
 			EClass eClass = null;
+			ResultSetMetaData metaData = resultSet.getMetaData();
+			List<String> columns = new ArrayList<String>(metaData.getColumnCount());
+			for (int c = 1; c <= metaData.getColumnCount();c++) {
+				String columnName = metaData.getColumnName(c);
+				columns.add(columnName);
+			}
+			columns.remove("ETYPE");
+			Map<String, EStructuralFeature> featureMap = new HashMap<String, EStructuralFeature>();
 			while (resultSet.next()) {
 				if (eClass == null) {
 					String typeUri = resultSet.getString("eTYPE");
 					eClass = getEClass(resource.getResourceSet(), typeUri);
+					featureMap.putAll(buildFeatureMap(eClass, columns));
 				}
 				EObject eObject = EcoreUtil.create(eClass);
-				for (EStructuralFeature feature : eClass.getEAllStructuralFeatures()) {
-					try {
-						String value = resultSet.getString(feature.getName());
-						if (value != null) {
-							eObject.eSet(feature, value);
-						}
-					} catch (SQLException e) {
-						System.out.println("column not found " + feature.getName());
-					}
-				}
+				featureMap.forEach((k,v)->setValue(resultSet, v, eObject));
 				resource.getContents().add(eObject);
 			}
 
@@ -254,6 +259,37 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		//				contents.add(dbObject);
 		//			}
 		//		}
+	}
+
+	/**
+	 * @param resultSet
+	 * @param v
+	 * @param eObject
+	 * @return
+	 */
+	private Object setValue(ResultSet resultSet, EStructuralFeature feature, EObject eObject) {
+		try {
+			Object value = resultSet.getObject(feature.getName(), feature.getEType().getInstanceClass());
+			if (value != null) {
+				eObject.eSet(feature, value);
+			}
+			return value;
+		} catch (SQLException e) {
+			System.out.println("Error setting value for " + feature.getName());
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * Builds a {@link Map} of all {@link EStructuralFeature} of the given that match the column list.
+	 * @param eClass The {@link EClass}, to get the {@link EStructuralFeature} from
+	 * @param columns the list of column names
+	 * @return a {@link Map} with the 
+	 */
+	private Map<? extends String, ? extends EStructuralFeature> buildFeatureMap(EClass eClass, List<String> columns) {
+		Map<String, EStructuralFeature> allFeatures = eClass.getEAllStructuralFeatures().stream().collect(Collectors.toMap(EStructuralFeature::getName, Function.identity()));
+		return allFeatures.entrySet().stream().filter(e->columns.contains(e.getKey().toUpperCase())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
 
 	/* 
