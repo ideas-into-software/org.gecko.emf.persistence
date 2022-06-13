@@ -24,20 +24,23 @@ import org.gecko.emf.osgi.example.model.basic.Person;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.framework.BundleContext;
 
 /**
  * 
  * @author mark
  * @since 18.05.2022
  */
-@Component
+//@Component
 public class TestComponent {
 	
 	@Reference(target = "(&(emf.configurator.name=emf.persistence.jdbc)(emf.model.name=basic))")
 	private ResourceSet resourceSet;
+	private BundleContext bctx;
 	
 	@Activate
-	public void activate() {
+	public void activate(BundleContext bctx) {
+		this.bctx = bctx;
 		Person p = BasicFactory.eINSTANCE.createPerson();
 		p.setFirstName("Emil");
 		p.setLastName("Tester");
