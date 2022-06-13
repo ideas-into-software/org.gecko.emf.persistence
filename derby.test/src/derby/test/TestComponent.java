@@ -47,10 +47,10 @@ public class TestComponent {
 		System.out.println("Resource r " + saveResource);
 		saveResource.getContents().add(p);
 //		try {
-			Map<String, Object> saveOptions = new HashMap<String, Object>();
-			saveOptions.put("type", "derby");
+//			Map<String, Object> saveOptions = new HashMap<String, Object>();
+//			saveOptions.put("type", "derby");
 //			saveResource.save(saveOptions);
-			System.out.println("Resource r saved " + saveResource);
+//			System.out.println("Resource r saved " + saveResource);
 //		} catch (IOException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();

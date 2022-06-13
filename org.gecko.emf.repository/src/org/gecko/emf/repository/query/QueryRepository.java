@@ -61,5 +61,24 @@ public interface QueryRepository {
    * @throws EMFRepositoryException thrown when an error during getting all objects occur
    */
   public <T extends EObject> T getEObjectByQuery(EClass eClass, IQuery query, Map<Object, Object> options);
+  
+  /**
+   * Counts the potential {@link EObject} of the given {@link EClass} that match the given {@link IQuery} or -1. 
+   * @param eClass the {@link EClass} of the objects to return
+   * @param query the {@link IQuery}
+   * @param options the Resource Load options
+   * @return The number of potential {@link EObject}
+   * @throws EMFRepositoryException thrown when an error during getting all objects occur
+   */
+  public long count(EClass eClass, IQuery query, Map<Object, Object> options);
+  
+  /**
+   * Counts the potential {@link EObject} of the given {@link EClass} that match the given {@link IQuery} or -1. 
+   * @param eClass the {@link EClass} of the objects to return
+   * @param query the {@link IQuery}
+   * @return The number of potential {@link EObject}
+   * @throws EMFRepositoryException thrown when an error during getting all objects occur
+   */
+  public long count(EClass eClass, IQuery query);
 
 }

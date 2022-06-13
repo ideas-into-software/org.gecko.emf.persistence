@@ -31,10 +31,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.gecko.emf.osgi.ResourceSetFactory;
 import org.gecko.emf.persistence.ConstraintValidationException;
+import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.PersistenceConstants;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
 
@@ -562,6 +564,49 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 	
 	/* 
 	 * (non-Javadoc)
+	 * @see org.gecko.emf.repository.EMFReadRepository#count(org.eclipse.emf.ecore.EClass)
+	 */
+	@Override
+	public long count(EClass eClass) {
+		return count(eClass, null);
+	}
+	
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.repository.EMFReadRepository#count(org.eclipse.emf.ecore.EClass, java.util.Map)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public long count(EClass eClass, Map<String, Object> options) {
+		if (eClass == null || id == null) {
+			logger.log(Level.SEVERE, "Error getting EObject without class or id parameters");
+			return -1;
+		}
+		// Copy load options to not pollute them with the response data
+		Map<String, Object> loadOptions = new HashMap<String, Object>();
+		if (options != null) {
+			loadOptions.putAll(options);
+		}
+		
+		loadOptions.put(Options.OPTION_COUNT_ONLY, Boolean.TRUE);
+		URI uri = createEClassUri(eClass.getName(), loadOptions);
+		Resource loadedResource;
+		try {
+			loadedResource = loadResource(uri, loadOptions);
+			if (loadedResource == null) {
+				logger.log(Level.FINE, "No content/table found for URI " + uri.toString());
+				return -1;
+			}
+			Map<Object, Object> responseMap = (Map<Object, Object>) loadOptions.get(URIConverter.OPTION_RESPONSE);
+			Object count = responseMap.getOrDefault(Options.OPTION_COUNT_RESPONSE, -1l);
+			return count instanceof Long ? (Long)count : -1l;
+		} catch (IOException e) {
+			throw new IllegalStateException("No content/table found for URI " + uri.toString(), e); 
+		}
+	}
+	
+	/* 
+	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.repository.EMFReadRepository#getEObject(org.eclipse.emf.common.util.URI, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
@@ -577,19 +622,8 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 					return null;
 				}
 			}
-			Resource resource = getResource(uri, true);
-			if (resource == null) {
-				resource = createResource(uri);
-			}
-			if (resource == null) {
-				throw new IllegalStateException("Cannot create resource for URI " + uri.toString());
-			}
-			resource.load(options);
-			if (resource.getContents().isEmpty()) {
-				logger.fine("No content found for URI " + uri.toString());
-				return null;
-			}
-			return (T) resource.getContents().get(0);
+			Resource loadedResource = loadResource(uri, options);
+			return loadedResource == null ? null : (T) loadedResource.getContents().get(0);
 		} catch (Exception e) {
 			if(e.getCause() instanceof FileNotFoundException){
 				logger.log(Level.FINE, "No content found for URI " + uri.toString(), e);
@@ -597,6 +631,28 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 			}
 			throw new IllegalStateException("No content found for URI " + uri.toString(), e); 
 		}
+	}
+
+	/**
+	 * @param uri
+	 * @param options
+	 * @return
+	 * @throws IOException
+	 */
+	private Resource loadResource(URI uri, Map<?, ?> options) throws IOException {
+		Resource resource = getResource(uri, true);
+		if (resource == null) {
+			resource = createResource(uri);
+		}
+		if (resource == null) {
+			throw new IllegalStateException("Cannot create resource for URI " + uri.toString());
+		}
+		resource.load(options);
+		if (resource.getContents().isEmpty()) {
+			logger.fine("No content found for URI " + uri.toString());
+			return null;
+		}
+		return resource;
 	}
 
 	/* 

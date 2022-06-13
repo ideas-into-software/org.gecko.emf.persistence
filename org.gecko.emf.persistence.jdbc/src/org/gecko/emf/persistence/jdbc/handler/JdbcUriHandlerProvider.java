@@ -33,7 +33,6 @@ import org.osgi.util.promise.PromiseFactory;
  * 
  * @author mark
  * @since 16.04.2022
- * @TODO Make this configurable an create a java.sql.Connection out of the DataSourceFactory
  * Change Generic type of the In- and Outputstrems from DataSourceFactory to Connection
  */
 @Component(name = "org.gecko.persistence.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE, service = UriHandlerProvider.class, property = { RESOURCESET_CONFIG_PROP, "type=persistence"})

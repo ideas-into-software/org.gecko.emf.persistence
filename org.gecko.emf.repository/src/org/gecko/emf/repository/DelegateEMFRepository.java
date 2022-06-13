@@ -462,4 +462,28 @@ public class DelegateEMFRepository implements EMFRepositoryHelper, EMFWriteRepos
 		return delegate.getHelper().attach(object, options);
 	}
 
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.repository.EMFReadRepository#count(org.eclipse.emf.ecore.EClass)
+	 */
+	@Override
+	public long count(EClass eClass) {
+		if (readDelegate == null) {
+			throw new UnsupportedOperationException();
+		}
+		return readDelegate.count(eClass);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.repository.EMFReadRepository#count(org.eclipse.emf.ecore.EClass, java.util.Map)
+	 */
+	@Override
+	public long count(EClass eClass, Map<String, Object> options) {
+		if (readDelegate == null) {
+			throw new UnsupportedOperationException();
+		}
+		return readDelegate.count(eClass, options);
+	}
+
 }

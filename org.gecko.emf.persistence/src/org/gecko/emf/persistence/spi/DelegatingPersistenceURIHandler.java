@@ -28,7 +28,7 @@ import org.gecko.emf.osgi.UriHandlerProvider;
  * @author Mark Hoffmann
  * @since 29.03.2022
  */
-public class PersistenceUriHandler implements URIHandler {
+public class DelegatingPersistenceURIHandler implements URIHandler {
 	
 	private List<UriHandlerProvider> delegates = new LinkedList<>();
 

@@ -48,71 +48,6 @@ import org.osgi.util.promise.Promise;
 @Component(name="JdbcStreamFactory", immediate=true, service= {InputStreamFactory.class, OutputStreamFactory.class}, property = PERSISTENCE_FILTER_PROP)
 public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>, JdbcQuery, ResultSet> {
 
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.OutputStreamFactory#createOutputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public OutputStream createOutputStream(URI uri, Map<?, ?> options, Promise<Connection> connection, Map<Object, Object> response) {
-		return new JdbcOutputStream(converterService, connection, uri, idFactories, options, response);
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.InputStreamFactory#createInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public InputStream createInputStream(URI uri, Map<?, ?> options, Promise<Connection> connection, Map<Object, Object> response) throws IOException {
-		return new JdbcInputStream(converterService, queryEngine, connection, handlerList, uri, options, response);
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.InputStreamFactory#createDeleteRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
-	 */
-	@Override
-	public void createDeleteRequest(URI uri, Map<?, ?> options, Promise<Connection> connection,
-			Map<Object, Object> response) throws IOException {
-		normalizeOptions(options);
-//		boolean countResults = false;
-//		Object optionCountResult = mergedOptions.get(Options.OPTION_COUNT_RESULT);
-//		long elementCount = -1l;
-//		countResults = optionCountResult != null && Boolean.TRUE.equals(optionCountResult);
-//		DeleteResult deleteResult = null;
-//
-//		if (uri.query() != null) {
-//			if (queryEngine == null) {
-//				throw new IOException("The query engine was not found");
-//			}
-//
-//			EMongoQuery mongoQuery = queryEngine.buildQuery(uri, mergedOptions);
-//
-//			Bson filter = mongoQuery.getFilter();
-//
-//			if (filter != null) {
-//				deleteResult = collection.deleteMany(filter);
-//				if (countResults) {
-//					elementCount = deleteResult.getDeletedCount();
-//				}
-//			} else {
-//				deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
-//				if (countResults) {
-//					elementCount = deleteResult.getDeletedCount();
-//				}
-//			}
-//			if (countResults) {
-//				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
-//			}
-//
-//		} else {
-//			deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
-//			if (countResults) {
-//				elementCount = deleteResult.getDeletedCount();
-//				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
-//			}
-//		}
-	}
-
 	/**
 	 * Sets the converter service
 	 * @param converterService the converter service to set
@@ -163,6 +98,23 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>,
 	 */
 	public void removeInputHandler(InputContentHandler<ResultSet> contentHandler) {
 		super.removeInputHandler(contentHandler);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateOutputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
+	 */
+	protected OutputStream doCreateOutputStream(URI uri, Map<?, ?> options, Promise<Connection> connection,
+			Map<Object, Object> response) {
+		return new JdbcOutputStream(converterService, connection, uri, idFactories, options, response);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
+	 */
+	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, Promise<Connection> connection, Map<Object, Object> response) throws IOException {
+		return new JdbcInputStream(converterService, queryEngine, connection, handlerList, uri, options, response);
 	}
 
 }

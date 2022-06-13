@@ -4,9 +4,8 @@
 #	Jacoco Support - gecko-jacoco
 -library: \
 	geckoEMF,\
-	gecko-dimc,\
-	gecko-osgitest,\
-	gecko-jacoco
+	geckoOSGi-Test,\
+	gecko-dimc
 
 # Needed because we enabled library 'gecko-dimc' 	
 github-project: org.gecko.emf.persistence

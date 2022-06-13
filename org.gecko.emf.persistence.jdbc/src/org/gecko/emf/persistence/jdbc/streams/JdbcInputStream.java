@@ -24,7 +24,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,11 +31,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -45,11 +44,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.gecko.emf.persistence.ConverterService;
+import org.gecko.emf.persistence.Countable;
 import org.gecko.emf.persistence.InputContentHandler;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.QueryEngine;
+import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;
 import org.gecko.emf.persistence.jdbc.query.JdbcQuery;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.promise.Promise;
 
 /**
@@ -57,7 +57,7 @@ import org.osgi.util.promise.Promise;
  * @author bhunt
  * @author Mark Hoffmann
  */
-public class JdbcInputStream extends InputStream implements URIConverter.Loadable {
+public class JdbcInputStream extends InputStream implements URIConverter.Loadable, Countable {
 
 	private final ConverterService converterService;
 	private URI uri;
@@ -66,6 +66,15 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	private Promise<Connection> connectionPromise;
 	private List<InputContentHandler<ResultSet>> contentHandler;
 	private Map<Object, Object> response;
+	private String eClassUri;
+	private String typeColumn;
+	private boolean countOnly;
+	private boolean countResults;
+	private String idAttributeName;
+	private boolean countIdAttributeFilter;
+	private boolean countTypeFilter;
+	private static final String QUERY_COUNT = "SELECT COUNT(%s) FROM %s";
+	private static final String QUERY_ALL = "SELECT %s FROM %s";
 
 	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery>  queryEngine, Promise<Connection> connection, List<InputContentHandler<ResultSet>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
 		this.response = response;
@@ -80,6 +89,21 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		this.connectionPromise = connection;
 		this.uri = uri;
 		normalizeOptions(options);
+		readOptions(mergedOptions);
+	}
+
+	/**
+	 * @param mergedOptions2
+	 */
+	private void readOptions(Map<Object, Object> mergedOptions2) {
+		eClassUri = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
+		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
+		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_KEY_ECLASS_URI, JdbcPersistenceConstants.ECLASS_TYPE_COLUMN_NAME);
+
+		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_ID_ATTRIBUTE, false));
+		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_URI_FILTER, false));
+		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
+		countResults = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
 	}
 
 	/* 
@@ -98,7 +122,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		if (handlerOptional.isPresent()) {
 			needCache = handlerOptional.get().enableResourceCache((Map<Object, Object>) mergedOptions);
 		}
-
+		
 		// We need to set up the XMLResource.URIHandler so that proxy URIs are handled properly.EObjectCodecProvider codecProvider = new EObjectCodecProvider(resourceSet);
 		final List<Resource> resourcesCache;
 		if(needCache){
@@ -110,33 +134,77 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		try {
 			Connection connection = connectionPromise.getValue();
 			Statement s = connection.createStatement();
-			ResultSet resultSet = s.executeQuery("SELECT * FROM PERSON");
+			long results = -1l;
+			
 			EClass eClass = null;
+			if (eClassUri != null) {
+				eClass = getEClass(resource.getResourceSet(), eClassUri);
+			}
+			String tableName = eClass != null ? eClass.getName().toUpperCase() : getTable(uri, mergedOptions);
+			String idAttributeName = null;
+			if (eClass != null) {
+				EAttribute idAttribute = eClass.getEIDAttribute();
+				idAttributeName = idAttribute == null ? typeColumn : idAttribute.getName();
+			}
+			// Execute a count query to get a number of all matches for that query
+			if (countResults) {
+				String countCol = idAttributeName == null ? typeColumn : idAttributeName;
+				results = executeCount(connection, tableName, countCol);
+				// If returning counting result / mapping results as response value is active
+				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(results));
+			}
+			
+			
+			ResultSet resultSet = s.executeQuery("SELECT * FROM PERSON");
+			
 			ResultSetMetaData metaData = resultSet.getMetaData();
 			List<String> columns = new ArrayList<String>(metaData.getColumnCount());
 			for (int c = 1; c <= metaData.getColumnCount();c++) {
 				String columnName = metaData.getColumnName(c);
 				columns.add(columnName);
 			}
-			columns.remove("ETYPE");
-			Map<String, EStructuralFeature> featureMap = new HashMap<String, EStructuralFeature>();
-			while (resultSet.next()) {
-				if (eClass == null) {
-					String typeUri = resultSet.getString("eTYPE");
-					eClass = getEClass(resource.getResourceSet(), typeUri);
-					featureMap.putAll(buildFeatureMap(eClass, columns));
-				}
-				EObject eObject = EcoreUtil.create(eClass);
-				featureMap.forEach((k,v)->setValue(resultSet, v, eObject));
-				resource.getContents().add(eObject);
+			Map<String, EStructuralFeature> mappableFeatures = new HashMap<String, EStructuralFeature>();
+			// 
+			if (eClass != null) {
+				mappableFeatures.putAll(buildMappableFeaturesMap(eClass, columns));
 			}
-
+			
+			EList<EObject> contents = resource.getContents();
+			
+			// counter for all mapped elements
+			long mappedCount = 0l;
+			while (resultSet.next()) {
+				// TODO It may be interesting to enable parsing per entry, so every data entry can of a different type
+				// We have no type information yet, so we try to extract it from the first entry
+				if (eClass == null) {
+					String typeUri = resultSet.getString(typeColumn);
+					eClass = getEClass(resource.getResourceSet(), typeUri);
+					// Continue until we find a EClass type in the column
+					if (eClass == null) {
+						continue;
+					} else {
+						mappableFeatures.putAll(buildMappableFeaturesMap(eClass, columns));
+						// Rewind the ResultSet and go to the first row, to apply mapping for all entries of the current EClass
+//						resultSet.first();
+					}
+				}
+				
+				EObject eObject = EcoreUtil.create(eClass);
+				mappableFeatures.forEach((k,v)->setValue(resultSet, v, eObject));
+				contents.add(eObject);
+				mappedCount++;
+			}
+			if (!countResults) {
+				results = mappedCount;
+				// If returning counting result / mapping results as response value is active
+				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(results));
+			}
+			
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -262,6 +330,44 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	}
 
 	/**
+	 * Executes a count statement
+	 * @param connection the databse connection
+	 * @param tableName the table name to count
+	 * @param idAttribute an optional id attribute, to make count more performant
+	 * @return the count result;
+	 * @throws SQLException
+	 */
+	protected long executeCount(Connection connection, String tableName, String column)
+			throws SQLException {
+		long result = -1l;
+		Statement countStatement = connection.createStatement();
+		String query;
+		if (column != null) {
+			query = String.format(QUERY_COUNT, column, tableName);
+		} else {
+			query = String.format(QUERY_COUNT, "*", tableName);
+		}
+		ResultSet countRS = countStatement.executeQuery(query);
+		if (countRS.next()) {
+			result = countRS.getLong(1);
+		}
+		return result;
+	}
+	
+	/**
+	 * Executes a count statement
+	 * @param connection the databse connection
+	 * @param tableName the table name to count
+	 * @param idAttribute an optional id attribute, to make count more performant
+	 * @return the count result;
+	 * @throws SQLException
+	 */
+	protected long executeCount(Connection connection, String tableName, EAttribute idAttribute)
+			throws SQLException {
+		return executeCount(connection, tableName, idAttribute.getName());
+	}
+
+	/**
 	 * @param resultSet
 	 * @param v
 	 * @param eObject
@@ -287,7 +393,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	 * @param columns the list of column names
 	 * @return a {@link Map} with the 
 	 */
-	private Map<? extends String, ? extends EStructuralFeature> buildFeatureMap(EClass eClass, List<String> columns) {
+	private Map<? extends String, ? extends EStructuralFeature> buildMappableFeaturesMap(EClass eClass, List<String> columns) {
 		Map<String, EStructuralFeature> allFeatures = eClass.getEAllStructuralFeatures().stream().collect(Collectors.toMap(EStructuralFeature::getName, Function.identity()));
 		return allFeatures.entrySet().stream().filter(e->columns.contains(e.getKey().toUpperCase())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
@@ -392,5 +498,53 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	}
 
 	private Map<String, EClass> eClassCache;
+	
+	protected String getTable(URI uri, Map<?, ?> options) {
+		return uri.segment(1);
+	}
+	
+	protected String getIdAttribute(URI uri, Map<?, ?> options) {
+		return uri.fragment();
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.Countable#count(org.eclipse.emf.common.util.URI, java.util.Map, java.util.Map)
+	 */
+	@Override
+	public long count(URI uri, Map<?, ?> options, Map<Object, Object> response) {
+		try {
+			if (countIdAttributeFilter) {
+				if (idAttributeName != null) {
+					
+				}
+			}
+			Connection connection = connectionPromise.getValue();
+			String tableName = getTable(uri, mergedOptions);
+			String idAttribute = getIdAttribute(uri, mergedOptions);
+			// Execute a count query to get a number of all matches for that query
+			return executeCount(connection, tableName, idAttribute != null ? idAttribute : typeColumn);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return -1;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.Countable#exists(org.eclipse.emf.common.util.URI, java.util.Map, java.util.Map)
+	 */
+	@Override
+	public boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+		return count(uri, options, response) > 0;
+	}
 
 }

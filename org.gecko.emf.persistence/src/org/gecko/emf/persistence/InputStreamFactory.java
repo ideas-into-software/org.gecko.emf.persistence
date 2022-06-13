@@ -53,5 +53,27 @@ public interface InputStreamFactory<TABLE> {
 	 * @throws IOException if there is a problem constructing the remove 
 	 */
 	void createDeleteRequest(URI uri, Map<?, ?> options, TABLE table, Map<Object, Object> response) throws IOException;
+	
+	/**
+	 * Creates an exist request for the given uri
+	 * @param uri the uri to check for existence
+	 * @param options the load options
+	 * @param table the table to query against
+	 * @param response the response option map
+	 * @return <code>true</code>, if an object for the uri exists, otherwise <code>false</code>
+	 * @throws IOException
+	 */
+	boolean createExistRequest(URI uri, Map<?, ?> options, TABLE table, Map<Object, Object> response) throws IOException;
+	
+	/**
+	 * Creates an count request for the given uri
+	 * @param uri the uri to check for existence
+	 * @param options the load options
+	 * @param table the table to query against
+	 * @param response the response option map
+	 * @return the number of elements, or -1 on errors
+	 * @throws IOException
+	 */
+	long createCountRequest(URI uri, Map<?, ?> options, TABLE table, Map<Object, Object> response) throws IOException;
 
 }

@@ -2,7 +2,7 @@ javac.source: 11
 javac.target: 11
 
 # enables JUnit 5 support for this project
--enable-junit5: true
+-library: enableOSGi-Test
 
 # sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
 -buildpath: \

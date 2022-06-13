@@ -24,7 +24,7 @@ import org.gecko.emf.osgi.ResourceSetConfigurator;
  */
 public class PersistenceResourceSetConfigurator implements ResourceSetConfigurator {
 	
-	private final PersistenceUriHandler persistenceHandler = new PersistenceUriHandler();
+	private final DelegatingPersistenceURIHandler persistenceHandler = new DelegatingPersistenceURIHandler();
 
 	/* 
 	 * (non-Javadoc)
@@ -41,7 +41,7 @@ public class PersistenceResourceSetConfigurator implements ResourceSetConfigurat
 	 * Returns the peristenceHandler.
 	 * @return the peristenceHandler
 	 */
-	public PersistenceUriHandler getPeristenceHandler() {
+	public DelegatingPersistenceURIHandler getPeristenceHandler() {
 		return persistenceHandler;
 	}
 

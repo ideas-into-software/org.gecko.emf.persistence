@@ -11,6 +11,7 @@
  */
 package org.gecko.emf.persistence;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
@@ -38,5 +39,5 @@ public interface OutputStreamFactory<TABLE> {
 	 * @param response the EMF response
 	 * @return the stream for saving the EMF object to MongoDB
 	 */
-	OutputStream createOutputStream(URI uri, Map<?, ?> options, TABLE table, Map<Object, Object> response);
-}
+	OutputStream createOutputStream(URI uri, Map<?, ?> options, TABLE table, Map<Object, Object> response) throws IOException ;
+} 

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 
 /**
  * 
@@ -33,7 +34,7 @@ public interface Options {
 	String OPTION_USE_ENUM_LITERAL = "STORE_ENUM_LITERAL";
 	
 	/**
-	 * This option can be set to tell the mongo client, if to count the resulting elements of a query.
+	 * This option can be set to tell the persistence client, if to count the resulting elements of a query.
 	 * This option has a performance impact, because it is an additional query. The result will be provided as {@link Long} value in the
 	 * {@link Resource} as response option with Key {@link #OPTION_COUNT_RESPONSE}.
 	 * 
@@ -43,6 +44,18 @@ public interface Options {
 	 * value type: Boolean, default is <code>false</code>
 	 */
 	String OPTION_COUNT_RESULT = "COUNT_RESULT";
+	
+	/**
+	 * This option can be set to tell the persistence client, if to count the resulting elements of a query.
+	 * This option only executes a count and does no further query and mapping. The result will be provided as {@link Long} value in the
+	 * {@link Resource} as response option with Key {@link #OPTION_COUNT_RESPONSE}.
+	 * 
+	 * To get the response options you have to set {@link URIConverter#OPTION_RESPONSE} with a new map
+	 * to the load options
+	 * 
+	 * value type: Boolean, default is <code>false</code>
+	 */
+	String OPTION_COUNT_ONLY = "COUNT_ONLY";
 	
 	/**
 	 * This option is a response options. It will be set if {@link Options#OPTION_COUNT_RESULT} is set to <code>true</code>.
@@ -107,7 +120,7 @@ public interface Options {
 	String OPTION_USE_ID_ATTRIBUTE_AS_PRIMARY_KEY = "USE_ID_ATTRIBUTE_AS_PRIMARY_KEY";
 
 	/**
-	 * If set to Boolean.TRUE, a query will return a EMongoCursor instead of a result
+	 * If set to Boolean.TRUE, a query will return a Cursor/Iterator instead of a result
 	 * 
 	 * Value type: Boolean, default is <code>false</code>
 	 */
@@ -154,12 +167,38 @@ public interface Options {
 	 * alternative name for the EClass Uri. The default is {@link Keywords#ECLASS_KEY}
 	 * 
 	 * <code>
-	 * resourceSet.getLoadOptions().put(Options.OPTION_KEY_ECLASS_URI, "_type");
+	 * resourceSet.getLoadOptions().put(Options.OPTION_ECLASS_URI_HINT, "_type");
 	 * </code>
 	 * 
 	 * Value type: {@link String}
 	 */
 	String OPTION_KEY_ECLASS_URI = "KEY_ECLASS_URI";
+	
+	/**
+	 * This option may be used when you wish to provide the EClass type information via load or save option
+	 * You will need that when e.g. loading data from a table that does not contain {@link EClass} type
+	 * information.
+	 * 
+	 * <code>
+	 * resourceSet.getLoadOptions().put(Options.OPTION_KEY_ECLASS_URI, EcoreUtil.getURI(myEClass).toString());
+	 * </code>
+	 * 
+	 * Value type: {@link String}
+	 */
+	String OPTION_ECLASS_URI_HINT = "ECLASS_URI_HINT";
+	
+	/**
+	 * This option may be used when you wish to provide the EClass'es id-attribute information via load or save option
+	 * You will need that when e.g. loading data from a table that does not contain {@link EClass} type
+	 * information.
+	 * 
+	 * <code>
+	 * resourceSet.getLoadOptions().put(Options.OPTION_KEY_ECLASS_URI, EcoreUtil.getURI(myEClass).toString());
+	 * </code>
+	 * 
+	 * Value type: {@link String}
+	 */
+	String OPTION_ECLASS_IDATTRIBUTE_HINT = "ECLASS_IDATTRIBUTE_HINT";
 	
 	/**
 	 * This option may be used when you wish to customize serialization and/or de-serialization, using an
@@ -264,10 +303,10 @@ public interface Options {
 	 * If set to an {@link EClass} or a {@link String} EMF persistence uses the give value as database/collection
 	 * 
 	 * <code>
-	 * resourceSet.getSaveOptions().put(Options.OPTION_COLLECTION_NAME, BasicPackage.Literals.MYTEST));
-	 * resourceSet.getSaveOptions().put(Options.OPTION_COLLECTION_NAME, "mycollection"));
-	 * resourceSet.getLoadOptions().put(Options.OPTION_COLLECTION_NAME, BasicPackage.Literals.MYTEST));
-	 * resourceSet.getLoadOptions().put(Options.OPTION_COLLECTION_NAME, "mycollection"));
+	 * resourceSet.getSaveOptions().put(Options.OPTION_TABLE_NAME, BasicPackage.Literals.MYTEST));
+	 * resourceSet.getSaveOptions().put(Options.OPTION_TABLE_NAME, "mycollection"));
+	 * resourceSet.getLoadOptions().put(Options.OPTION_TABLE_NAME, BasicPackage.Literals.MYTEST));
+	 * resourceSet.getLoadOptions().put(Options.OPTION_TABLE_NAME, "mycollection"));
 	 * </code>
 	 */
 	String OPTION_TABLE_NAME = "DATABASE_NAME";

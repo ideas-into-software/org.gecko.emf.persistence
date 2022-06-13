@@ -118,6 +118,28 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 		}
 	}
 
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.InputStreamFactory#createExistRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
+	 */
+	@Override
+	public boolean createExistRequest(URI uri, Map<?, ?> options, MongoCollection<Document> table,
+			Map<Object, Object> response) throws IOException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.InputStreamFactory#createCountRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
+	 */
+	@Override
+	public long createCountRequest(URI uri, Map<?, ?> options, MongoCollection<Document> table,
+			Map<Object, Object> response) throws IOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	/**
 	 * Sets the converter service
 	 * @param converterService the converter service to set
@@ -168,6 +190,26 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 */
 	public void removeInputHandler(InputContentHandler<FindIterable<EObject>> contentHandler) {
 		super.removeInputHandler(contentHandler);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateOutputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
+	 */
+	@Override
+	protected OutputStream doCreateOutputStream(URI uri, Map<?, ?> options, MongoCollection<Document> collection,
+			Map<Object, Object> response) throws IOException {
+		return new MongoOutputStream(converterService, collection, uri, idFactories, options, response);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
+	 */
+	@Override
+	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, MongoCollection<Document> collection,
+			Map<Object, Object> response) throws IOException {
+		return new MongoInputStream(converterService, queryEngine, collection, handlerList, uri, options, response);
 	}
 
 }

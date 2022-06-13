@@ -99,5 +99,20 @@ public interface EMFReadRepository extends EMFRepository {
 	 * @throws EMFRepositoryException thrown when an error during getting all objects occur
 	 */
 	public <T extends EObject> List<T> getAllEObjects(EClass eClass, Map<?, ?> options);
+	
+	/**
+	 * Counts all objects of the {@link EClass} type
+	 * @param eClass the {@link EClass} of the objects to be counted
+	 * @return the number of elements or -1 on invalid queries
+	 */
+	public long count(EClass eClass); 
+	
+	/**
+	 * Counts all objects of the {@link EClass} type
+	 * @param eClass the {@link EClass} of the objects to be counted
+	 * @param options the load options
+	 * @return the number of elements or -1 on invalid queries
+	 */
+	public long count(EClass eClass, Map<String, Object> options); 
 
 }

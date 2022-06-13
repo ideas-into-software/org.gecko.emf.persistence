@@ -26,4 +26,5 @@ public interface JdbcPersistenceConstants {
 	public static final String RESOURCESET_CONFIG_NAME = "emf.persistence.jdbc";
 	public static final String RESOURCESET_CONFIG_PROP = EMFNamespaces.EMF_CONFIGURATOR_NAME + "=" + RESOURCESET_CONFIG_NAME;
 
+	public static final String ECLASS_TYPE_COLUMN_NAME = "ETYPE";
 }
