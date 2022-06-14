@@ -15,7 +15,7 @@ pipeline  {
             }
             steps {
                 echo "I am building on ${env.BRANCH_NAME}"
-                sh "./gradlew clean build itest release -Drelease.dir=$JENKINS_HOME/repo.gecko/release/org.gecko.emf.persistence --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
+                sh "./gradlew clean build release -Drelease.dir=$JENKINS_HOME/repo.gecko/release/org.gecko.emf.persistence --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
             }
         }
         stage('Snapshot branch release') {
