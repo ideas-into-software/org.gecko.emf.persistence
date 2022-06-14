@@ -3,12 +3,19 @@ pluginManagement {
     id 'biz.aQute.bnd.workspace' version bnd_version
   }
   repositories {
-    maven { url bnd_snapshots }
+    maven {
+      url = uri(bnd_snapshots)
+      content {
+        snapshotsOnly()
+        includeGroup('biz.aQute.bnd')
+        includeGroup('biz.aQute.bnd.workspace')
+      }
+    }
     mavenCentral()
     gradlePluginPortal()
   }
-  rootProject.name="org.gecko.emf.persistence"
 }
 plugins {
   id 'biz.aQute.bnd.workspace'
 }
+rootProject.name = "emfutils"

@@ -1,41 +1,32 @@
+// Available to customize the build
 plugins {
-  id "org.sonarqube" version "3.1.1"
+  id "org.sonarqube" version "3.3"
   id 'jacoco'
   id 'java'
 }
 
-// It is always good to give gradle the possibility to have a repository to download dpendencies
-repositories {
-    mavenCentral()
-}
-
-// Allow gradle to enable JUnit support in submodules
-subprojects {
-   apply plugin : 'java'
-   test.useJUnitPlatform()
-}
-
-// Sonar setup
 sonarqube {
   properties {
-    property "sonar.projectName", "org.gecko.emf.persistence"
+    property "sonar.projectName", "Gecko EMF Persistence"
     property "sonar.projectKey", "geckoprojects-org_org.gecko.emf.persistence"
     property "sonar.organization", "geckoprojects-org"
     property "sonar.host.url", "https://sonarcloud.io"
     property "sonar.coverage.jacoco.xmlReportPaths", "${rootDir}/build/reports/jacoco/codeCoverageReport/codeCoverageReport.xml"
-    //property "sonar.exclusions", "org.gecko.project/**/*.java, org.gecko.other.project/**/*.java"
+    property "sonar.exclusions", "org.gecko.emf.collections/**/*.java, org.gecko.emf.pushstreams/**/*.java, org.gecko.emf.util.model/**/*.java, org.gecko.emf.json.tests/**/*.java, org.gecko.emf.bson.tests/**/*.java"
   }
+}
+
+repositories {
+    mavenCentral()
 }
 
 tasks.named('wrapper') {
   jarFile = rootProject.file('.gradle-wrapper/gradle-wrapper.jar')
 }
 
-
 // Disable bnd plugin built-in task 'testOSGi' and register custom task for testing
 gradle.startParameter.excludedTaskNames += "testOSGi"
 
-// Enable itest task instead for using OSGi Tests and JUnit5
 tasks.register('itest'){
   subprojects.each { sp ->
     sp.tasks.each { t -> 

@@ -104,7 +104,8 @@ public class PersistenceHelper {
 				List<EObject> eos = (List<EObject>) eObject.eGet(r, false);
 				BasicDiagnostic chain = new BasicDiagnostic();
 				if(r.isContainment()) {
-					eos.stream().map(eo -> checkForAttachedNonContainmentRefs(eo, r)).forEach(chain::add);
+					eos.stream().map(eo -> checkForAttachedNonContainmentRefs(eo, r)).forEach(d->chain.add(d));
+//					eos.stream().map(eo -> checkForAttachedNonContainmentRefs(eo, r)).forEach(chain::add);//Leads to compile error in gradle
 				} else {
 					BasicEList<EObject> list = (BasicEList<EObject>) eos;
 					for(int i = 0 ; i < list.size(); i++) {

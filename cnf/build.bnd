@@ -14,6 +14,11 @@ base-version: 1.0.0.SNAPSHOT
 # Maven Central Group-Id
 -groupid: org.gecko.emf.persistence
 
+-fixupmessages: \
+	"No metadata for revision";\
+		restrict:=error;\
+    	is:=warning
+
 javac.source: 11
 javac.target: 11
 
