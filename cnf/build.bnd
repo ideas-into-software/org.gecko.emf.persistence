@@ -12,7 +12,7 @@ github-project: org.gecko.emf.persistence
 base-version: 1.0.0.SNAPSHOT
 
 # Maven Central Group-Id
--groupid: org.gecko.emf.persistence
+-groupid: org.geckoprojects.emf.persistence
 
 -fixupmessages: \
 	"No metadata for revision";\
