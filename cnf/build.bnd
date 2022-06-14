@@ -5,7 +5,7 @@
 -library: \
 	geckoEMF,\
 	geckoOSGi-Test,\
-	gecko-dimc
+	geckoDIMC
 
 # Needed because we enabled library 'gecko-dimc' 	
 github-project: org.gecko.emf.persistence

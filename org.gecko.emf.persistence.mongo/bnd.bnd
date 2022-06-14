@@ -17,7 +17,9 @@ src: src,src-gen
 	org.mongodb.driver-core,\
 	org.gecko.emf.osgi.api,\
 	org.gecko.emf.collections,\
-	org.gecko.persistence.mongo
+	org.gecko.persistence.mongo,\
+	org.osgi.annotation.versioning,\
+	org.osgi.annotation.bundle
 
 -includeresource.model: model=model
 Bundle-Name: Gecko Mongo EMF Persistence

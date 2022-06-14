@@ -11,5 +11,7 @@ Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.configurator)'
 	org.osgi.util.promise,\
 	org.osgi.service.jdbc,\
 	org.osgi.framework,\
-	org.osgi.util.function
+	org.osgi.util.function,\
+	org.osgi.annotation.bundle,\
+	org.osgi.service.component.annotations
 -privatepackage: derby.test

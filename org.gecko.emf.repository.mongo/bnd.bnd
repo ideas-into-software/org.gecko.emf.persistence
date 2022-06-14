@@ -4,4 +4,7 @@
 	org.osgi.service.cm;version=latest,\
 	org.mongodb.driver-sync;version=latest,\
 	org.gecko.emf.repository,\
-	org.gecko.persistence.mongo
+	org.gecko.persistence.mongo,\
+	org.osgi.annotation.versioning,\
+	org.osgi.annotation.bundle,\
+	org.osgi.service.component.annotations

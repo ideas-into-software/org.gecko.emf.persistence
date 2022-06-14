@@ -4,7 +4,10 @@
 	org.mongodb.driver-core;version=latest,\
 	org.osgi.framework;version=latest,\
 	org.osgi.service.log;version=latest,\
-	org.osgi.util.converter;version=latest
+	org.osgi.util.converter;version=latest,\
+	org.osgi.service.metatype.annotations,\
+	org.osgi.service.component.annotations,\
+	org.osgi.annotation.bundle
 
 Export-Package: org.gecko.persistence.mongo
 Bundle-Name: Gecko MongoDB Peristence

@@ -11,11 +11,8 @@
  */
 package org.gecko.persistence.derby;
 
-import java.sql.Connection;
 import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.sql.ConnectionPoolDataSource;
@@ -23,14 +20,11 @@ import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
 import org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource;
-import org.apache.derby.jdbc.EmbeddedConnectionPoolDataSource40;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
 import org.apache.derby.jdbc.EmbeddedXADataSource;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
-import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 /**

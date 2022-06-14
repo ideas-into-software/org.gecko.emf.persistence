@@ -1,7 +1,9 @@
 -enable-emf: true
 
 -buildpath: \
-	org.osgi.framework;version=latest
+	org.osgi.framework;version=latest,\
+	org.osgi.annotation.bundle,\
+	org.osgi.annotation.versioning
 	
 Bundle-Name: EMF Persistence API
 Bundle-Description: Gecko.io EMF Persistence API

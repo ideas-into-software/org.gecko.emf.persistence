@@ -7,7 +7,8 @@
 	org.gecko.emf.util.model,\
 	org.gecko.emf.collections,\
 	org.osgi.framework,\
-	org.osgi.util.promise
+	org.osgi.util.promise,\
+	org.osgi.service.component.annotations
 -privatepackage: \
 	org.gecko.emf.persistence.jdbc,\
 	org.gecko.emf.persistence.jdbc.converter,\
