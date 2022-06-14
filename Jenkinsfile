@@ -11,7 +11,7 @@ pipeline  {
     stages {
         stage('Main branch release') {
             when { 
-                branch 'main' 
+                branch 'master' 
             }
             steps {
                 echo "I am building on ${env.BRANCH_NAME}"
