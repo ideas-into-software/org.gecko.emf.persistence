@@ -13,6 +13,7 @@ package org.gecko.emf.persistence;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
+import org.gecko.emf.persistence.input.InputContentHandler;
 
 /**
  * Constants for the EMF Repository
@@ -38,5 +39,10 @@ public class PersistenceConstants {
 	 * Note that a copy of each object will be made and validated.  
 	 * */
 	public static final String FULL_CONSTRAINT_VALIDATION = "full.contraint.validation";
+	
+	/** 
+	 * Defines the service property key, that defines {@link InputContentHandler} type
+	 */
+	public static final String INPUT_CONTENT_HANDLER_PROP = "pushstream";
 	
 }

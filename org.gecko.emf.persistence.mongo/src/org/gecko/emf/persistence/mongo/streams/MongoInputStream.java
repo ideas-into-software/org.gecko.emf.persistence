@@ -38,10 +38,12 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.gecko.emf.collection.CollectionFactory;
 import org.gecko.emf.collection.EReferenceCollection;
 import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.InputContentHandler;
 import org.gecko.emf.persistence.Keywords;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.QueryEngine;
+import org.gecko.emf.persistence.input.InputContentHandler;
+import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.input.InputContextBuilder;
 import org.gecko.emf.persistence.model.mongo.EMongoQuery;
 import org.gecko.emf.persistence.mongo.codecs.EObjectCodecProvider;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
@@ -178,8 +180,14 @@ public class MongoInputStream extends InputStream implements URIConverter.Loadab
 
 			final FindIterable<EObject> iterable = resultIterable;
 			
+			InputContext<FindIterable<EObject>> inputContext = new InputContextBuilder<FindIterable<EObject>>()
+					.options(mergedOptions)
+					.result(iterable)
+					.resourceCache(resourcesCache)
+					.resource(resource).build();
+			
 			handlerOptional.ifPresent((ich)->{
-				EObject result = ich.createContent(iterable, (Map<Object, Object>) mergedOptions, resourcesCache);
+				EObject result = ich.createContent(inputContext);
 				if (result != null) {
 					contents.add(result);
 				}

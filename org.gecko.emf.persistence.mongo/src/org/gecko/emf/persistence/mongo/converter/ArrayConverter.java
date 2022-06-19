@@ -14,7 +14,7 @@ package org.gecko.emf.persistence.mongo.converter;
 import java.util.logging.Logger;
 
 import org.eclipse.emf.ecore.EDataType;
-import org.gecko.emf.persistence.ValueConverter;
+import org.gecko.emf.persistence.converter.ValueConverter;
 
 /**
  * 
@@ -31,7 +31,7 @@ public class ArrayConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.ValueConverter#convertMongoDBValueToEMFValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertMongoDBValueToEMFValue(EDataType eDataType, Object databaseValue) {
+	public Object convertDBValueToEMFValue(EDataType eDataType, Object databaseValue) {
 		if(databaseValue instanceof Object[]) {
 			Object[] objArray = (Object[]) databaseValue;
 			String[] splitName = eDataType.getInstanceClassName().split("(?<=\\[)]"); //to get the array dimension
@@ -48,7 +48,7 @@ public class ArrayConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.ValueConverter#convertEMFValueToMongoDBValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertEMFValueToMongoDBValue(EDataType eDataType, Object emfValue) {
+	public Object convertEMFValueToDBValue(EDataType eDataType, Object emfValue) {
 		
 		if(emfValue instanceof Object[]) {
 			return emfValue;

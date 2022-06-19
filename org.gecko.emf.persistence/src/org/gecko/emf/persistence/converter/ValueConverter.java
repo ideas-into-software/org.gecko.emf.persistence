@@ -10,12 +10,12 @@
  *     Data In Motion - initial API and implementation
  *     Bryan Hunt
  */
-package org.gecko.emf.persistence;
+package org.gecko.emf.persistence.converter;
 
 import org.eclipse.emf.ecore.EDataType;
 
 /**
- * Converter interface to convert from MongoDB into EMF and back
+ * Converter interface to convert from Database into EMF and back
  * @author bhunt
  */
 public interface ValueConverter
@@ -30,7 +30,7 @@ public interface ValueConverter
 	 * @param databaseValue the value read from MongoDB
 	 * @return the value that will be set in the EMF object being built.
 	 */
-	Object convertMongoDBValueToEMFValue(EDataType eDataType, Object databaseValue);
+	Object convertDBValueToEMFValue(EDataType eDataType, Object databaseValue);
 
 	/**
 	 * Convert a value from EMF of the specified type to a value stored in MongoDB.
@@ -42,7 +42,7 @@ public interface ValueConverter
 	 * @param emfValue the value from the EMF object
 	 * @return the value that will be stored in MongoDB
 	 */
-	Object convertEMFValueToMongoDBValue(EDataType eDataType, Object emfValue);
+	Object convertEMFValueToDBValue(EDataType eDataType, Object emfValue);
 
 	/**
 	 * Determines whether or not this converter can convert a value of a specific type.

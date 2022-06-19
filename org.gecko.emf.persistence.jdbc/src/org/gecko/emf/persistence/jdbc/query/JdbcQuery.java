@@ -11,28 +11,39 @@
  */
 package org.gecko.emf.persistence.jdbc.query;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * 
  * @author mark
  * @since 16.04.2022
  */
-public class JdbcQuery {
+public interface JdbcQuery {
 	
-	private Set<String> projection = new HashSet<>();
-	private Set<String> tables = new HashSet<>();
+	public static final String QUERY_COUNT = "SELECT COUNT(%s) FROM %s";
+	public static final String QUERY_ALL = "SELECT %s FROM %s";
+	public static final String QUERY_ID = "SELECT %s FROM %s WHERE %s=%s";
+	
 
-	public String getSelect() {
-		return "SELECT * FROM Person";
-	}
+	/**
+	 * Executes a Jdbc query
+	 * @param connection the connection must not be null
+	 * @param tableName the table name to query
+	 * @param column the column to query against
+	 * @return the Jdbc {@link ResultSet}
+	 * @throws SQLException
+	 */
+	public ResultSet executeQuery(Connection connection, String tableName, String column) throws SQLException;
 	
 	/**
-	 * Returns the projection.
-	 * @return the projection
+	 * Same as {@link JdbcQuery#executeQuery(Connection, String, String)} with last parameter <code>null</code>
+	 * @param connection the connection must not be null
+	 * @param tableName the table name to query
+	 * @return the Jdbc {@link ResultSet}
+	 * @throws SQLException
 	 */
-	public Set<String> getProjection() {
-		return projection;
-	}
+	public ResultSet executeQuery(Connection connection, String tableName) throws SQLException;
+	
 }

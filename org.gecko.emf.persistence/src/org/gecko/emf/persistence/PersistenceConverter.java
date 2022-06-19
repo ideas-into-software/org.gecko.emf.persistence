@@ -12,6 +12,7 @@
 package org.gecko.emf.persistence;
 
 import org.eclipse.emf.ecore.EDataType;
+import org.gecko.emf.persistence.converter.TypeConverter;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**

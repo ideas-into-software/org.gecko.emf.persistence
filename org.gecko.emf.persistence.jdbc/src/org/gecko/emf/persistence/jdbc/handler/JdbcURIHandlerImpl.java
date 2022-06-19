@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.emf.common.util.URI;
-import org.gecko.emf.persistence.InputStreamFactory;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.gecko.emf.persistence.PersistenceURIHandlerImpl;
+import org.gecko.emf.persistence.input.InputStreamFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.promise.PromiseFactory;
@@ -48,7 +48,8 @@ import org.osgi.util.promise.PromiseFactory;
 public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connection>> {
 
 	private static final String SCHEMA_DB = "jdbc";
-	private static final String DB_TEMPLATE = "jdbc:%s:%s;create=true";
+	private static final String DB_TEMPLATE = "jdbc:%s:%s";
+//	private static final String DB_TEMPLATE = "jdbc:%s:%s;create=true";
 	private final PromiseFactory pf;
 	private Map<String, DataSourceFactory> connections;
 	/**

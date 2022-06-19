@@ -12,11 +12,9 @@
  */
 package org.gecko.emf.persistence.jdbc.converter;
 
-import java.util.LinkedList;
-
-import org.eclipse.emf.ecore.EDataType;
 import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.ValueConverter;
+import org.gecko.emf.persistence.converter.DefaultConverterService;
+import org.gecko.emf.persistence.converter.ValueConverter;
 import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -24,21 +22,15 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 
 /**
- * This class is thread safe
+ * Converter service for Jdbc. We just take the default converter
  * @author bhunt
  */
 @Component(name="JdbcConverterService", service=ConverterService.class, immediate=true, property = JdbcPersistenceConstants.PERSISTENCE_FILTER_PROP)
-public class JdbcConverterService implements ConverterService {
+public class JdbcConverterService extends DefaultConverterService {
 	
-	private LinkedList<ValueConverter> converters;
-	
-	public JdbcConverterService() {
-		this.converters = new LinkedList<ValueConverter>();
-	}
-
 	/* 
 	 * (non-Javadoc)
-	 * @see org.gecko.emf.mongo.converter.ConverterService#addConverter(org.gecko.emf.mongo.converter.ValueConverter)
+	 * @see org.gecko.emf.persistence.ConverterService#addConverter(org.gecko.emf.persistence.converter.ValueConverter)
 	 */
 	@Override
 	@Reference(unbind="removeConverter", cardinality=ReferenceCardinality.MULTIPLE, policy=ReferencePolicy.DYNAMIC, target = JdbcPersistenceConstants.PERSISTENCE_FILTER)
@@ -51,22 +43,7 @@ public class JdbcConverterService implements ConverterService {
 
 	/* 
 	 * (non-Javadoc)
-	 * @see org.gecko.emf.mongo.converter.ConverterService#getConverter(org.eclipse.emf.ecore.EDataType)
-	 */
-	@Override
-	public ValueConverter getConverter(EDataType eDataType) {
-		synchronized (converters) {
-			return converters.
-					stream().
-					filter((c)->c.isConverterForType(eDataType)).
-					findFirst().
-					orElseThrow(()->new IllegalStateException("The default converter was not found - this should never happen"));
-		}
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.mongo.converter.ConverterService#removeConverter(org.gecko.emf.mongo.converter.ValueConverter)
+	 * @see org.gecko.emf.persistence.ConverterService#removeConverter(org.gecko.emf.persistence.converter.ValueConverter)
 	 */
 	@Override
 	public void removeConverter(ValueConverter converter){

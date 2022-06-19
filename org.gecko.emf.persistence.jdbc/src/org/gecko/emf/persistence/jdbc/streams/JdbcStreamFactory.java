@@ -25,11 +25,11 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.DefaultStreamFactory;
-import org.gecko.emf.persistence.InputContentHandler;
-import org.gecko.emf.persistence.InputStreamFactory;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.gecko.emf.persistence.PrimaryKeyFactory;
 import org.gecko.emf.persistence.QueryEngine;
+import org.gecko.emf.persistence.input.InputContentHandler;
+import org.gecko.emf.persistence.input.InputStreamFactory;
 import org.gecko.emf.persistence.jdbc.query.JdbcQuery;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -87,7 +87,7 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>,
 	 * Sets an {@link InputContentHandler} to be used
 	 * @param contentHandler the id factory to be added
 	 */
-	@Reference(name="JdbcInputHandler", policy=ReferencePolicy.DYNAMIC, cardinality=ReferenceCardinality.MULTIPLE, unbind="removeInputHandler", target=PERSISTENCE_FILTER)
+	@Reference(name="JdbcInputHandler", policy=ReferencePolicy.STATIC, cardinality=ReferenceCardinality.AT_LEAST_ONE, unbind="removeInputHandler", target=PERSISTENCE_FILTER)
 	public void addInputHandler(InputContentHandler<ResultSet> contentHandler) {
 		super.addInputHandler(contentHandler);
 	}

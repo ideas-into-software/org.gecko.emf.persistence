@@ -9,9 +9,8 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence;
+package org.gecko.emf.persistence.input;
 
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
@@ -19,8 +18,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
- * Interface to handle 3rd party persistence input. The order can be handles using the service.rank
- * @param <RESULT> the iterable or result set to create {@link EObject} from 
+ * Interface to handle 3rd party persistence input. The order can be handles using the service.rank or 
+ * other service properties
  * @author Mark Hoffmann
  * @since 26.03.2022
  */
@@ -41,20 +40,10 @@ public interface InputContentHandler<RESULT> {
 	public boolean canHandle(Map<Object, Object> options);
 	
 	/**
-	 * Creates the content from the find iterable
-	 * @param iterable the {@link FindIterable}
-	 * @param options the load options
+	 * Creates the content from the given result
+	 * @param context the input context for the query including the result
 	 * @return the content as {@link EObject} or <code>null</code>
 	 */
-	public EObject createContent(RESULT iterable, Map<Object, Object> options);
+	public EObject createContent(InputContext<RESULT> context);
 	
-	/**
-	 * Creates the content from the find iterable using a resource cache
-	 * @param iterable the {@link FindIterable}
-	 * @param options the load options
-	 * @param resourceCache the resource cache to be used
-	 * @return the content as {@link EObject} or <code>null</code>
-	 */
-	public EObject createContent(RESULT iterable, Map<Object, Object> options, List<Resource> resourceCache);
-
 }

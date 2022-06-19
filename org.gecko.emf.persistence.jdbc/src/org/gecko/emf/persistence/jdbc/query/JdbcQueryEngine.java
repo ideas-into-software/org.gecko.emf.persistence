@@ -53,7 +53,7 @@ public class JdbcQueryEngine implements QueryEngine<JdbcQuery> {
 	 * @return
 	 */
 	private JdbcQuery createQuery(Request request, Map<?, ?> options) {
-		return new JdbcQuery();
+		return new JdbcAllQuery(request);
 	}
 
 //	/**

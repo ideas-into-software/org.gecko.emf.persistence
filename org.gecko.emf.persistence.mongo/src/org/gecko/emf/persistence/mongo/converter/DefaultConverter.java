@@ -15,7 +15,7 @@ package org.gecko.emf.persistence.mongo.converter;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.gecko.emf.persistence.ValueConverter;
+import org.gecko.emf.persistence.converter.ValueConverter;
 
 /**
  * Default value converter for EMF 
@@ -27,7 +27,7 @@ public class DefaultConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.converter.ValueConverter#convertMongoDBValueToEMFValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertMongoDBValueToEMFValue(EDataType eDataType, Object databaseValue) {
+	public Object convertDBValueToEMFValue(EDataType eDataType, Object databaseValue) {
 		return EcoreUtil.createFromString(eDataType, (String) databaseValue);
 	}
 
@@ -36,7 +36,7 @@ public class DefaultConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.converter.ValueConverter#convertEMFValueToMongoDBValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertEMFValueToMongoDBValue(EDataType eDataType, Object emfValue) {
+	public Object convertEMFValueToDBValue(EDataType eDataType, Object emfValue) {
 		return EcoreUtil.convertToString(eDataType, emfValue);
 	}
 

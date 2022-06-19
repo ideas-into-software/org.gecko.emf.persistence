@@ -20,8 +20,8 @@ import java.util.concurrent.Executors;
 
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.gecko.emf.osgi.UriHandlerProvider;
-import org.gecko.emf.persistence.InputStreamFactory;
 import org.gecko.emf.persistence.OutputStreamFactory;
+import org.gecko.emf.persistence.input.InputStreamFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;

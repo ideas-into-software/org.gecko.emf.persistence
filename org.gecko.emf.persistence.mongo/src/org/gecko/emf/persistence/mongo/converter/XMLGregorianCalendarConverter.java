@@ -22,7 +22,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.emf.ecore.EDataType;
-import org.gecko.emf.persistence.ValueConverter;
+import org.gecko.emf.persistence.converter.ValueConverter;
 
 /**
  * Value converter for {@link XMLGregorianCalendar}
@@ -38,7 +38,7 @@ public class XMLGregorianCalendarConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.ValueConverter#convertMongoDBValueToEMFValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertMongoDBValueToEMFValue(EDataType eDataType, Object databaseValue) {
+	public Object convertDBValueToEMFValue(EDataType eDataType, Object databaseValue) {
 		if (eDataType.getInstanceClass().equals(XMLGregorianCalendar.class)) {
 			Date date;
 			if (databaseValue instanceof Long) {
@@ -67,7 +67,7 @@ public class XMLGregorianCalendarConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.ValueConverter#convertEMFValueToMongoDBValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertEMFValueToMongoDBValue(EDataType eDataType, Object emfValue) {
+	public Object convertEMFValueToDBValue(EDataType eDataType, Object emfValue) {
 		if (eDataType.getInstanceClass().equals(XMLGregorianCalendar.class)) {
 			XMLGregorianCalendar c = (XMLGregorianCalendar) emfValue;
 			return c.toGregorianCalendar().getTime();

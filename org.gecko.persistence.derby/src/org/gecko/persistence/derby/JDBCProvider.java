@@ -41,7 +41,16 @@ public class JDBCProvider implements DataSourceFactory {
 	 */
 	@Override
 	public DataSource createDataSource(Properties props) throws SQLException {
-		return new EmbeddedDataSource();
+		EmbeddedDataSource eds = new EmbeddedDataSource();
+		String database = props.getProperty(JDBC_DATABASE_NAME);
+		if (database != null) {
+			eds.setDatabaseName(database);
+		}
+		String name = props.getProperty(JDBC_DATASOURCE_NAME);
+		if (name != null) {
+			eds.setDataSourceName(name);
+		}
+		return eds;
 	}
 
 	/* 
@@ -50,7 +59,16 @@ public class JDBCProvider implements DataSourceFactory {
 	 */
 	@Override
 	public ConnectionPoolDataSource createConnectionPoolDataSource(Properties props) throws SQLException {
-		return new EmbeddedConnectionPoolDataSource();
+		EmbeddedConnectionPoolDataSource ecpds = new EmbeddedConnectionPoolDataSource();
+		String database = props.getProperty(JDBC_DATABASE_NAME);
+		if (database != null) {
+			ecpds.setDatabaseName(database);
+		}
+		String name = props.getProperty(JDBC_DATASOURCE_NAME);
+		if (name != null) {
+			ecpds.setDataSourceName(name);
+		}
+		return ecpds;
 	}
 
 	/* 
@@ -59,7 +77,16 @@ public class JDBCProvider implements DataSourceFactory {
 	 */
 	@Override
 	public XADataSource createXADataSource(Properties props) throws SQLException {
-		return new EmbeddedXADataSource();
+		EmbeddedXADataSource exads = new EmbeddedXADataSource();
+		String database = props.getProperty(JDBC_DATABASE_NAME);
+		if (database != null) {
+			exads.setDatabaseName(database);
+		}
+		String name = props.getProperty(JDBC_DATASOURCE_NAME);
+		if (name != null) {
+			exads.setDataSourceName(name);
+		}
+		return exads;
 	}
 
 	/* 

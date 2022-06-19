@@ -13,6 +13,7 @@
 package org.gecko.emf.persistence;
 
 import org.eclipse.emf.ecore.EDataType;
+import org.gecko.emf.persistence.converter.ValueConverter;
 
 /**
  * @author bhunt

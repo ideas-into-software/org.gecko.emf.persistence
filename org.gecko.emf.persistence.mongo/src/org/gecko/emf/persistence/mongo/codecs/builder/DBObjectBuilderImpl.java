@@ -46,7 +46,7 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.Keywords;
 import org.gecko.emf.persistence.Options;
-import org.gecko.emf.persistence.ValueConverter;
+import org.gecko.emf.persistence.converter.ValueConverter;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
 
 /**
@@ -435,7 +435,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 		// Types not native to MongoDB are stored as strings and must be converted to the proper object type by EMF
 		ValueConverter valueConverter = converterService.getConverter(eDataType);
 		if (valueConverter != null) {
-			convertedValue = valueConverter.convertEMFValueToMongoDBValue(eDataType, emfValue);
+			convertedValue = valueConverter.convertEMFValueToDBValue(eDataType, emfValue);
 		} else {
 			logger.warning("No ValueConverter found for data type " + eDataType.getName() + " and value " + emfValue);
 		}

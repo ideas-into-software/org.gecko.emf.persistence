@@ -16,7 +16,7 @@ import java.util.LinkedList;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.ValueConverter;
+import org.gecko.emf.persistence.converter.ValueConverter;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;

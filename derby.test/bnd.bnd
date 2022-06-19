@@ -13,5 +13,10 @@ Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.configurator)'
 	org.osgi.framework,\
 	org.osgi.util.function,\
 	org.osgi.annotation.bundle,\
-	org.osgi.service.component.annotations
+	org.osgi.service.component.annotations,\
+	de.jena.mdo.example.asset.model,\
+	org.gecko.emf.persistence;version=latest,\
+	org.gecko.emf.persistence.pushstreams,\
+	org.gecko.emf.pushstreams,\
+	org.osgi.util.pushstream
 -privatepackage: derby.test

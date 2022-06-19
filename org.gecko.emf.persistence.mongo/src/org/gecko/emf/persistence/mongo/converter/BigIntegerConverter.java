@@ -15,7 +15,7 @@ import java.math.BigInteger;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.gecko.emf.persistence.ValueConverter;
+import org.gecko.emf.persistence.converter.ValueConverter;
 
 /**
  * Converter for BigInteger.
@@ -40,7 +40,7 @@ public class BigIntegerConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.converter.ValueConverter#convertMongoDBValueToEMFValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertMongoDBValueToEMFValue(EDataType eDataType,
+	public Object convertDBValueToEMFValue(EDataType eDataType,
 			Object databaseValue) {
 		if (databaseValue instanceof Integer) {
 			return EcoreUtil.createFromString(eDataType, ((Integer)databaseValue).toString());
@@ -56,7 +56,7 @@ public class BigIntegerConverter implements ValueConverter {
 	 * @see org.gecko.emf.mongo.converter.ValueConverter#convertEMFValueToMongoDBValue(org.eclipse.emf.ecore.EDataType, java.lang.Object)
 	 */
 	@Override
-	public Object convertEMFValueToMongoDBValue(EDataType eDataType,
+	public Object convertEMFValueToDBValue(EDataType eDataType,
 			Object emfValue) {
 		return EcoreUtil.convertToString(eDataType, emfValue);
 	}

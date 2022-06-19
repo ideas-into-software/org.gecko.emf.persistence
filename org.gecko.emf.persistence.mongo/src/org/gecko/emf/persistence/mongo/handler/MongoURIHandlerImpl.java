@@ -21,10 +21,10 @@ import java.util.Map;
 import org.bson.Document;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
-import org.gecko.emf.persistence.InputStreamFactory;
 import org.gecko.emf.persistence.Keywords;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.OutputStreamFactory;
+import org.gecko.emf.persistence.input.InputStreamFactory;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
 
 import com.mongodb.BasicDBObject;

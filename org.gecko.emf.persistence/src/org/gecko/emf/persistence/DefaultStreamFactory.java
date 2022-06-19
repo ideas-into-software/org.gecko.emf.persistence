@@ -24,6 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
+import org.gecko.emf.persistence.input.InputContentHandler;
+import org.gecko.emf.persistence.input.InputStreamFactory;
 
 /**
  * @author bhunt

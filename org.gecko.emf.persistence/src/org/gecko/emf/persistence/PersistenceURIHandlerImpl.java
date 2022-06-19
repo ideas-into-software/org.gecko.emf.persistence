@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
+import org.gecko.emf.persistence.input.InputStreamFactory;
 
 /**
  * Basic implementation for an {@link URIHandlerImpl} for the persistence, It contains a default implementation

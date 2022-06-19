@@ -14,6 +14,8 @@ package org.gecko.emf.persistence;
 import java.util.List;
 import java.util.Map;
 
+import org.gecko.emf.persistence.input.InputContentHandler;
+
 /**
  * Just a wrapper to hold important information
  * @author Mark Hoffmann

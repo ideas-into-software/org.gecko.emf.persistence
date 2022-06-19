@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
  * @author mark
  * @since 13.06.2022
  */
-@Component
+//@Component
 public class ImportDump {
 	
 	private static final String DB_TEMPLATE = "jdbc:derby:%s;create=true";
@@ -57,17 +58,22 @@ public class ImportDump {
 	}
 	
 	private Void doImport() {
-		String dbUrl = String.format(DB_TEMPLATE, "TRAFFIC");
+		String dbUrl = String.format(DB_TEMPLATE, "traffic");
 		try {
 			connection = dsf.createDriver(null).connect(dbUrl, null);
-			createDatabases(connection);
-			URL dumpUrl = bctx.getBundle().getEntry("data/dump.sql");
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(dumpUrl.openStream()))) {
-				br.lines().map(s->s.substring(0, s.length() - 1)).forEach(this::batchImport);
-				importLines(batchCache, connection);
-				System.out.println("Finished Import " + (BATCH_SIZE * batches.get() + batchCache.size()) + " elements");
-			} catch (IOException e) {
-				throw new IllegalStateException("Error reading dump file");
+//			createDatabases(connection);
+//			URL dumpUrl = bctx.getBundle().getEntry("data/dump.sql");
+//			try (BufferedReader br = new BufferedReader(new InputStreamReader(dumpUrl.openStream()))) {
+//				br.lines().map(s->s.substring(0, s.length() - 1)).forEach(this::batchImport);
+//				importLines(batchCache, connection);
+//				System.out.println("Finished Import " + (BATCH_SIZE * batches.get() + batchCache.size()) + " elements");
+//			} catch (IOException e) {
+//				throw new IllegalStateException("Error reading dump file");
+//			}
+			ResultSet execute = connection.createStatement().executeQuery("SELECT COUNT(*) FROM DETECTOR");
+			if (execute.next()) {
+				long count = execute.getLong(1);
+				System.out.println("Counted detectors: " + count);
 			}
 		} catch (SQLException e) {
 			throw new IllegalStateException("Error connecting to derby", e);

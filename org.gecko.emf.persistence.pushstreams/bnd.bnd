@@ -1,0 +1,10 @@
+Bundle-Name: EMF Persistence PushStream Support
+Bundle-Description: Gecko.io EMF Persistence PushStream Support
+
+-buildpath: \
+	org.osgi.framework;version=latest,\
+	org.osgi.util.pushstream;version=latest,\
+	org.eclipse.emf.common;version=latest,\
+	org.eclipse.emf.ecore;version=latest,\
+	org.gecko.emf.pushstreams;version=latest,\
+	org.gecko.emf.persistence;version=project

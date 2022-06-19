@@ -9,7 +9,7 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence;
+package org.gecko.emf.persistence.converter;
 
 import org.eclipse.emf.ecore.EDataType;
 import org.osgi.annotation.versioning.ConsumerType;
