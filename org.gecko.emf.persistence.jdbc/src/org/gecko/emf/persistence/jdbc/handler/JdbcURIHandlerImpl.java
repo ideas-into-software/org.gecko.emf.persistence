@@ -14,11 +14,13 @@
 package org.gecko.emf.persistence.jdbc.handler;
 
 import java.sql.Connection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
 import org.eclipse.emf.common.util.URI;
 import org.gecko.emf.persistence.OutputStreamFactory;
+import org.gecko.emf.persistence.PersistenceConstants;
 import org.gecko.emf.persistence.PersistenceURIHandlerImpl;
 import org.gecko.emf.persistence.input.InputStreamFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -46,12 +48,41 @@ import org.osgi.util.promise.PromiseFactory;
  * 
  */
 public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connection>> {
+	
+	static class DataSourceFactoryHolder {
+		final DataSourceFactory dataSourceFactory;
+		final Map<String, Object> properties;
+		
+		/**
+		 * Creates a new instance.
+		 */
+		public DataSourceFactoryHolder(DataSourceFactory factory, Map<String, Object> properties) {
+			this.dataSourceFactory = factory;
+			this.properties = properties != null ? properties : Collections.emptyMap();
+		}
+		
+		/**
+		 * Returns the dataSourcefactory.
+		 * @return the dataSourcefactory
+		 */
+		public DataSourceFactory getDataSourceFactory() {
+			return dataSourceFactory;
+		}
+		
+		/**
+		 * Returns the properties or an empty map.
+		 * @return the properties or an empty map.
+		 */
+		public Map<String, Object> getProperties() {
+			return properties;
+		}
+	}
 
 	private static final String SCHEMA_DB = "jdbc";
 	private static final String DB_TEMPLATE = "jdbc:%s:%s";
 //	private static final String DB_TEMPLATE = "jdbc:%s:%s;create=true";
 	private final PromiseFactory pf;
-	private Map<String, DataSourceFactory> connections;
+	private Map<String, DataSourceFactoryHolder> dataSourceHolders;
 	/**
 	 * Creates a new instance.
 	 * @param databaseLocator an instance of the mongo locator service
@@ -59,10 +90,10 @@ public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connec
 	 * @param outputStreamFactory an instance of the output stream factory service
 	 * @param promiseFactory the promise factory
 	 */
-	public JdbcURIHandlerImpl(Map<String, DataSourceFactory> databases, InputStreamFactory<Promise<Connection>> inputStreamFactory, OutputStreamFactory<Promise<Connection>> outputStreamFactory, PromiseFactory promiseFactory) {
+	public JdbcURIHandlerImpl(Map<String, DataSourceFactoryHolder> dataSources, InputStreamFactory<Promise<Connection>> inputStreamFactory, OutputStreamFactory<Promise<Connection>> outputStreamFactory, PromiseFactory promiseFactory) {
 		super(inputStreamFactory, outputStreamFactory);
 		this.pf = promiseFactory;
-		this.connections = databases;
+		this.dataSourceHolders = dataSources;
 	}
 	
 	/* 
@@ -73,6 +104,16 @@ public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connec
 	public String getSchema() {
 		return SCHEMA_DB;
 	}
+	
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.PersistenceURIHandlerImpl#canHandle(org.eclipse.emf.common.util.URI)
+	 */
+	@Override
+	public boolean canHandle(URI uri) {
+		String name = uri.host();
+		return super.canHandle(uri) && dataSourceHolders.containsKey(name);
+	}
 
 	/* 
 	 * (non-Javadoc)
@@ -80,8 +121,9 @@ public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connec
 	 */
 	public Promise<Connection> getConnection(URI uri, Map<?, ?> options) {
 		String name = uri.host();
-		DataSourceFactory dataSourceFactory = connections.get(name);
-		String database = getDatabase(uri, options);
+		DataSourceFactoryHolder holder = dataSourceHolders.get(name);
+		DataSourceFactory dataSourceFactory = holder.getDataSourceFactory();
+		String database = getDatabase(holder, uri, options);
 		String type = (String) options.get("type");
 		type = type.toLowerCase();
 		Properties prop = new Properties();
@@ -95,7 +137,13 @@ public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connec
 		return uri.segment(1);
 	}
 
-	protected String getDatabase(URI uri, Map<?, ?> options) {
+	protected String getDatabase(DataSourceFactoryHolder holder, URI uri, Map<?, ?> options) {
+		if (holder != null) {
+			String database = (String) holder.getProperties().get(PersistenceConstants.PROPERTY_DATABASE_NAME);
+			if (database != null) {
+				return database;
+			}
+		}
 		return uri.segment(0);
 	}
 	

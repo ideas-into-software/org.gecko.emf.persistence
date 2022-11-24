@@ -31,7 +31,11 @@
 	org.osgi.service.component;version='[1.4.0,1.4.1)',\
 	org.osgi.service.jdbc;version='[1.0.1,1.0.2)',\
 	org.osgi.util.function;version='[1.1.0,1.1.1)',\
-	org.osgi.util.promise;version='[1.1.1,1.1.2)',\
 	slf4j.api;version='[1.7.30,1.7.31)',\
 	slf4j.simple;version='[1.7.30,1.7.31)',\
-	org.gecko.emf.osgi.example.model.basic;version='[4.1.1,4.1.2)'
+	org.gecko.emf.osgi.example.model.basic;version='[4.1.1,4.1.2)',\
+	de.jena.mdo.example.asset.model;version='[1.0.0,1.0.1)',\
+	org.gecko.emf.persistence.pushstreams;version=snapshot,\
+	org.gecko.emf.pushstreams;version='[1.1.1,1.1.2)',\
+	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
+	org.osgi.util.pushstream;version='[1.0.1,1.0.2)'

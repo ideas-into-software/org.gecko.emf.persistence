@@ -12,8 +12,8 @@
 package org.gecko.emf.persistence;
 
 /**
- * 
- * @author mark
+ * Keywords that are used in the persistence framework
+ * @author Mark Hoffmann
  * @since 26.03.2022
  */
 public interface Keywords {

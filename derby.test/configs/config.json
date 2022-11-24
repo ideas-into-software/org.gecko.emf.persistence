@@ -1,16 +1,30 @@
 {
   ":configurator:resource-version": 1,
   
-  "org.gecko.datasource": 
+  "org.gecko.datasource~traffic": 
 	{
     "name": "Derby_Traffic", 
     "type": "Derby",
-    "databaseName": "TRAFFIC",
+    "databaseName": "traffic",
     "dataSourceName": "Derby_Traffic",
     "user": "test", 
     "password": "1234"
 	},
-  "org.gecko.persistence.jdbc~Derby": 
+  "org.gecko.datasource~tree": 
+	{
+    "name": "Derby_Tree", 
+    "type": "Derby",
+    "databaseName": "tree",
+    "dataSourceName": "Derby_Tree",
+    "user": "test", 
+    "password": "1234"
+	},
+  "org.gecko.persistence.jdbc~DerbyTree": 
+	{
+	"name" : "derbytree",
+    "dataSource.target" : "(name=Derby_Tree)"
+	},
+  "org.gecko.persistence.jdbc~DerbyTraffic": 
 	{
 	"name" : "derbytraffic",
     "dataSource.target" : "(name=Derby_Traffic)"

@@ -164,7 +164,7 @@ public interface Options {
 	
 	/**
 	 * This option may be used when you wish to customize serialization and/or de-serialization, using an
-	 * alternative name for the EClass Uri. The default is {@link Keywords#ECLASS_KEY}
+	 * alternative name for the EClass Uri type column. The default is {@link Keywords#ECLASS_KEY}
 	 * 
 	 * <code>
 	 * resourceSet.getLoadOptions().put(Options.OPTION_ECLASS_URI_HINT, "_type");
@@ -175,7 +175,7 @@ public interface Options {
 	String OPTION_KEY_ECLASS_URI = "KEY_ECLASS_URI";
 	
 	/**
-	 * This option may be used when you wish to provide the EClass type information via load or save option
+	 * This option may be used when you wish to provide the EClass type information as URI string via load or save option
 	 * You will need that when e.g. loading data from a table that does not contain {@link EClass} type
 	 * information.
 	 * 
@@ -186,6 +186,19 @@ public interface Options {
 	 * Value type: {@link String}
 	 */
 	String OPTION_ECLASS_URI_HINT = "ECLASS_URI_HINT";
+	
+	/**
+	 * This option may be used when you wish to provide the EClass type information via load or save option
+	 * You will need that when e.g. loading data from a table that does not contain {@link EClass} type
+	 * information.
+	 * 
+	 * <code>
+	 * resourceSet.getLoadOptions().put(Options.OPTION_KEY_ECLASS, myEClass);
+	 * </code>
+	 * 
+	 * Value type: {@link EClass}
+	 */
+	String OPTION_ECLASS_HINT = "ECLASS_HINT";
 	
 	/**
 	 * This option may be used when you wish to provide the EClass'es id-attribute information via load or save option

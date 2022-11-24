@@ -73,10 +73,10 @@ public class PersistenceResourceSetConfiguratorComponent {
 	 */
 	@Reference(name = "handlerProvider", policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE, target = "(type=persistence)")
 	public void addProvider(UriHandlerProvider provider, Map<String, Object> map) {
-		configurator.getPeristenceHandler().addProvider(provider);
-		String name = (String) map.get(EMFNamespaces.EMF_CONFIGURATOR_NAME);
-		if (name != null) {
-			providerName.add(name);
+		configurator.getPersistenceHandler().addProvider(provider);
+		String configuratorName = getConfiguratorName(map);
+		if (configuratorName != null) {
+			providerName.add(configuratorName);
 			updateRegistrationProperties();
 		}
 	}
@@ -87,12 +87,12 @@ public class PersistenceResourceSetConfiguratorComponent {
 	 * @param provider the provider to be removed
 	 */
 	public void removeProvider(UriHandlerProvider provider, Map<String, Object> map) {
-		String name = (String) map.get(EMFNamespaces.EMF_CONFIGURATOR_NAME);
-		if (name != null) {
-			providerName.remove(name);
+		String configuratorName = getConfiguratorName(map);
+		if (configuratorName != null) {
+			providerName.remove(configuratorName);
 			updateRegistrationProperties();
 		}
-		configurator.getPeristenceHandler().removeProvider(provider);
+		configurator.getPersistenceHandler().removeProvider(provider);
 	}
 
 	/**
@@ -114,6 +114,24 @@ public class PersistenceResourceSetConfiguratorComponent {
 		String[] ids = providerName.toArray(new String[providerName.size()]);
 		properties.put(EMFNamespaces.EMF_CONFIGURATOR_NAME, ids);
 		return properties;
+	}
+	
+	/**
+	 * Returns the configurator name, depending on the service properties.
+	 * @param properties the service properties
+	 * @return the configurator name or <code>null</code>
+	 */
+	private String getConfiguratorName(Map<String, Object> properties) {
+		String configuratorName = (String) properties.get(EMFNamespaces.EMF_CONFIGURATOR_NAME);
+		String name = (String) properties.get("name");
+		if (configuratorName != null) {
+			if (name != null) {
+				configuratorName += "." + name;
+			}
+		} else {
+			configuratorName = name;
+		}
+		return configuratorName;
 	}
 
 }

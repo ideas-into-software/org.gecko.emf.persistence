@@ -11,8 +11,18 @@
  */
 package org.gecko.emf.persistence.helper;
 
+import static org.gecko.emf.persistence.PersistenceConstants.EXTENDED_METADATA_NAMESPACE;
+import static org.gecko.emf.persistence.PersistenceConstants.EXTENDED_METADATA_NAMESPACE_KEY;
+import static org.gecko.emf.persistence.PersistenceConstants.EXTENDED_METADATA_NAME_KEY;
+import static org.gecko.emf.persistence.PersistenceConstants.URI_HINT;
+import static org.gecko.emf.persistence.PersistenceConstants.URI_HINT_NAME_KEY;
+
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -23,16 +33,18 @@ import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.ENamedElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.ExtendedMetaData;
 import org.gecko.emf.persistence.ConstraintValidationException;
+import org.gecko.emf.persistence.Options;
 
 /**
  * Some {@link EcoreUtil} extensions
@@ -42,7 +54,7 @@ import org.gecko.emf.persistence.ConstraintValidationException;
 public class PersistenceHelper {
 
 	private static Diagnostic OK_INSTANCE = new BasicDiagnostic(Diagnostic.OK, "org.eclipse.emf.common", 0, "OK", null);
-	
+
 	/**
 	 * Goes through the whole containment Reference Tree of the given Object 
 	 * and checks if set non-containment References are proxies or attached Objects 
@@ -51,7 +63,7 @@ public class PersistenceHelper {
 	 * @throws ConstraintValidationException if any Object has any unattached references
 	 */
 	public static void checkForAttachedNonContainmentReferences(EObject eObject) throws ConstraintValidationException {
-		
+
 		Diagnostic diag = checkForAttachedNonContainmentRefs(eObject);
 		if(diag.getSeverity() != Diagnostic.OK) {
 			throw new ConstraintValidationException("EObject " + eObject.toString() + " has invalid Non-Containment References", diag);
@@ -66,24 +78,24 @@ public class PersistenceHelper {
 	 * @throws ConstraintValidationException if any Object has any unattached references
 	 */
 	public static void checkForAttachedNonContainmentReferences(Collection<EObject> eObjects) throws ConstraintValidationException{
-		
+
 		BasicDiagnostic chain = new BasicDiagnostic();
-		
+
 		eObjects.stream()
 		.map(PersistenceHelper::checkForAttachedNonContainmentRefs)
 		.forEach(chain::add);
-		
+
 		if(chain.getSeverity() != Diagnostic.OK) {
 			throw new ConstraintValidationException("EObject(s) have invalid non Containment Referneces", chain);
 		}
 	}
-	
+
 	private static Diagnostic checkForAttachedNonContainmentRefs(EObject eObject) {
 		return checkForAttachedNonContainmentRefs(eObject, null);
-		
+
 	}
 	private static Diagnostic checkForAttachedNonContainmentRefs(EObject eObject, EReference reference) {
-		
+
 		if(reference != null && !reference.isContainment()) {
 			if(eObject.eIsProxy() || (eObject.eResource() != null && eObject.eResource().getResourceSet() != null)){
 				return OK_INSTANCE;
@@ -91,51 +103,51 @@ public class PersistenceHelper {
 				return new BasicDiagnostic(Diagnostic.ERROR, eObject.toString() + " for reference " + reference.getName(), 42, "The Object is no Proxy and is not attached to any Resource/ResourceSet", null);
 			}
 		}
-		
+
 		EClass eClass = eObject.eClass();
 		EList<EReference> references = eClass.getEAllReferences();
 
 		List<Diagnostic> diagnostics = references.stream()
-		.filter(eObject::eIsSet)
-		.filter(r->!r.isTransient())
-		.map(r -> {
-			if(r.isMany()) {
-				@SuppressWarnings("unchecked")
-				List<EObject> eos = (List<EObject>) eObject.eGet(r, false);
-				BasicDiagnostic chain = new BasicDiagnostic();
-				if(r.isContainment()) {
-					eos.stream().map(eo -> checkForAttachedNonContainmentRefs(eo, r)).forEach(d->chain.add(d));
-//					eos.stream().map(eo -> checkForAttachedNonContainmentRefs(eo, r)).forEach(chain::add);//Leads to compile error in gradle
-				} else {
-					BasicEList<EObject> list = (BasicEList<EObject>) eos;
-					for(int i = 0 ; i < list.size(); i++) {
-						EObject eo = list.basicGet(i);
-						chain.add(checkForAttachedNonContainmentRefs(eo, r));
+				.filter(eObject::eIsSet)
+				.filter(r->!r.isTransient())
+				.map(r -> {
+					if(r.isMany()) {
+						@SuppressWarnings("unchecked")
+						List<EObject> eos = (List<EObject>) eObject.eGet(r, false);
+						BasicDiagnostic chain = new BasicDiagnostic();
+						if(r.isContainment()) {
+							eos.stream().map(eo -> checkForAttachedNonContainmentRefs(eo, r)).forEach(d->chain.add(d));
+							//					eos.stream().map(eo -> checkForAttachedNonContainmentRefs(eo, r)).forEach(chain::add);//Leads to compile error in gradle
+						} else {
+							BasicEList<EObject> list = (BasicEList<EObject>) eos;
+							for(int i = 0 ; i < list.size(); i++) {
+								EObject eo = list.basicGet(i);
+								chain.add(checkForAttachedNonContainmentRefs(eo, r));
+							}
+						}
+						return chain;
+					} else {
+						EObject eo = (EObject) eObject.eGet(r, false);
+						if(r.isContainment()) {
+							return checkForAttachedNonContainmentRefs(eo, r);
+						}
+						else if(eo.eIsProxy() || (eo.eResource() != null && eo.eResource().getResourceSet() != null)){
+							return OK_INSTANCE;
+						} else {
+							return new BasicDiagnostic(Diagnostic.ERROR, "Reference " + r.getName(), 42, "The Object is no Proxy and is not attached to any Resource/ResourceSet", null);
+						}
 					}
-				}
-				return chain;
-			} else {
-				EObject eo = (EObject) eObject.eGet(r, false);
-				if(r.isContainment()) {
-					return checkForAttachedNonContainmentRefs(eo, r);
-				}
-				else if(eo.eIsProxy() || (eo.eResource() != null && eo.eResource().getResourceSet() != null)){
-					return OK_INSTANCE;
-				} else {
-					return new BasicDiagnostic(Diagnostic.ERROR, "Reference " + r.getName(), 42, "The Object is no Proxy and is not attached to any Resource/ResourceSet", null);
-				}
-			}
-		})
-		.collect(Collectors.toList());
-		
+				})
+				.collect(Collectors.toList());
+
 		return new BasicDiagnostic(eObject.toString(), 42, diagnostics, "Validation Result of EObject", null);
 	}
-	
+
 	public static class ReferenceHolder {
 		public EReference reference;
 		public EObject eObject;
 	}
-	
+
 	/**
 	 * Returns a self-contained copy of the source that will be copied into
 	 * target.
@@ -201,7 +213,7 @@ public class PersistenceHelper {
 	private static <T extends EObject> T copySelectiv(T eObject, List<String> includedFeaturePaths, String prefix){
 		return copySelectiv(eObject, includedFeaturePaths, prefix, false);
 	}
-	
+
 	/**
 	 * Copies the given {@link EObject} and includes all the features named in the includedFeaturePaths {@link List}.
 	 * The prefix defines the level in the feature path hierarchy and the given {@link EObject} must be of this hierarchy level.
@@ -275,9 +287,9 @@ public class PersistenceHelper {
 					&& (
 							eo.eClass().getEIDAttribute().getEType().equals(EcorePackage.Literals.ESTRING) 
 							|| eo.eClass().getEIDAttribute().getEType().equals(EcorePackage.Literals.EJAVA_OBJECT
-						)
-					)
-				) {
+									)
+							)
+					) {
 				EcoreUtil.setID(eo, EcoreUtil.convertToString((EDataType) rootObject.eClass().getEIDAttribute().getEType(), containedIdSupplier.get()));
 			}
 		}
@@ -286,9 +298,9 @@ public class PersistenceHelper {
 				&& (
 						rootObject.eClass().getEIDAttribute().getEType().equals(EcorePackage.Literals.ESTRING) 
 						|| rootObject.eClass().getEIDAttribute().getEType().equals(EcorePackage.Literals.EJAVA_OBJECT
-					)
-				)
-			) {
+								)
+						)
+				) {
 			id = EcoreUtil.convertToString((EDataType) rootObject.eClass().getEIDAttribute().getEType(), rootIdsupplier.get());
 			EcoreUtil.setID(rootObject, id);
 		}
@@ -301,6 +313,176 @@ public class PersistenceHelper {
 	 */
 	public static Object setIds(EObject eObject) {
 		return setIds(eObject, () -> UUID.randomUUID().toString(), () -> UUID.randomUUID().toString()); 
+	}
+
+	/**
+	 * Retrieves the name of the {@link EClass} that should be used as eclass segment in the {@link URI}.
+	 *
+	 * By default this is the {@link EClass#getName()}. If anywhere in the {@link EClass} or on off its super classes the annotation <code>UriHint</code> is found, a different name will be chosen.
+	 * At first a possibly named reference will be used. This can reference to any {@link EClass}, even if it is not a super type of the given {@link EClass}. If found it will call {@link PersistenceHelper#getUriHintNameForEClass(EClass)} with the found reference.
+	 * So the name returned String will be at least name of the referenced {@link EClass}.
+	 * If such a reference is not present a DetailEntry with the key <code>name</code> will be taken under consideration.
+	 *
+	 * The first annotation found on the class hierarchy will define the hint.
+	 * @param eClass
+	 * @return
+	 */
+	public static String getUriNameForEClass(EClass eClass){
+		return getEClassUriHint(eClass);
+//		String name = getCollectionNameFromEClassAnnotation(eClass);
+//		if(name == null){
+//			name = getNameForElement(eClass);
+//		}
+//		return name;
+	}
+
+//	/**
+//	 * Grabs the hint from the given class if an annotation is present at the given {@link EClass} or one of its super types
+//	 * @param eClass the {@link EClass} to look in
+//	 * @return the hint or <code>null</code> if no annotation is present.
+//	 */
+//	private static String getCollectionNameFromEClassAnnotation(EClass eClass){
+//		String name = null;
+//		String hint = EcoreUtil.getAnnotation(eClass, PersistenceConstants.URI_HINT, "name");
+//
+//		EAnnotation annotation = eClass.getEAnnotation("UriHint");
+//		if(annotation != null){
+//			annotation.getReferences().stream().findFirst().map(EClass.class::cast).map(null)
+//			if(annotation.getReferences().size() > 0){
+//				EClass refEClass = (EClass) annotation.getReferences().get(0);
+//				name = getUriHintNameForEClass(refEClass);
+//			} else {
+//				if(annotation.getDetails().size() > 0){
+//					name = annotation.getDetails().get("name");
+//				}
+//			}
+//		}
+//		if(name == null){
+//			List<EClass> superTypes = eClass.getESuperTypes();
+//			for(EClass superEClass : superTypes){
+//				name = getCollectionNameFromEClassAnnotation(superEClass);
+//				if(name != null){
+//					if(superTypes.size() > 1){
+//						for(int i = superTypes.indexOf(superEClass) + 1 ; i > superTypes.size(); i++){
+//							String conflict = getCollectionNameFromEClassAnnotation(superTypes.get(i));
+//							if(conflict != null){
+//								throw new RuntimeException(String.format("At least two colliding Collection names are defined for the two super types ( %s, %s ) of %s with the names %s and %s",  superEClass.getName(), superTypes.get(i).getName(), eClass.getName(), name, conflict));
+//							}
+//						}
+//					}
+//					break;
+//				}
+//			}
+//		}
+//		return name;
+//	}
+	
+	/**
+	 * Returns the name of the {@link ENamedElement} or the {@link ExtendedMetaData} name key if the 
+	 * name space equals "emf.persistence"
+	 * @param element the {@link ENamedElement}
+	 * @return the name or {@link ExtendedMetaData} value for the key 'name'
+	 */
+	public static String getElementNameLower(ENamedElement element) {
+		assert(element != null);
+		String name = getElementEMDName(element, EXTENDED_METADATA_NAMESPACE);
+		return name == null ? element.getName().toLowerCase(): name;
+	}
+
+	/**
+	 * Returns the name of the {@link ExtendedMetaData} name key if the 
+	 * name space equals "emf.persistence" of an {@link ENamedElement}
+	 * @param element the {@link ENamedElement}
+	 * @return the name or {@link ExtendedMetaData} value for the key 'name'
+	 */
+	public static String getElementEMDName(ENamedElement element) {
+		return getElementEMDName(element, EXTENDED_METADATA_NAMESPACE);
+	}
+
+	/**
+	 * Returns the name - details entry for {@link ExtendedMetaData} with the give namespaceValue of a {@link ENamedElement}.
+	 * @param element the {@link ENamedElement}
+	 * @param namespaceValue the namespace value
+	 * @return the name value or <code>null</code>
+	 */
+	public static String getElementEMDName(ENamedElement element, String namespaceValue) {
+		assert(element != null);
+		assert(namespaceValue != null);
+		String annotation = EcoreUtil.getAnnotation(element, ExtendedMetaData.ANNOTATION_URI, EXTENDED_METADATA_NAMESPACE_KEY);
+		String name = EcoreUtil.getAnnotation(element, ExtendedMetaData.ANNOTATION_URI, EXTENDED_METADATA_NAME_KEY);
+		return (namespaceValue.equals(annotation) && name != null) ? name : null;
+	}
+
+	/**
+	 * Returns all name - details entries for {@link ExtendedMetaData} with the give namespace.
+	 * It parses the whole EClass super type hierarchy. The first element in the list is the base EClass
+	 * @param eclass the EClass to check for {@link ExtendedMetaData}
+	 * @return names list or empty list
+	 */
+	public static List<String> getAllEClassEMDName(EClass eclass) {
+		return getAllEClassEMDName(eclass, EXTENDED_METADATA_NAMESPACE);
+	}
+
+	/**
+	 * Returns all name - details entries for {@link ExtendedMetaData} with the give namespace.
+	 * It parses the whole EClass super type hierarchy. The first element in the list is the base EClass
+	 * @param eclass the EClass to check for {@link ExtendedMetaData}
+	 * @param namespace the namespace
+	 * @return names list or empty list
+	 */
+	public static List<String> getAllEClassEMDName(EClass eclass, String namespace) {
+		assert(eclass != null);
+		assert(namespace != null);
+		String name = getElementEMDName(eclass, namespace);
+		List<String> names = new LinkedList<String>();
+		if (name != null) {
+			names.add(name);
+		}
+		List<String> superNames = eclass.getESuperTypes().
+				stream().
+				map(sec->getElementEMDName(sec, namespace)).
+				filter(Objects::nonNull).
+				collect(Collectors.toList());
+		if (!superNames.isEmpty()) {
+			names.addAll(superNames);
+		}
+		return names;
+	}
+
+	/**
+	 * Returns the annotation value for the EClass super type hierarchy 
+	 * @param eclass the EClass. Must not be <code>null</code>
+	 * @param source the annotation source. Must not be <code>null</code>
+	 * @param detailsKey the annotation details key. Must not be <code>null</code>
+	 * @return
+	 */
+	public static final List<String> getAllEClassAnnotationValue(EClass eclass, String source, String detailsKey) {
+		assert(eclass != null);
+		assert(source != null);
+		assert(detailsKey != null);
+		String value = EcoreUtil.getAnnotation(eclass, source, detailsKey);
+		List<String> values = new LinkedList<String>(); 
+		if (value != null) {
+			values.add(value);
+		}
+		List<String> superValues = eclass.
+				getESuperTypes().
+				stream().
+				map(sec->EcoreUtil.getAnnotation(sec, source, detailsKey)).
+				collect(Collectors.toList());
+		if (!superValues.isEmpty()) {
+			values.addAll(superValues);
+		}
+		return values;
+	}
+
+	/**
+	 * Returns the uri-hints annotation values for the {@link EClass}
+	 * @param eclass the {@link EClass}
+	 * @return the uri-hints
+	 */
+	public static List<String> getAllEClassUriHint(EClass eclass) {
+		return getAllEClassAnnotationValue(eclass, URI_HINT, URI_HINT_NAME_KEY);
 	}
 	
 	/**
@@ -315,50 +497,79 @@ public class PersistenceHelper {
 	 * @param eClass
 	 * @return
 	 */
-	public static String getUriHintNameForEClass(EClass eClass){
-		String name = getCollectionNameFromEClassAnnotation(eClass);
-		if(name == null){
-			name = eClass.getName();
+	public static String getEClassUriHint(EClass eClass){
+		List<String> names = getAllEClassUriHint(eClass);
+		switch (names.size()) {
+		case 0:	
+			return eClass.getName();
+		case 1:	
+			return names.get(0);
+		default:
+			throw new RuntimeException(String.format("At least two colliding uri-hints are defined for the EClass '%s'and the super type hierarchy: '%s'", eClass.getName(), String.join(",", names)));
 		}
-		return name;
 	}
 
-	/**
-	 * Grabs the hint from the given class if an annotation is present at the given {@link EClass} or one of its super types
-	 * @param eClass the {@link EClass} to look in
-	 * @return the hint or <code>null</code> if no annotation is present.
-	 */
-	private static String getCollectionNameFromEClassAnnotation(EClass eClass){
-		String name = null;
-		EAnnotation annotation = eClass.getEAnnotation("UriHint");
-		if(annotation != null){
-			if(annotation.getReferences().size() > 0){
-				EClass refEClass = (EClass) annotation.getReferences().get(0);
-				name = getUriHintNameForEClass(refEClass);
-			} else {
-				if(annotation.getDetails().size() > 0){
-					name = annotation.getDetails().get("name");
-				}
-			}
+	public static final URI createPersistenceUri(String baseUri, EClass eclass) {
+		URI uri = URI.createURI(baseUri);
+		String name = getAllEClassEMDName(eclass).stream().findFirst().orElse(eclass.getName());
+		if (name != null) {
+			uri = uri.appendSegment(name);
 		}
-		if(name == null){
-			List<EClass> superTypes = eClass.getESuperTypes();
-			for(EClass superEClass : superTypes){
-				name = getCollectionNameFromEClassAnnotation(superEClass);
-				if(name != null){
-					if(superTypes.size() > 1){
-						for(int i = superTypes.indexOf(superEClass) + 1 ; i > superTypes.size(); i++){
-							String conflict = getCollectionNameFromEClassAnnotation(superTypes.get(i));
-							if(conflict != null){
-								throw new RuntimeException(String.format("At least two colliding Collection names are defined for the two super types ( %s, %s ) of %s with the names %s and %s",  superEClass.getName(), superTypes.get(i).getName(), eClass.getName(), name, conflict));
-							}
-						}
-					}
-					break;
-				}
-			}
+		return uri;
+	}
+	
+	public static final Map<String, Object> createLoadSaveOptions(EClass eclass, Map<String, Object> options) {
+		if (eclass == null) {
+			return options;
 		}
-		return name;
+		if (options == null) {
+			options = new HashMap<>();
+		}
+		options.put(Options.OPTION_ECLASS_HINT, eclass);
+		options.put(Options.OPTION_ECLASS_URI_HINT, EcoreUtil.getURI(eclass).toString());
+		return options;
+	}
+	
+	public static EMFPersistenceContext createPersistenceContext(String baseUri, EClass eclass, Map<String, Object> options) {
+		assert(eclass != null);
+		assert(baseUri != null);
+		return new EMFPersistenceContext(baseUri, eclass, options);
+	}
+	
+	public static class EMFPersistenceContext {
+		private final EClass eclass;
+		private final Map<String, Object> options;
+		private final URI uri;
+		
+		private EMFPersistenceContext(String baseUri, EClass eclass, Map<String, Object> options) {
+			this.eclass = eclass;
+			this.uri = createPersistenceUri(baseUri, eclass);
+			this.options = createLoadSaveOptions(eclass, options); 
+		}
+		
+		/**
+		 * Returns the eclass.
+		 * @return the eclass
+		 */
+		public EClass getEclass() {
+			return eclass;
+		}
+		
+		/**
+		 * Returns the options.
+		 * @return the options
+		 */
+		public Map<String, Object> getOptions() {
+			return options;
+		}
+		
+		/**
+		 * Returns the uri.
+		 * @return the uri
+		 */
+		public URI getUri() {
+			return uri;
+		}
 	}
 
 }

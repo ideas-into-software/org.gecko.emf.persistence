@@ -41,7 +41,7 @@ public class PersistenceResourceSetConfigurator implements ResourceSetConfigurat
 	 * Returns the peristenceHandler.
 	 * @return the peristenceHandler
 	 */
-	public DelegatingPersistenceURIHandler getPeristenceHandler() {
+	public DelegatingPersistenceURIHandler getPersistenceHandler() {
 		return persistenceHandler;
 	}
 

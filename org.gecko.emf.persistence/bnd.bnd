@@ -11,5 +11,6 @@ Export-Package: \
 	org.gecko.emf.persistence.helper,\
 	org.gecko.emf.persistence.input,\
 	org.gecko.emf.persistence,\
-	org.gecko.emf.persistence.converter
+	org.gecko.emf.persistence.converter,\
+	org.gecko.emf.persistence.codec
 -privatepackage: org.gecko.emf.persistence.spi

@@ -532,7 +532,7 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 			logger.log(Level.SEVERE, "Error getting EObject without class parameter");
 			return null;
 		}
-		return getEObject(PersistenceHelper.getUriHintNameForEClass(eClass), id, options);
+		return getEObject(PersistenceHelper.getEClassUriHint(eClass), id, options);
 	}
 
 	/* 
@@ -722,7 +722,7 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 			return null;
 		}
 		
-		return createEClassUri(PersistenceHelper.getUriHintNameForEClass(eClass), options);
+		return createEClassUri(PersistenceHelper.getEClassUriHint(eClass), options);
 	}
 	
 	/**

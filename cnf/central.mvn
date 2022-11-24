@@ -151,18 +151,18 @@ org.geckoprojects.bnd:org.gecko.bnd.dimc.library:1.1.1
 org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.1.1
 org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.1.1
 
-#org.geckoprojects.emf:org.gecko.emf.osgi.api:4.1.1.202202162308
-#org.geckoprojects.emf:org.gecko.emf.osgi.component:4.1.1.202202162308
-org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:4.1.1-SNAPSHOT
-org.geckoprojects.emf:org.gecko.emf.osgi.example.model.basic:4.1.1.202202162309
+#org.geckoprojects.emf:org.gecko.emf.osgi.api:4.4.0
+#org.geckoprojects.emf:org.gecko.emf.osgi.component:4.4.0
+org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:4.4.0
+org.geckoprojects.emf:org.gecko.emf.osgi.example.model.basic:4.4.0
 
 org.geckoprojects.emf.utils:org.gecko.emf.util.model:2.1.0
 
 commons-io:commons-io:2.11.0
 
-org.mongodb:mongodb-driver-sync:4.5.1
-org.mongodb:bson:jar:4.5.1
-org.mongodb:mongodb-driver-core:jar:4.5.1
+org.mongodb:mongodb-driver-sync:4.7.2
+org.mongodb:bson:jar:4.7.2
+org.mongodb:mongodb-driver-core:jar:4.7.2
 
 org.apache.derby:derby:10.14.2.0
 #org.apache.derby:derby:10.15.2.0

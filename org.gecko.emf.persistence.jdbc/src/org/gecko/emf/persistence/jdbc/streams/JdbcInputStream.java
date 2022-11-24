@@ -40,6 +40,8 @@ import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.Countable;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.QueryEngine;
+import org.gecko.emf.persistence.codec.EClassProvider;
+import org.gecko.emf.persistence.helper.PersistenceHelper;
 import org.gecko.emf.persistence.input.InputContentHandler;
 import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;
 import org.gecko.emf.persistence.jdbc.context.JdbcInputContext;
@@ -119,18 +121,18 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 			Connection connection = connectionPromise.getValue();
 			long results = -1l;
 
-			if (eClassUri != null) {
+			if (eClass == null && eClassUri != null) {
 				eClass = getEClass(resource.getResourceSet(), eClassUri);
 			}
-			String tableName = eClass != null ? eClass.getName().toUpperCase() : getTable(uri, mergedOptions);
+			String tableName = eClass != null ? PersistenceHelper.getElementNameLower(eClass) : getTable(uri, mergedOptions);
 			if (eClass != null) {
 				EAttribute idAttribute = eClass.getEIDAttribute();
-				idAttributeName = idAttribute == null ? getTypeColumn() : idAttribute.getName();
+				idAttributeName = idAttribute == null ? getTypeColumn() : PersistenceHelper.getElementEMDName(idAttribute);
 			}
 			// Execute a count query to get a number of all matches for that query
 			if (countResults) {
 				String countCol = idAttributeName == null ? getTypeColumn() : idAttributeName;
-				results = executeCount(connection, tableName, countCol);
+				results = executeCount(connection, tableName.toUpperCase(), countCol);
 				// If returning counting result / mapping results as response value is active
 				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(results));
 			}
@@ -148,7 +150,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 					.converterService(converterService)
 					.build();
 
-			// Setp 3 - create default mapper to create EObjects out of the result
+			// Step 3 - create default mapper to create EObjects out of the result
 			final JdbcInputMapper inputMapper = new JdbcEObjectCodec(inputContext, this);
 			inputMapper.initialize();
 
@@ -508,6 +510,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	 * @param mergedOptions2
 	 */
 	private void readOptions(Map<Object, Object> mergedOptions2) {
+		eClass = (EClass) mergedOptions.getOrDefault(Options.OPTION_ECLASS_HINT, null);
 		eClassUri = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
 		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
 		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_KEY_ECLASS_URI, JdbcPersistenceConstants.ECLASS_TYPE_COLUMN_NAME);

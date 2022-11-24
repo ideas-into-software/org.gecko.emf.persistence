@@ -22,6 +22,8 @@ import org.eclipse.emf.ecore.resource.URIHandler;
 import org.gecko.emf.osgi.UriHandlerProvider;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.gecko.emf.persistence.input.InputStreamFactory;
+import org.gecko.emf.persistence.jdbc.handler.JdbcURIHandlerImpl.DataSourceFactoryHolder;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
@@ -41,8 +43,16 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	private volatile JdbcURIHandlerImpl uriHandler;
 	private volatile InputStreamFactory<Promise<Connection>> inputStreamFactory;
 	private volatile OutputStreamFactory<Promise<Connection>> outputStreamFactory;
-	private final Map<String,DataSourceFactory> connections = new ConcurrentHashMap<>();
+	private final Map<String,DataSourceFactoryHolder> connections = new ConcurrentHashMap<>();
 	private final PromiseFactory pf = new PromiseFactory(Executors.newCachedThreadPool(), Executors.newScheduledThreadPool(2));
+	
+	@interface JdbcUriHandlerConfig {
+		String name();
+	}
+	
+	@Activate
+	public void activate(JdbcUriHandlerConfig config) {
+	}
 	
 	/* 
 	 * (non-Javadoc)
@@ -59,7 +69,7 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	@Reference(name="dataSource")
 	public void setDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String, Object> properties) {
 		String name = (String) properties.getOrDefault("name", "default");
-		connections.put(name, dataSourceFactory);
+		connections.put(name, new DataSourceFactoryHolder(dataSourceFactory, properties));
 	}
 	public void unsetDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String, Object> properties) {
 		String name = (String) properties.getOrDefault("name", "default");
