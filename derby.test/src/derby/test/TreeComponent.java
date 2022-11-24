@@ -43,7 +43,7 @@ public class TreeComponent {
 	
 	@Reference(target = "(&(emf.configurator.name=emf.persistence.jdbc.derbytree)(emf.model.name=dbtree))")
 	private ResourceSet resourceSet;
-	private String treeBaseUri = "jdbc://Derby_Tree";
+	private String treeBaseUri = "jdbc://Derby_Tree/derbytree";
 	
 	@Activate
 	public void activate(BundleContext bctx) {

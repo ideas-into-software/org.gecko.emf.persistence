@@ -14,6 +14,7 @@ package org.gecko.emf.persistence;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -30,11 +31,13 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 
 	private final InputStreamFactory<C> inputStreamFactory;
 	private final OutputStreamFactory<C> outputStreamFactory;
+	private final Map<String, Object> properties;
 
 	/**
 	 * Creates a new instance.
 	 */
-	public PersistenceURIHandlerImpl(InputStreamFactory<C> inputStreamFactory, OutputStreamFactory<C> outputStreamFactory) {
+	public PersistenceURIHandlerImpl(Map<String, Object> properties, InputStreamFactory<C> inputStreamFactory, OutputStreamFactory<C> outputStreamFactory) {
+		this.properties = properties == null ? Collections.emptyMap() : properties;
 		this.inputStreamFactory = inputStreamFactory;
 		this.outputStreamFactory = outputStreamFactory;
 	}
@@ -44,6 +47,22 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 	 * @return the uri schema, must not be <code>null</code>
 	 */
 	public abstract String getSchema();
+	
+	/**
+	 * Returns the configuration name of this implementation
+	 * @return the configuration name or <code>null</code>
+	 */
+	public String getName() {
+		return (String) properties.get(PersistenceConstants.PROPERTY_PERSISTENCE_NAME);
+	}
+	
+	/**
+	 * Returns the properties.
+	 * @return the properties
+	 */
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
 
 	/**
 	 * Gets or creates a connection for the given URI
@@ -59,7 +78,7 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 	 */
 	@Override
 	public boolean canHandle(URI uri) {
-		return getSchema().equalsIgnoreCase(uri.scheme());
+		return getSchema().equalsIgnoreCase(uri.scheme()) && getName() != null && getName().equals(uri.segment(0));
 	}
 
 	/* 

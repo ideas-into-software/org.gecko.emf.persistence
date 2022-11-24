@@ -43,7 +43,7 @@ public class TrafficComponent {
 	
 	@Reference(target = "(&(emf.configurator.name=emf.persistence.jdbc.derbytraffic)(emf.model.name=traffic))")
 	private ResourceSet resourceSet;
-	private String trafficBaseUri = "jdbc://Derby_Traffic";
+	private String trafficBaseUri = "jdbc://Derby_Traffic/derbytraffic";
 //	private BundleContext bctx;
 //	private URI detectorUri = URI.createURI("jdbc://Derby_Traffic/traffic/DETECTOR/");
 //	private URI edgeUri = URI.createURI("jdbc://Derby_Traffic/traffic/EDGE/");

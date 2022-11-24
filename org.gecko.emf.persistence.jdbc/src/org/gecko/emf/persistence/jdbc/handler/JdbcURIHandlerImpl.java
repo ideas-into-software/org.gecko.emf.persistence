@@ -90,8 +90,8 @@ public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connec
 	 * @param outputStreamFactory an instance of the output stream factory service
 	 * @param promiseFactory the promise factory
 	 */
-	public JdbcURIHandlerImpl(Map<String, DataSourceFactoryHolder> dataSources, InputStreamFactory<Promise<Connection>> inputStreamFactory, OutputStreamFactory<Promise<Connection>> outputStreamFactory, PromiseFactory promiseFactory) {
-		super(inputStreamFactory, outputStreamFactory);
+	public JdbcURIHandlerImpl(Map<String, DataSourceFactoryHolder> dataSources, Map<String, Object> properties, InputStreamFactory<Promise<Connection>> inputStreamFactory, OutputStreamFactory<Promise<Connection>> outputStreamFactory, PromiseFactory promiseFactory) {
+		super(properties, inputStreamFactory, outputStreamFactory);
 		this.pf = promiseFactory;
 		this.dataSourceHolders = dataSources;
 	}

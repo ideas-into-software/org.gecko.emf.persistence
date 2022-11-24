@@ -51,6 +51,9 @@ public class PersistenceConstants {
 	/** General property for a database name */
 	public static final String PROPERTY_DATABASE_NAME = "databaseName";
 	
+	/** General property for a persistence name */
+	public static final String PROPERTY_PERSISTENCE_NAME = "persistence.name";
+	
 	/** 
 	 * If this option is set to <code>true</code> a full EMF Object validation is performed before an object is saved. 
 	 * Note that a copy of each object will be made and validated.  

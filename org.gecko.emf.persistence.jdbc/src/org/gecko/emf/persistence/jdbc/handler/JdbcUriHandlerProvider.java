@@ -12,6 +12,7 @@
 package org.gecko.emf.persistence.jdbc.handler;
 
 import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.RESOURCESET_CONFIG_PROP;
+import static org.gecko.emf.persistence.PersistenceConstants.PROPERTY_PERSISTENCE_NAME;
 
 import java.sql.Connection;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	private volatile InputStreamFactory<Promise<Connection>> inputStreamFactory;
 	private volatile OutputStreamFactory<Promise<Connection>> outputStreamFactory;
 	private final Map<String,DataSourceFactoryHolder> connections = new ConcurrentHashMap<>();
+	private final Map<String,Object> properties = new ConcurrentHashMap<>();
 	private final PromiseFactory pf = new PromiseFactory(Executors.newCachedThreadPool(), Executors.newScheduledThreadPool(2));
 	
 	@interface JdbcUriHandlerConfig {
@@ -51,7 +53,9 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	}
 	
 	@Activate
-	public void activate(JdbcUriHandlerConfig config) {
+	public void activate(JdbcUriHandlerConfig config, Map<String, Object> properties) {
+		this.properties.put(PROPERTY_PERSISTENCE_NAME, config.name());
+		this.properties.putAll(properties);
 	}
 	
 	/* 
@@ -61,7 +65,7 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	@Override
 	public URIHandler getURIHandler() {
 		if (uriHandler == null) {
-			uriHandler = new JdbcURIHandlerImpl(connections, inputStreamFactory, outputStreamFactory, pf);
+			uriHandler = new JdbcURIHandlerImpl(connections, properties, inputStreamFactory, outputStreamFactory, pf);
 		}
 		return uriHandler;
 	}
