@@ -1,0 +1,21 @@
+Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
+
+-library: enableOSGi-Test
+
+# sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
+-buildpath: \
+	osgi.core;version=latest,\
+	org.osgi.test.junit5.cm;version=latest,\
+	org.eclipse.emf.ecore;version=latest,\
+	org.eclipse.emf.common;version=latest,\
+	de.jena.mdo.tree.model;version=latest,\
+	org.gecko.emf.persistence;version=snapshot,\
+	org.osgi.service.jdbc,\
+	org.gecko.emf.persistence.jdbc
+	
+Private-Package: org.gecko.emf.persistence.jdbc.tests
+
+Bundle-Version: 1.0.0.SNAPSHOT
+
+# Sometimes without DynamicImport Mockito will not find certain classes
+#DynamicImport-Package: *

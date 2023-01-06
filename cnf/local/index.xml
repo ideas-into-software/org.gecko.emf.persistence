@@ -13,24 +13,24 @@
       <directive name="uses" value="org.eclipse.emf.ecore"/>
       <attribute name="bundle-symbolic-name" value="de.jena.mdo.example.asset.model"/>
       <attribute name="bundle-version" value="1.0.0.202206141954-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="de.jena.mdo.asset.traffic"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="1830881222,2123197,-1980779952,76307824,68856941,1425955268,353677225,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="de.jena.mdo.asset.traffic,org.eclipse.emf.ecore,org.eclipse.emf.ecore.impl"/>
       <attribute name="bundle-symbolic-name" value="de.jena.mdo.example.asset.model"/>
       <attribute name="bundle-version" value="1.0.0.202206141954-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="de.jena.mdo.asset.traffic.impl"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="1649314566,-883892080,-1980754563,56818608,-452492243,378898793,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="de.jena.mdo.asset.traffic,org.eclipse.emf.common.notify,org.eclipse.emf.common.notify.impl,org.eclipse.emf.common.util,org.eclipse.emf.ecore,org.eclipse.emf.ecore.resource,org.eclipse.emf.ecore.resource.impl,org.eclipse.emf.ecore.util,org.eclipse.emf.ecore.xmi.impl"/>
       <attribute name="bundle-symbolic-name" value="de.jena.mdo.example.asset.model"/>
       <attribute name="bundle-version" value="1.0.0.202206141954-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="de.jena.mdo.asset.traffic.util"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="400236024,-1454940097,373755339,671990641,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.bundle">
@@ -42,14 +42,14 @@
       <attribute name="osgi.wiring.host" value="de.jena.mdo.example.asset.model"/>
     </capability>
     <capability namespace="emf.configurator">
-      <attribute name="name" value="traffic"/>
       <attribute name="nsURI" value="http://jena.de/mdo/traffic/1.0" type="List&lt;String&gt;"/>
+      <attribute name="name" value="traffic"/>
       <attribute name="emf.configurator" value="epackage"/>
     </capability>
     <capability namespace="osgi.content">
       <attribute name="size" value="85119" type="Long"/>
-      <attribute name="url" value="de.jena.mdo.example.asset.model/de.jena.mdo.example.asset.model-1.0.0.jar"/>
       <attribute name="mime" value="application/vnd.osgi.bundle"/>
+      <attribute name="url" value="de.jena.mdo.example.asset.model/de.jena.mdo.example.asset.model-1.0.0.jar"/>
       <attribute name="osgi.content" value="81281FD9B37753D997D29F778FF9F950E2F0D2A21FE9A45EC63C10B38B7C6BD3"/>
     </capability>
     <capability namespace="osgi.service">
@@ -152,24 +152,24 @@
       <directive name="uses" value="org.eclipse.emf.ecore,org.osgi.util.pushstream"/>
       <attribute name="bundle-symbolic-name" value="org.gecko.emf.pushstreams"/>
       <attribute name="bundle-version" value="1.1.1.202206171015-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.1.1" type="Version"/>
       <attribute name="osgi.wiring.package" value="org.gecko.emf.pushstream"/>
+      <attribute name="version" value="1.1.1" type="Version"/>
       <attribute name="bnd.hashes" value="363008188,-2090707856,1999086672,1425955268,-2011060340,-576059203,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="org.eclipse.emf.common.util,org.eclipse.emf.ecore,org.eclipse.emf.ecore.impl,org.gecko.emf.pushstream,org.osgi.util.pushstream"/>
       <attribute name="bundle-symbolic-name" value="org.gecko.emf.pushstreams"/>
       <attribute name="bundle-version" value="1.1.1.202206171015-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.1.1" type="Version"/>
       <attribute name="osgi.wiring.package" value="org.gecko.emf.pushstream.impl"/>
+      <attribute name="version" value="1.1.1" type="Version"/>
       <attribute name="bnd.hashes" value="2014783740,-1757425008,-926033972,1945122941,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="org.eclipse.emf.common.notify,org.eclipse.emf.common.notify.impl,org.eclipse.emf.ecore,org.eclipse.emf.ecore.util,org.gecko.emf.pushstream"/>
       <attribute name="bundle-symbolic-name" value="org.gecko.emf.pushstreams"/>
       <attribute name="bundle-version" value="1.1.1.202206171015-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.1.1" type="Version"/>
       <attribute name="osgi.wiring.package" value="org.gecko.emf.pushstream.util"/>
+      <attribute name="version" value="1.1.1" type="Version"/>
       <attribute name="bnd.hashes" value="-1102769995,-1621048530,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.bundle">
@@ -181,14 +181,14 @@
       <attribute name="osgi.wiring.host" value="org.gecko.emf.pushstreams"/>
     </capability>
     <capability namespace="emf.configurator">
-      <attribute name="name" value="pushstream"/>
       <attribute name="nsURI" value="https://geckoprojects.org/model/emf/pushstream/1.0" type="List&lt;String&gt;"/>
+      <attribute name="name" value="pushstream"/>
       <attribute name="emf.configurator" value="epackage"/>
     </capability>
     <capability namespace="osgi.content">
       <attribute name="size" value="57257" type="Long"/>
-      <attribute name="url" value="org.gecko.emf.pushstreams/org.gecko.emf.pushstreams-1.1.1.jar"/>
       <attribute name="mime" value="application/vnd.osgi.bundle"/>
+      <attribute name="url" value="org.gecko.emf.pushstreams/org.gecko.emf.pushstreams-1.1.1.jar"/>
       <attribute name="osgi.content" value="2C241F26FDA4E09C9786522D42E4DA3BD8FE4C7264852C2B00B93916940C4134"/>
     </capability>
     <capability namespace="osgi.service">
@@ -291,24 +291,24 @@
       <directive name="uses" value="org.eclipse.emf.ecore"/>
       <attribute name="bundle-symbolic-name" value="de.jena.mdo.tree.model"/>
       <attribute name="bundle-version" value="1.0.0.202211171026-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="de.jena.mdo.model.dbtree"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="2010349884,706654254,1425955268,991474538,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="de.jena.mdo.model.dbtree,org.eclipse.emf.ecore,org.eclipse.emf.ecore.impl"/>
       <attribute name="bundle-symbolic-name" value="de.jena.mdo.tree.model"/>
       <attribute name="bundle-version" value="1.0.0.202211171026-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="de.jena.mdo.model.dbtree.impl"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="1939560828,-1645101202,-813710166,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="de.jena.mdo.model.dbtree,org.eclipse.emf.common.notify,org.eclipse.emf.common.notify.impl,org.eclipse.emf.common.util,org.eclipse.emf.ecore,org.eclipse.emf.ecore.resource,org.eclipse.emf.ecore.resource.impl,org.eclipse.emf.ecore.util,org.eclipse.emf.ecore.xmi.impl"/>
       <attribute name="bundle-symbolic-name" value="de.jena.mdo.tree.model"/>
       <attribute name="bundle-version" value="1.0.0.202211171026-SNAPSHOT" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="de.jena.mdo.model.dbtree.util"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="-643789033,1126615680,2057583274,831112080,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.bundle">
@@ -321,15 +321,15 @@
     </capability>
     <capability namespace="de.jena.mdo.model.dbtree"/>
     <capability namespace="emf.configurator">
-      <attribute name="emf.configurator.contentType" value="" type="List&lt;String&gt;"/>
       <attribute name="emf.configurator.name" value="dbtree"/>
+      <attribute name="emf.configurator.contentType" value="" type="List&lt;String&gt;"/>
       <attribute name="emf.configurator.fileExtension" value="dbtree" type="List&lt;String&gt;"/>
       <attribute name="emf.configurator" value="resourceSet"/>
     </capability>
     <capability namespace="osgi.content">
       <attribute name="size" value="139771" type="Long"/>
-      <attribute name="url" value="de.jena.mdo.tree.model/de.jena.mdo.tree.model-1.0.0.jar"/>
       <attribute name="mime" value="application/vnd.osgi.bundle"/>
+      <attribute name="url" value="de.jena.mdo.tree.model/de.jena.mdo.tree.model-1.0.0.jar"/>
       <attribute name="osgi.content" value="92A164CF264610BFCB20BB30109C8A1E3C569BFF81A8D8486599B594DC2821DD"/>
     </capability>
     <capability namespace="osgi.service">
@@ -426,8 +426,8 @@
     </requirement>
     <requirement namespace="emf.core">
       <directive name="filter" value="(&amp;(emf.core=osgi)(version&gt;=2.1.0)(!(version&gt;=3.0.0)))"/>
-      <attribute name="emf.configurator.contentType" value="" type="List&lt;String&gt;"/>
       <attribute name="emf.configurator.name" value="dbtree"/>
+      <attribute name="emf.configurator.contentType" value="" type="List&lt;String&gt;"/>
       <attribute name="emf.configurator.fileExtension" value="dbtree" type="List&lt;String&gt;"/>
     </requirement>
     <requirement namespace="osgi.ee">
@@ -459,24 +459,24 @@
       <directive name="uses" value="org.eclipse.emf.common.util,org.eclipse.emf.ecore"/>
       <attribute name="bundle-symbolic-name" value="org.gecko.emf.collections"/>
       <attribute name="bundle-version" value="1.0.0.202204011602" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="org.gecko.emf.collection"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="-393458580,1425955268,-108638296,816560323,975618347,1086854103,1651701700,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="org.eclipse.emf.common.notify,org.eclipse.emf.common.util,org.eclipse.emf.ecore,org.eclipse.emf.ecore.impl,org.gecko.emf.collection"/>
       <attribute name="bundle-symbolic-name" value="org.gecko.emf.collections"/>
       <attribute name="bundle-version" value="1.0.0.202204011602" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="org.gecko.emf.collection.impl"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="-140833620,690557416,1499400683,-1266735465,2097957892,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.package">
       <directive name="uses" value="org.eclipse.emf.common.notify,org.eclipse.emf.common.notify.impl,org.eclipse.emf.common.util,org.eclipse.emf.ecore,org.eclipse.emf.ecore.resource,org.eclipse.emf.ecore.resource.impl,org.eclipse.emf.ecore.util,org.eclipse.emf.ecore.xmi.impl,org.gecko.emf.collection"/>
       <attribute name="bundle-symbolic-name" value="org.gecko.emf.collections"/>
       <attribute name="bundle-version" value="1.0.0.202204011602" type="Version"/>
-      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="osgi.wiring.package" value="org.gecko.emf.collection.util"/>
+      <attribute name="version" value="1.0.0" type="Version"/>
       <attribute name="bnd.hashes" value="-697020135,1640364478,1445238060,1626908562,-1923478059" type="List&lt;Long&gt;"/>
     </capability>
     <capability namespace="osgi.wiring.bundle">
@@ -488,20 +488,20 @@
       <attribute name="osgi.wiring.host" value="org.gecko.emf.collections"/>
     </capability>
     <capability namespace="emf.configurator">
-      <attribute name="name" value="collection"/>
       <attribute name="nsURI" value="https://geckoprojects.org/model/emf/collection/1.0" type="List&lt;String&gt;"/>
+      <attribute name="name" value="collection"/>
       <attribute name="emf.configurator" value="epackage"/>
     </capability>
     <capability namespace="emf.configurator">
+      <attribute name="fileExtension" value="collection" type="List&lt;String&gt;"/>
       <attribute name="name" value="collection"/>
       <attribute name="contentType" value="" type="List&lt;String&gt;"/>
-      <attribute name="fileExtension" value="collection" type="List&lt;String&gt;"/>
       <attribute name="emf.configurator" value="resourceSet"/>
     </capability>
     <capability namespace="osgi.content">
       <attribute name="size" value="58529" type="Long"/>
-      <attribute name="url" value="org.gecko.emf.collections/org.gecko.emf.collections-1.0.0.jar"/>
       <attribute name="mime" value="application/vnd.osgi.bundle"/>
+      <attribute name="url" value="org.gecko.emf.collections/org.gecko.emf.collections-1.0.0.jar"/>
       <attribute name="osgi.content" value="55F72F56DC0FA5626A7447C50C4E7F96856505A268F8B6D04CA0D4F6E9B58A0F"/>
     </capability>
     <capability namespace="osgi.service">

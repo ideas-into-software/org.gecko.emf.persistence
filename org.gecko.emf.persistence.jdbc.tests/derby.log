@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Fri Jan 06 14:19:43 CET 2023:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0185-873c-bce5-00001e02c300 
+on database directory /opt/git/org.gecko.emf.persistence/org.gecko.emf.persistence.jdbc.tests/TEST with class loader derby [2] 
+Loaded from file:/home/mark/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
+java.vendor=Eclipse Adoptium
+java.runtime.version=17.0.5+8
+user.dir=/opt/git/org.gecko.emf.persistence/org.gecko.emf.persistence.jdbc.tests
+os.name=Linux
+os.arch=amd64
+os.version=5.15.0-56-generic
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
