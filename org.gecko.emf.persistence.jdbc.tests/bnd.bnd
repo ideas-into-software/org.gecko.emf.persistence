@@ -11,7 +11,8 @@ Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.
 	de.jena.mdo.tree.model;version=latest,\
 	org.gecko.emf.persistence;version=snapshot,\
 	org.osgi.service.jdbc,\
-	org.gecko.emf.persistence.jdbc
+	org.gecko.emf.persistence.jdbc,\
+	org.postgresql.jdbc
 	
 Private-Package: org.gecko.emf.persistence.jdbc.tests
 

@@ -18,7 +18,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.DataSource;
+import javax.sql.PooledConnection;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
+
 import org.eclipse.emf.common.util.URI;
+import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PROP_DATASOURCE_NAME;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.gecko.emf.persistence.PersistenceConstants;
 import org.gecko.emf.persistence.PersistenceURIHandlerImpl;
@@ -122,14 +129,51 @@ public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connec
 	public Promise<Connection> getConnection(URI uri, Map<?, ?> options) {
 		String name = uri.host();
 		DataSourceFactoryHolder holder = dataSourceHolders.get(name);
+		
 		DataSourceFactory dataSourceFactory = holder.getDataSourceFactory();
 		String database = getDatabase(holder, uri, options);
-		String type = (String) options.get("type");
-		type = type.toLowerCase();
+		String dsType = (String) holder.getProperties().getOrDefault("persistence.jdbc.dsType", "Driver");
 		Properties prop = new Properties();
 		prop.putAll(options);
-		String dbUrl = String.format(DB_TEMPLATE, type, database);
-		Promise<Connection> connectionP = pf.submit(()->dataSourceFactory.createDriver(null).connect(dbUrl, null));
+		Promise<Connection> connectionP = null;
+		switch (dsType) {
+		case "Driver":
+			String type = (String) options.get("type");
+			type = type.toLowerCase();
+			String dbUrl = String.format(DB_TEMPLATE, type, database);
+			connectionP = pf.submit(()->dataSourceFactory.createDriver(null).connect(dbUrl, null));
+			break;
+		case "XADataSource":
+			connectionP = pf.submit(()->{
+				Properties props = new Properties();
+				props.putAll(options);
+				XADataSource xaDataSource = dataSourceFactory.createXADataSource(props);
+				final XAConnection xaConnection = xaDataSource.getXAConnection();
+				xaConnection.getConnection();
+				return xaConnection.getConnection();
+			});
+			break;
+		case "DataSource":
+			connectionP = pf.submit(()->{
+				Properties props = new Properties();
+				props.putAll(options);
+				DataSource dataSource = dataSourceFactory.createDataSource(props);
+				return dataSource.getConnection();
+			});
+			break;
+		case "PooledDataSource":
+			connectionP = pf.submit(()->{
+				Properties props = new Properties();
+				props.putAll(options);
+				ConnectionPoolDataSource pooledDataSource = dataSourceFactory.createConnectionPoolDataSource(props);
+				PooledConnection pooledConnection = pooledDataSource.getPooledConnection();
+				return pooledConnection.getConnection();
+			});
+			break;
+
+		default:
+			break;
+		}
 		return connectionP;
 	}
 
@@ -140,6 +184,12 @@ public class JdbcURIHandlerImpl extends PersistenceURIHandlerImpl<Promise<Connec
 	protected String getDatabase(DataSourceFactoryHolder holder, URI uri, Map<?, ?> options) {
 		if (holder != null) {
 			String database = (String) holder.getProperties().get(PersistenceConstants.PROPERTY_DATABASE_NAME);
+			if (database != null) {
+				return database;
+			}
+		}
+		if (options != null) {
+			String database = (String) options.get(PersistenceConstants.PROPERTY_DATABASE_NAME);
 			if (database != null) {
 				return database;
 			}

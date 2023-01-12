@@ -11,20 +11,12 @@
  */
 package org.gecko.emf.persistence.jdbc;
 
-import static javax.sql.rowset.RowSetProvider.newFactory;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
-
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.RowSetFactory;
-
-import org.eclipse.emf.ecore.EClass;
-import org.gecko.emf.persistence.helper.PersistenceHelper;
 
 /**
  * 
@@ -38,20 +30,16 @@ public class JdbcHelper {
 	public static boolean existDatabase(String databaseName, Connection connection) throws SQLException {
 		Objects.requireNonNull(databaseName);
 		Objects.requireNonNull(connection);
-		DatabaseMetaData metaData = connection.getMetaData();
-		System.out.println(metaData.getCatalogTerm());
-		System.out.println(metaData.getSchemaTerm());
-		ResultSet resultSet = connection.getMetaData().getCatalogs();
-		try {
-
-			while (resultSet.next()) {
-				String existingDatabaseName = resultSet.getString(1);
+		String catalog = connection.getCatalog();
+		String schema = connection.getSchema();
+		DatabaseMetaData databaseMetaData = connection.getMetaData();
+		try (ResultSet tables = databaseMetaData.getTables(catalog, schema, databaseName, null)) {
+			while (tables.next()) {
+				String existingDatabaseName = tables.getString(3);
 				if(existingDatabaseName.equalsIgnoreCase(databaseName)){
 					return true;
 				}
 			}
-		} finally {
-			resultSet.close();
 		}
 		return false;
 	}
@@ -72,16 +60,16 @@ public class JdbcHelper {
 	public static boolean existTable(String tableName, Connection connection) throws SQLException {
 		Objects.requireNonNull(tableName);
 		Objects.requireNonNull(connection);
-		ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName, null);
-		try {
-			while (resultSet.next()) {
-				String existingTableName = resultSet.getString(1);
-				if(existingTableName.equalsIgnoreCase(tableName)){
+		String catalog = connection.getCatalog();
+		String schema = connection.getSchema();
+		DatabaseMetaData databaseMetaData = connection.getMetaData();
+		try (ResultSet tables = databaseMetaData.getTables(catalog, schema, tableName, null)) {
+			while (tables.next()) {
+				String existingTable = tables.getString(3);
+				if(existingTable.equalsIgnoreCase(tableName)){
 					return true;
 				}
 			}
-		} finally {
-			resultSet.close();
 		}
 		return false;
 	}

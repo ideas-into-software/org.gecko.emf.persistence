@@ -36,7 +36,7 @@ import org.osgi.util.promise.PromiseFactory;
  * 
  * @author mark
  * @since 16.04.2022
- * Change Generic type of the In- and Outputstrems from DataSourceFactory to Connection
+ * Change Generic type of the In- and Outputstreams from DataSourceFactory to Connection
  */
 @Component(name = "org.gecko.persistence.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE, service = UriHandlerProvider.class, property = { RESOURCESET_CONFIG_PROP, "type=persistence"})
 public class JdbcUriHandlerProvider implements UriHandlerProvider {
@@ -49,7 +49,9 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	private final PromiseFactory pf = new PromiseFactory(Executors.newCachedThreadPool(), Executors.newScheduledThreadPool(2));
 	
 	@interface JdbcUriHandlerConfig {
+		static final String PREFIX_ = "persistence.jdbc.";
 		String name();
+		String dsType() default "Driver";
 	}
 	
 	@Activate
@@ -70,13 +72,13 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 		return uriHandler;
 	}
 	
-	@Reference(name="dataSource")
+	@Reference(name="persistence.jdbc.ds")
 	public void setDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String, Object> properties) {
-		String name = (String) properties.getOrDefault("name", "default");
+		String name = (String) properties.getOrDefault(PROPERTY_PERSISTENCE_NAME, "default");
 		connections.put(name, new DataSourceFactoryHolder(dataSourceFactory, properties));
 	}
 	public void unsetDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String, Object> properties) {
-		String name = (String) properties.getOrDefault("name", "default");
+		String name = (String) properties.getOrDefault(PROPERTY_PERSISTENCE_NAME, "default");
 		connections.remove(name);
 	}
 

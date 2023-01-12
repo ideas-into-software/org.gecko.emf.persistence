@@ -24,16 +24,15 @@ import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
 import org.apache.derby.jdbc.EmbeddedXADataSource;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 /**
- * 
- * @author mark
+ * {@link DataSourceFactory} for the derby database
+ * @author Mark Hoffmann
  * @since 16.04.2022
  */
-@Component(immediate = true, configurationPid = "org.gecko.datasource", configurationPolicy = ConfigurationPolicy.REQUIRE)
-public class JDBCProvider implements DataSourceFactory {
+@Component(immediate = true, property = { DataSourceFactory.OSGI_JDBC_DRIVER_CLASS + "=org.apache.derby.jdbc.EmbeddedDriver", DataSourceFactory.OSGI_JDBC_DRIVER_NAME + "=derby", DataSourceFactory.OSGI_JDBC_DRIVER_VERSION + "=10.14"})
+public class DerbyDataSourceFactory implements DataSourceFactory {
 	
 	/* 
 	 * (non-Javadoc)
@@ -49,6 +48,18 @@ public class JDBCProvider implements DataSourceFactory {
 		String name = props.getProperty(JDBC_DATASOURCE_NAME);
 		if (name != null) {
 			eds.setDataSourceName(name);
+		}
+		String user = props.getProperty(JDBC_USER);
+		if (user != null) {
+			eds.setUser(user);
+		}
+		String password = props.getProperty(JDBC_PASSWORD);
+		if (password != null) {
+			eds.setPassword(password);
+		}
+		String createDBString = props.getProperty("createDB");
+		if (createDBString != null && database != null && Boolean.parseBoolean(createDBString)) {
+			eds.setCreateDatabase(database);
 		}
 		return eds;
 	}
@@ -68,6 +79,18 @@ public class JDBCProvider implements DataSourceFactory {
 		if (name != null) {
 			ecpds.setDataSourceName(name);
 		}
+		String user = props.getProperty(JDBC_USER);
+		if (user != null) {
+			ecpds.setUser(user);
+		}
+		String password = props.getProperty(JDBC_PASSWORD);
+		if (password != null) {
+			ecpds.setPassword(password);
+		}
+		String createDBString = props.getProperty("createDB");
+		if (createDBString != null && database != null && Boolean.parseBoolean(createDBString)) {
+			ecpds.setCreateDatabase(database);
+		}
 		return ecpds;
 	}
 
@@ -85,6 +108,18 @@ public class JDBCProvider implements DataSourceFactory {
 		String name = props.getProperty(JDBC_DATASOURCE_NAME);
 		if (name != null) {
 			exads.setDataSourceName(name);
+		}
+		String user = props.getProperty(JDBC_USER);
+		if (user != null) {
+			exads.setUser(user);
+		}
+		String password = props.getProperty(JDBC_PASSWORD);
+		if (password != null) {
+			exads.setPassword(password);
+		}
+		String createDBString = props.getProperty("createDB");
+		if (createDBString != null && database != null && Boolean.parseBoolean(createDBString)) {
+			exads.setCreateDatabase(database);
 		}
 		return exads;
 	}

@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.osgi.service.jdbc.DataSourceFactory.OSGI_JDBC_DRIVER_NAME;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -57,7 +58,7 @@ import de.jena.mdo.model.dbtree.DbtreePackage;
 @ExtendWith(ServiceExtension.class)
 @ExtendWith(ConfigurationExtension.class)
 //@ExtendWith(MockitoExtension.class)
-public class ExampleTest {
+public class TreeExampleDerbyTest {
 	
 	private static final String DB_TEMPLATE = "jdbc:derby:%s;create=true";
 	private static final String TREE_BASE_URI = "jdbc://DerbyTest/derbytest";
@@ -72,16 +73,19 @@ public class ExampleTest {
 	@Test
 	@WithFactoryConfigurations ({
 		@WithFactoryConfiguration(name="test", location = "?", factoryPid = "org.gecko.datasource", properties = {
-				@Property(key = "name", value = "DerbyTest"),
-				@Property(key = "type", value = "Derby"),
-				@Property(key = "databaseName", value = "TEST"),
-				@Property(key = "dataSourceName", value = "Derby_Test"),
-				@Property(key = "user", value = "test"),
-				@Property(key = "password", value = "1234")
+				@Property(key = "datasource.name", value = "DerbyTest"),
+				@Property(key = "datasource.delegate.target", value = "(" + OSGI_JDBC_DRIVER_NAME + "=derby)"),
+				@Property(key = "datasource.dialect", value = "derby"),
+				@Property(key = "datasource.databaseName", value = "TEST"),
+				@Property(key = "datasource.serverName", value = "localhost"),
+				@Property(key = "datasource.portNumber", value = "1234"),
+				@Property(key = "datasource.user", value = "test"),
+				@Property(key = "datasource.password", value = "1234")
 		}),
 		@WithFactoryConfiguration(name="Derby-Test", location = "?", factoryPid = "org.gecko.persistence.jdbc", properties = {
-				@Property(key = "name", value = "derbytest"),
-				@Property(key = "dataSource.target", value = "(name=DerbyTest)")
+				@Property(key = "persistence.jdbc.name", value = "derbytest"),
+				@Property(key = "persistence.jdbc.dsType", value = "XADataSource"),
+				@Property(key = "persistence.jdbc.ds.target", value = "(datasource.name=DerbyTest)")
 		})
 	})
 	public void testSaveTree(@InjectService(filter = "(&(emf.configurator.name=emf.persistence.jdbc.derbytest)(emf.model.name=dbtree))") ResourceSet resourceSet,
@@ -117,16 +121,18 @@ public class ExampleTest {
 	@Test
 	@WithFactoryConfigurations ({
 		@WithFactoryConfiguration(name="test", location = "?", factoryPid = "org.gecko.datasource", properties = {
-				@Property(key = "name", value = "DerbyTest"),
-				@Property(key = "type", value = "Derby"),
-				@Property(key = "databaseName", value = "TEST"),
-				@Property(key = "dataSourceName", value = "Derby_Test"),
-				@Property(key = "user", value = "test"),
-				@Property(key = "password", value = "1234")
+				@Property(key = "datasource.name", value = "DerbyTest"),
+				@Property(key = "datasource.delegate.target", value = "(" + OSGI_JDBC_DRIVER_NAME + "=derby)"),
+				@Property(key = "datasource.dialect", value = "derby"),
+				@Property(key = "datasource.databaseName", value = "TEST"),
+				@Property(key = "datasource.serverName", value = "localhost"),
+				@Property(key = "datasource.portNumber", value = "1234"),
+				@Property(key = "datasource.user", value = "test"),
+				@Property(key = "datasource.password", value = "1234")
 		}),
 		@WithFactoryConfiguration(name="Derby-Test", location = "?", factoryPid = "org.gecko.persistence.jdbc", properties = {
 				@Property(key = "name", value = "derbytest"),
-				@Property(key = "dataSource.target", value = "(name=DerbyTest)")
+				@Property(key = "dataSource.target", value = "(datasource.name=DerbyTest)")
 		})
 	})
 	public void testLoadTree(@InjectService(filter = "(&(emf.configurator.name=emf.persistence.jdbc.derbytest)(emf.model.name=dbtree))") ResourceSet resourceSet) {
