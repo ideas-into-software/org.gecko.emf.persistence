@@ -13,4 +13,6 @@
 	
 Import-Package: \
 	org.osgi.service.jpa;version='[3.1,4)',\
+	org.eclipse.persistence.dynamic;version='[4.0.0,5.0.0)',\
+	org.eclipse.persistence.internal.dynamic;version='[4.0.0,5.0.0)',\
 	*
