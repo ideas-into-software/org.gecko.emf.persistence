@@ -1,0 +1,7 @@
+-buildpath: \
+	org.osgi.framework;version=latest,\
+	org.osgi.service.jpa;version=latest,\
+	jakarta.persistence-api;version=latest,\
+	org.gecko.persistence.jpa.demo.library;version=snapshot
+Bundle-Name: JPA Library Demo Application
+Bundle-Description: Gecko Persistence JPA Library Demo Application

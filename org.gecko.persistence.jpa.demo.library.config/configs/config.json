@@ -1,0 +1,24 @@
+{
+  ":configurator:resource-version": 1,
+  
+  "gemini.jpa.punit~Accounts": 
+  {
+    "gemini.jpa.punit.name": "Library",
+    "gemini.jpa.punit.bsn": "org.gecko.persistence.jpa.demo.library",
+    "gemini.jpa.punit.classes": "model.configadmin.Book,model.configadmin.Library",
+    "gemini.jpa.punit.excludeUnlistedClasses": "true",
+	"jakarta.persistence.jdbc.driver": "org.apache.derby.jdbc.EmbeddedDriver",
+	"jakarta.persistence.jdbc.url": "jdbc:derby:Library;create=true",
+	"jakarta.persistence.jdbc.user": "app",
+	"jakarta.persistence.jdbc.password": "app",
+	"eclipselink.target-database": "Derby",
+	"eclipselink.logging.level": "FINE",
+	"eclipselink.logging.timestamp": "false",
+	"eclipselink.logging.thread": "false",
+	"eclipselink.logging.exceptions": "true",
+	"eclipselink.orm.throw.exceptions": "true",
+	"eclipselink.jdbc.read-connections.min": "1",
+	"eclipselink.jdbc.write-connections.min": "1",
+	"eclipselink.ddl-generation": "drop-and-create-tables"
+  }
+}

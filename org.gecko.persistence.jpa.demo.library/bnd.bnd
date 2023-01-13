@@ -1,0 +1,5 @@
+-buildpath: jakarta.persistence-api;version=latest
+Bundle-Name: JPA Library Demo Entities
+Bundle-Description: Gecko Persistence JPA Library Demo Entities
+-includeresource: META-INF/MANIFEST.MF=manifest
+Export-Package: model.configadmin

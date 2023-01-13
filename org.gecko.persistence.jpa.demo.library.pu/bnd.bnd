@@ -1,0 +1,8 @@
+-resourceonly: true
+-includeresource: META-INF/persistence.xml=persistence.xml
+Meta-Persistence: META-INF/persistence.xml
+Bundle-Name: JPA Library Demo PU
+Bundle-Description: Gecko Persistence JPA Library Demo Persistence Unit XML
+Import-Package: \
+	model.configadmin,\
+	*

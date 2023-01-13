@@ -1,0 +1,12 @@
+-resourceonly: true
+-includeresource: OSGI-INF/configurator/=configs/
+
+Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.configurator)'
+Bundle-Name: JPA Library Demo PU-Config
+Bundle-Description: Gecko Persistence JPA Library Demo Persistence-Unit Configuration
+-buildpath: \
+	jakarta.persistence-api;version=latest,\
+	org.osgi.framework;version=latest,\
+	org.osgi.service.jpa;version=latest,\
+	org.gecko.persistence.jpa.demo.library;version=snapshot
+	
