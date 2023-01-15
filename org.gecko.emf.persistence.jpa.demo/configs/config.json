@@ -1,0 +1,21 @@
+{
+  ":configurator:resource-version": 1,
+  
+  "gemini.jpa.punit~Employee": 
+  {
+    "gemini.jpa.punit.name": "Employee",
+	"jakarta.persistence.jdbc.driver": "org.apache.derby.jdbc.EmbeddedDriver",
+	"jakarta.persistence.jdbc.url": "jdbc:derby:Employee;create=true",
+	"jakarta.persistence.jdbc.user": "app",
+	"jakarta.persistence.jdbc.password": "app",
+	"eclipselink.target-database": "Derby",
+	"eclipselink.logging.level": "FINE",
+	"eclipselink.logging.timestamp": "false",
+	"eclipselink.logging.thread": "false",
+	"eclipselink.logging.exceptions": "true",
+	"eclipselink.orm.throw.exceptions": "true",
+	"eclipselink.jdbc.read-connections.min": "1",
+	"eclipselink.jdbc.write-connections.min": "1",
+	"eclipselink.ddl-generation": "drop-and-create-tables"
+  }
+}

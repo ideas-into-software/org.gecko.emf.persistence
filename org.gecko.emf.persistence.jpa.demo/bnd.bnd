@@ -7,13 +7,19 @@
 	org.eclipse.persistence.core;version=latest,\
 	org.eclipse.emf.ecore;version=latest
 	
--includeresource: \
-	META-INF/persistence.xml=persistence.xml
+#-includeresource: \
+#	META-INF/persistence.xml=persistence.xml
+#Meta-Persistence: META-INF/persistence.xml
 
-Meta-Persistence: META-INF/persistence.xml
+-includeresource: \
+	META-INF/MANIFEST.MF=Manifest_,\
+	OSGI-INF/configurator/=configs/
+
 -privatepackage: \
 	org.gecko.emf.persistence.jpa.demo,\
 	org.gecko.emf.persistence.jpa.demo.classloader
+	
+Require-Capability: osgi.extender;filter:='(osgi.extender=osgi.configurator)'
 Export-Package: org.gecko.emf.persistence.jpa.demo.entities
 Import-Package: \
 	org.eclipse.persistence.internal.dynamic;version='[4.0.0,5.0.0)',\

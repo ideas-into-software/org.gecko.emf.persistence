@@ -9,7 +9,7 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.jdbc.dialect;
+package org.gecko.persistence.datasource.dialect;
 
 import java.util.Properties;
 

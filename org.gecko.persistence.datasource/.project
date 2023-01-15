@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.gecko.emf.persistence.jdbc.dialect</name>
+	<name>org.gecko.persistence.datasource</name>
 	<comment></comment>
 	<projects>
 	</projects>

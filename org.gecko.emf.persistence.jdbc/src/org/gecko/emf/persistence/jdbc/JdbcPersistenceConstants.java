@@ -28,7 +28,4 @@ public interface JdbcPersistenceConstants {
 
 	public static final String ECLASS_TYPE_COLUMN_NAME = "ETYPE";
 	
-	public static final String DATASOURCE_PREFIX = "datasource.";
-	public static final String PROP_DATASOURCE_NAME = DATASOURCE_PREFIX + "name";
-	public static final String PROP_DIALECT_NAME = DATASOURCE_PREFIX + "dialect";
 }

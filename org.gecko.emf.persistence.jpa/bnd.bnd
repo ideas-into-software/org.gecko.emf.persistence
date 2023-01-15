@@ -1,0 +1,11 @@
+-buildpath: \
+	jakarta.persistence-api;version=latest,\
+	org.osgi.framework;version=latest,\
+	org.osgi.util.tracker;version=latest,\
+	org.osgi.service.jpa;version=latest,\
+	org.eclipse.persistence.jpa;version=latest,\
+	org.eclipse.persistence.core;version=latest,\
+	org.eclipse.emf.ecore;version=latest,\
+	org.gecko.emf.persistence;version=snapshot
+-privatepackage: org.gecko.emf.persistence.jpa.converter
+Export-Package: org.gecko.emf.persistence.jpa

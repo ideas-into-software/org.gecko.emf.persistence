@@ -9,13 +9,13 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.jdbc.dialect.impl;
+package org.gecko.persistence.datasource.dialect.platforms;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.gecko.emf.persistence.jdbc.dialect.Dialect;
-import org.gecko.emf.persistence.jdbc.dialect.DialectProvider;
+import org.gecko.persistence.datasource.dialect.Dialect;
+import org.gecko.persistence.datasource.dialect.DialectProvider;
 import org.osgi.service.component.annotations.Component;
 
 /**

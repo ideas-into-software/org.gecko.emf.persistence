@@ -9,14 +9,9 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.jdbc.dialect;
-
 /**
  * 
  * @author mark
- * @since 11.01.2023
+ * @since 14.01.2023
  */
-public interface DialectProvider {
-
-	Dialect getDialect(String dialectName);
-}
+package org.gecko.persistence.datasource.config;

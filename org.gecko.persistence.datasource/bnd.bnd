@@ -1,0 +1,12 @@
+Bundle-Name: Gecko Persistence Datasource
+Bundle-Description: Gecko Persistence Configurable Datasource
+-buildpath: \
+	org.osgi.service.jdbc,\
+	org.osgi.framework,\
+	org.osgi.service.cm
+Export-Package: \
+	org.gecko.persistence.datasource,\
+	org.gecko.persistence.datasource.dialect
+-privatepackage: \
+	org.gecko.persistence.datasource.config,\
+	org.gecko.persistence.datasource.dialect.platforms

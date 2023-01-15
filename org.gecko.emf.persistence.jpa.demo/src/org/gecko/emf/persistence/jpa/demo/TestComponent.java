@@ -34,7 +34,7 @@ public class TestComponent {
 	
 	@Reference(target="(emf.model.name=basic)")
 	private ResourceSet resourceSet;
-	@Reference(target = "(" + EntityManagerFactoryBuilder.JPA_UNIT_NAME + "=Accounts)")
+	@Reference(target = "(" + EntityManagerFactoryBuilder.JPA_UNIT_NAME + "=Employee)")
     private EntityManagerFactory emf;
 	
 	

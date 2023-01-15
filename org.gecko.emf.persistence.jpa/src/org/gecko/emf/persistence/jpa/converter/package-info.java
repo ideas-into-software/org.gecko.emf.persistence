@@ -12,7 +12,6 @@
 /**
  * 
  * @author mark
- * @since 11.01.2023
+ * @since 14.01.2023
  */
-@org.osgi.annotation.bundle.Export
-package org.gecko.emf.persistence.jdbc.dialect;
+package org.gecko.emf.persistence.jpa.converter;

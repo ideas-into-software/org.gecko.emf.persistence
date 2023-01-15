@@ -1,0 +1,44 @@
+-library: enableOSGi-Test
+
+-runrequires: \
+	bnd.identity;id='org.gecko.persistence.datasource.tests',\
+	bnd.identity;id='org.gecko.persistence.datasource',\
+	bnd.identity;id='slf4j.simple';version:Version='1.7.30',\
+	bnd.identity;id='org.postgresql.jdbc',\
+	bnd.identity;id='org.ops4j.pax.jdbc.derby'
+	
+-runbundles.test: \
+	org.gecko.persistence.datasource;version=snapshot,\
+	org.gecko.persistence.datasource.tests;version=snapshot
+
+#-runfw: org.apache.felix.framework
+
+#-runee: JavaSE-11
+
+-runfw: org.apache.felix.framework;version='[7.0.1,7.0.1]'
+-runee: JavaSE-11
+-runbundles: \
+	derby;version='[10.14.2000000,10.14.2000001)',\
+	junit-jupiter-api;version='[5.9.1,5.9.2)',\
+	junit-jupiter-params;version='[5.9.1,5.9.2)',\
+	junit-platform-commons;version='[1.9.1,1.9.2)',\
+	net.bytebuddy.byte-buddy;version='[1.12.16,1.12.17)',\
+	net.bytebuddy.byte-buddy-agent;version='[1.12.16,1.12.17)',\
+	org.apache.felix.configadmin;version='[1.9.22,1.9.23)',\
+	org.gecko.persistence.datasource.tests;version=snapshot,\
+	org.mockito.junit-jupiter;version='[4.9.0,4.9.1)',\
+	org.mockito.mockito-core;version='[4.9.0,4.9.1)',\
+	org.objenesis;version='[3.3.0,3.3.1)',\
+	org.opentest4j;version='[1.2.0,1.2.1)',\
+	org.ops4j.pax.jdbc.derby;version='[1.5.5,1.5.6)',\
+	org.osgi.service.jdbc;version='[1.1.0,1.1.1)',\
+	org.osgi.test.common;version='[1.2.1,1.2.2)',\
+	org.osgi.test.junit5;version='[1.2.1,1.2.2)',\
+	org.osgi.test.junit5.cm;version='[1.2.1,1.2.2)',\
+	org.postgresql.jdbc;version='[42.5.1,42.5.2)',\
+	slf4j.api;version='[1.7.30,1.7.31)',\
+	slf4j.simple;version='[1.7.30,1.7.31)',\
+	org.apache.felix.scr;version='[2.2.0,2.2.1)',\
+	org.gecko.persistence.datasource;version=snapshot,\
+	org.osgi.util.function;version='[1.1.0,1.1.1)',\
+	org.osgi.util.promise;version='[1.2.0,1.2.1)'

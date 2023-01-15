@@ -9,18 +9,27 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.jdbc.dialect.impl;
+package org.gecko.persistence.datasource.dialect.platforms;
 
 import java.util.Properties;
 
-import org.gecko.emf.persistence.jdbc.dialect.Dialect;
+import org.gecko.persistence.datasource.dialect.Dialect;
 
 /**
  * 
  * @author mark
  * @since 11.01.2023
  */
-public class DefaultDialect implements Dialect {
+public class PostgreSLQDialect implements Dialect {
+	
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.jdbc.dialect.Dialect#driverPropertiesNull()
+	 */
+	@Override
+	public boolean driverPropertiesNull() {
+		return true;
+	}
 
 	/* 
 	 * (non-Javadoc)
@@ -28,16 +37,7 @@ public class DefaultDialect implements Dialect {
 	 */
 	@Override
 	public String getName() {
-		return "default";
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.jdbc.dialect.Dialect#driverPropertiesNull()
-	 */
-	@Override
-	public boolean driverPropertiesNull() {
-		return false;
+		return "postgresql";
 	}
 
 	/* 
@@ -46,7 +46,7 @@ public class DefaultDialect implements Dialect {
 	 */
 	@Override
 	public Properties filterProperties(Properties properties, boolean driver) {
-		return properties;
+		return driver && driverPropertiesNull() ? null : properties;
 	}
 
 }
