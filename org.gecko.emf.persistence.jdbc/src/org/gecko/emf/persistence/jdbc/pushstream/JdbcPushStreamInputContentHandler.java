@@ -15,15 +15,15 @@ import java.sql.ResultSet;
 import java.util.concurrent.ExecutorService;
 
 import org.eclipse.emf.ecore.EObject;
-import org.gecko.emf.persistence.input.InputContentHandler;
-import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.context.ResultContext;
 import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;
-import org.gecko.emf.persistence.jdbc.context.JdbcInputContext;
 import org.gecko.emf.persistence.jdbc.streams.JdbcInputStream;
+import org.gecko.emf.persistence.mapping.InputContentHandler;
+import org.gecko.emf.persistence.mapping.IteratorMapper;
 import org.gecko.emf.persistence.pushstreams.AsyncPushEventSource;
-import org.gecko.emf.persistence.pushstreams.PushStreamInputContentHandler;
 import org.gecko.emf.persistence.pushstreams.PushEventSourceRunnable;
 import org.gecko.emf.persistence.pushstreams.PushStreamConstants;
+import org.gecko.emf.persistence.pushstreams.PushStreamInputContentHandler;
 import org.gecko.emf.persistence.pushstreams.SimplePushEventSource;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.util.pushstream.PushEventConsumer;
@@ -39,43 +39,35 @@ import org.osgi.util.pushstream.PushEventSource;
  * @since 17.06.2022
  */
 @Component(name="JdbcPushStreamInputContentHandler", service=InputContentHandler.class, property = {JdbcPersistenceConstants.PERSISTENCE_FILTER_PROP, PushStreamConstants.PUSHSTREAM_CONTENT_HANDLER_FILTER_PROP})
-public class JdbcPushStreamInputContentHandler extends PushStreamInputContentHandler<ResultSet> {
+public class JdbcPushStreamInputContentHandler extends PushStreamInputContentHandler<ResultSet, IteratorMapper> {
 
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.pushstreams.PushStreamInputContentHandler#doGetSimpleEventSource(org.gecko.emf.persistence.InputContext)
 	 */
 	@Override
-	protected PushEventSource<EObject> doGetSimpleEventSource(InputContext<ResultSet> context) {
-		return new SimplePushEventSource<ResultSet>(context) {
+	protected PushEventSource<EObject> doGetSimpleEventSource(ResultContext<ResultSet, IteratorMapper> context) {
+		return new SimplePushEventSource<ResultSet, IteratorMapper>(context) {
 			@Override
-			public PushEventSourceRunnable<ResultSet> createRunnable(InputContext<ResultSet> context,
+			public PushEventSourceRunnable<ResultSet, IteratorMapper> createRunnable(ResultContext<ResultSet, IteratorMapper> context,
 					PushEventConsumer<? super EObject> pec) {
-				if (context instanceof JdbcInputContext) {
-					return new JdbcPushStreamRunnable((JdbcInputContext) context, pec);
-				} else {
-					throw new IllegalArgumentException("The InputContext is expected to be JdbcInputContext");
-				}
+				return new JdbcPushStreamRunnable(context, pec);
 			}
 		};
 	}
-	
+
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.pushstreams.PushStreamInputContentHandler#doGetMultithreadedEventSource(org.gecko.emf.persistence.InputContext, java.util.concurrent.ExecutorService)
 	 */
 	@Override
-	protected PushEventSource<EObject> doGetMultithreadedEventSource(InputContext<ResultSet> context,
+	protected PushEventSource<EObject> doGetMultithreadedEventSource(ResultContext<ResultSet, IteratorMapper> context,
 			ExecutorService executor) {
-		return new AsyncPushEventSource<ResultSet>(context, executor) {
+		return new AsyncPushEventSource<ResultSet, IteratorMapper>(context, executor) {
 			@Override
-			public PushEventSourceRunnable<ResultSet> createRunnable(InputContext<ResultSet> context,
+			public PushEventSourceRunnable<ResultSet, IteratorMapper> createRunnable(ResultContext<ResultSet, IteratorMapper> context,
 					PushEventConsumer<? super EObject> pec) {
-				if (context instanceof JdbcInputContext) {
-					return new JdbcPushStreamRunnable((JdbcInputContext) context, pec);
-				} else {
-					throw new IllegalArgumentException("The InputContext is expected to be JdbcInputContext");
-				}
+				return new JdbcPushStreamRunnable(context, pec);
 			}
 		};
 	}

@@ -1,5 +1,5 @@
 @org.osgi.annotation.bundle.Capability(
-		namespace = org.gecko.emf.persistence.PersistenceConstants.CAPABILITY_NAMESPACE,
+		namespace = org.gecko.emf.persistence.api.PersistenceConstants.CAPABILITY_NAMESPACE,
 		name = "mongo",
 		version = "2.2"
 		)

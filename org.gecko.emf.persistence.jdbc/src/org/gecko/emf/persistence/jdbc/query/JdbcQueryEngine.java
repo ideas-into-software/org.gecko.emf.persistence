@@ -12,10 +12,13 @@
  */
 package org.gecko.emf.persistence.jdbc.query;
 
+import java.sql.Statement;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.emf.common.util.URI;
-import org.gecko.emf.persistence.QueryEngine;
+import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;
 import org.gecko.emf.utilities.Request;
 import org.osgi.service.component.annotations.Component;
@@ -26,15 +29,17 @@ import org.osgi.service.component.annotations.Component;
  * @since 03.07.2016
  */
 @Component(name="JdbcQueryEngine", immediate=true, service=QueryEngine.class, property = JdbcPersistenceConstants.PERSISTENCE_FILTER_PROP)
-public class JdbcQueryEngine implements QueryEngine<JdbcQuery> {
+public class JdbcQueryEngine implements QueryEngine<JdbcQuery, Statement> {
 	
+	private Statement statement;
+
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.QueryEngine#buildQuery(org.eclipse.emf.common.util.URI)
 	 */
 	@Override
 	public JdbcQuery buildQuery(URI uri) {
-		return buildQuery(uri, null);
+		return buildQuery(uri, Collections.emptyMap());
 	}
 
 	/* 
@@ -54,6 +59,42 @@ public class JdbcQueryEngine implements QueryEngine<JdbcQuery> {
 	 */
 	private JdbcQuery createQuery(Request request, Map<?, ?> options) {
 		return new JdbcAllQuery(request);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.QueryEngine#buildQuery(org.eclipse.emf.common.util.URI, java.lang.Object)
+	 */
+	@Override
+	public JdbcQuery buildQuery(URI uri, Statement nativeEngine) {
+		return buildQuery(uri);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.QueryEngine#buildQuery(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object)
+	 */
+	@Override
+	public JdbcQuery buildQuery(URI uri, Map<?, ?> options, Statement nativeEngine) {
+		return buildQuery(uri, options);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.QueryEngine#setNativeEngine(java.lang.Object)
+	 */
+	@Override
+	public void setNativeEngine(Statement nativeEngine) {
+		this.statement = nativeEngine;
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.QueryEngine#getNativeEngine()
+	 */
+	@Override
+	public Optional<Statement> getNativeEngine() {
+		return Optional.ofNullable(statement);
 	}
 
 //	/**

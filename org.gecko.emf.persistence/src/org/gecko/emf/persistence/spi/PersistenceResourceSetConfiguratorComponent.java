@@ -11,6 +11,8 @@
  */
 package org.gecko.emf.persistence.spi;
 
+import static org.gecko.emf.persistence.api.PersistenceConstants.PERSISTENCE_TYPE_FILTER;
+
 import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -36,7 +38,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author Mark Hoffmann
  * @since 29.03.2022
  */
-@Component(name = "PersistenceResourceSetConfiguratorComponent", immediate = true)
+@Component(name = "PersistenceResourceSetConfiguratorComponent")
 public class PersistenceResourceSetConfiguratorComponent {
 
 	private final PersistenceResourceSetConfigurator configurator = new PersistenceResourceSetConfigurator();
@@ -71,7 +73,7 @@ public class PersistenceResourceSetConfiguratorComponent {
 	 * 
 	 * @param provider the provider to be added
 	 */
-	@Reference(name = "handlerProvider", policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE, target = "(type=persistence)")
+	@Reference(name = "handlerProvider", policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE, target = PERSISTENCE_TYPE_FILTER)
 	public void addProvider(UriHandlerProvider provider, Map<String, Object> map) {
 		configurator.getPersistenceHandler().addProvider(provider);
 		String configuratorName = getConfiguratorName(map);

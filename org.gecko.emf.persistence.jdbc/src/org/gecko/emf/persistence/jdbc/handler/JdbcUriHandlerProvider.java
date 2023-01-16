@@ -11,8 +11,8 @@
  */
 package org.gecko.emf.persistence.jdbc.handler;
 
+import static org.gecko.emf.persistence.api.PersistenceConstants.PROPERTY_PERSISTENCE_NAME;
 import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.RESOURCESET_CONFIG_PROP;
-import static org.gecko.emf.persistence.PersistenceConstants.PROPERTY_PERSISTENCE_NAME;
 
 import java.sql.Connection;
 import java.util.Map;
@@ -21,8 +21,8 @@ import java.util.concurrent.Executors;
 
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.gecko.emf.osgi.UriHandlerProvider;
-import org.gecko.emf.persistence.OutputStreamFactory;
-import org.gecko.emf.persistence.input.InputStreamFactory;
+import org.gecko.emf.persistence.engine.InputStreamFactory;
+import org.gecko.emf.persistence.engine.OutputStreamFactory;
 import org.gecko.emf.persistence.jdbc.handler.JdbcURIHandlerImpl.DataSourceFactoryHolder;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

@@ -50,9 +50,9 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.XMLResource.URIHandler;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.Keywords;
-import org.gecko.emf.persistence.Options;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.Keywords;
+import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.converter.ValueConverter;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
 

@@ -12,7 +12,7 @@
  */
 package org.gecko.emf.persistence.jdbc.converter;
 
-import org.gecko.emf.persistence.ConverterService;
+import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.converter.DefaultConverterService;
 import org.gecko.emf.persistence.converter.ValueConverter;
 import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;

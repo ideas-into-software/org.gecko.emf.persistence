@@ -31,18 +31,19 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.PersistenceException;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.PersistenceException;
+import org.gecko.emf.persistence.context.ResultContext;
 import org.gecko.emf.persistence.converter.ValueConverter;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
-import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
 
 /**
  * Maps the result into an {@link EObject}
  * @author Mark Hoffmann
  * @since 19.06.2022
  */
-public abstract class BasicEObjectCodec<RESULT, T extends InputContext<RESULT>> {
+public abstract class BasicEObjectCodec<RESULT, MAPPER extends EObjectMapper, T extends ResultContext<RESULT, MAPPER>> {
 	
 	protected final Map<String, EStructuralFeature> mappableFeatures = new HashMap<String, EStructuralFeature>();
 	private final EClassProvider eClassProvider;

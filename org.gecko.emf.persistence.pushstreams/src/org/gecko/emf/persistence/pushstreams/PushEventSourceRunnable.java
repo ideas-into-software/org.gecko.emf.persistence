@@ -17,8 +17,9 @@ import java.util.logging.Logger;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.gecko.emf.persistence.Options;
-import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.context.ResultContext;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.osgi.util.pushstream.PushEvent;
 import org.osgi.util.pushstream.PushEventConsumer;
 
@@ -27,19 +28,19 @@ import org.osgi.util.pushstream.PushEventConsumer;
  * @author Mark Hoffmann
  * @since 17.06.2022
  */
-public abstract class PushEventSourceRunnable<RESULT> implements Runnable {
+public abstract class PushEventSourceRunnable<RESULT, MAPPER extends EObjectMapper> implements Runnable {
 
 	protected static final Logger LOGGER = Logger.getLogger(PushEventSourceRunnable.class.getName());
 	private final PushEventConsumer<? super EObject> consumer;
-	private final InputContext<RESULT> context;
+	private final ResultContext<RESULT, MAPPER> context;
 	private boolean closed = false;
 
-	public PushEventSourceRunnable(InputContext<RESULT> context, PushEventConsumer<? super EObject> consumer) {
+	public PushEventSourceRunnable(ResultContext<RESULT, MAPPER> context, PushEventConsumer<? super EObject> consumer) {
 		this.context = context;
 		this.consumer = consumer;
 	}
 	
-	public final InputContext<RESULT> getContext() {
+	public final ResultContext<RESULT, MAPPER> getContext() {
 		return context;
 	}
 

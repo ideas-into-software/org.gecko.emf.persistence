@@ -18,7 +18,7 @@ import org.eclipse.emf.ecore.resource.URIHandler;
 import org.gecko.emf.osgi.ResourceSetConfigurator;
 
 /**
- * {@link ResourceSetConfigurator} just handling the mongo stuff
+ * {@link ResourceSetConfigurator} just handling the persistence {@link URIHandler}
  * @author Mark Hoffmann
  * @since 18.04.2018
  */

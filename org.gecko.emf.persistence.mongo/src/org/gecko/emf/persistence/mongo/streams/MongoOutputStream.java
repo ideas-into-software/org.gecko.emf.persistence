@@ -33,9 +33,9 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.Options;
-import org.gecko.emf.persistence.PrimaryKeyFactory;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.mongo.codecs.EObjectCodecProvider;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
 

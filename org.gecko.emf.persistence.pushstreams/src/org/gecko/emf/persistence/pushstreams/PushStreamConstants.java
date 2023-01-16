@@ -11,8 +11,8 @@
  */
 package org.gecko.emf.persistence.pushstreams;
 
-import org.gecko.emf.persistence.PersistenceConstants;
-import org.gecko.emf.persistence.input.InputContentHandler;
+import org.gecko.emf.persistence.api.PersistenceConstants;
+import org.gecko.emf.persistence.mapping.InputContentHandler;
 
 /**
  * Constants for the PushStream supports

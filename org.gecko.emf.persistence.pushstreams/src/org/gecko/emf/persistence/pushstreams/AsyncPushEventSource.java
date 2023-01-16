@@ -16,7 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.eclipse.emf.ecore.EObject;
-import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.context.ResultContext;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.osgi.util.pushstream.PushEventConsumer;
 
 /**
@@ -24,12 +25,12 @@ import org.osgi.util.pushstream.PushEventConsumer;
  * @author Mark Hoffmann
  * @since 17.06.2022
  */
-public abstract class AsyncPushEventSource<RESULT> implements PersistencePushEventSource<RESULT> {
+public abstract class AsyncPushEventSource<RESULT, MAPPER extends EObjectMapper> implements PersistencePushEventSource<RESULT, MAPPER> {
 	
-	private final InputContext<RESULT> context;
+	private final ResultContext<RESULT, MAPPER> context;
 	private final ExecutorService executor;
 
-	public AsyncPushEventSource(InputContext<RESULT> context, ExecutorService executor) {
+	public AsyncPushEventSource(ResultContext<RESULT, MAPPER> context, ExecutorService executor) {
 		this.context = context;
 		this.executor = executor;
 	}
@@ -50,7 +51,7 @@ public abstract class AsyncPushEventSource<RESULT> implements PersistencePushEve
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.pushstreams.PersistencePushEventSource#getContext()
 	 */
-	final public InputContext<RESULT> getContext() {
+	final public ResultContext<RESULT, MAPPER> getContext() {
 		return context;
 	}
 	

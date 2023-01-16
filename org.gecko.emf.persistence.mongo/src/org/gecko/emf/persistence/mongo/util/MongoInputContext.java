@@ -17,8 +17,8 @@ import java.util.Optional;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.context.ResultContext;
 
 import com.mongodb.client.FindIterable;
 
@@ -27,7 +27,7 @@ import com.mongodb.client.FindIterable;
  * @author mark
  * @since 19.06.2022
  */
-public class MongoInputContext implements InputContext<FindIterable<EObject>> {
+public class MongoInputContext implements ResultContext<FindIterable<EObject>> {
 	
 	private final FindIterable<EObject> iterable;
 	private Map<Object, Object> options;

@@ -12,7 +12,8 @@
 package org.gecko.emf.persistence.pushstreams;
 
 import org.eclipse.emf.ecore.EObject;
-import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.context.ResultContext;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.osgi.util.pushstream.PushEventConsumer;
 import org.osgi.util.pushstream.PushEventSource;
 
@@ -22,7 +23,7 @@ import org.osgi.util.pushstream.PushEventSource;
  * @author mark
  * @since 17.06.2022
  */
-public interface PersistencePushEventSource<RESULT> extends PushEventSource<EObject> {
+public interface PersistencePushEventSource<RESULT, MAPPER extends EObjectMapper> extends PushEventSource<EObject> {
 	
 	/**
 	 * Creates a runnable to execute 
@@ -30,11 +31,11 @@ public interface PersistencePushEventSource<RESULT> extends PushEventSource<EObj
 	 * @param pushEventConsumer the needed {@link PushEventConsumer} instance
 	 * @return the runnable, must not be <code>null</code>
 	 */
-	public PushEventSourceRunnable<RESULT> createRunnable(InputContext<RESULT> context, PushEventConsumer<? super EObject> pushEventConsumer);
+	public PushEventSourceRunnable<RESULT, MAPPER> createRunnable(ResultContext<RESULT, MAPPER> context, PushEventConsumer<? super EObject> pushEventConsumer);
 
 	/**
 	 * Returns the context instance
 	 * @return the context instance
 	 */
-	public InputContext<RESULT> getContext();
+	public ResultContext<RESULT, MAPPER> getContext();
 }

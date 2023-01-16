@@ -3,7 +3,7 @@ package org.gecko.emf.persistence.converter;
 import java.util.LinkedList;
 
 import org.eclipse.emf.ecore.EDataType;
-import org.gecko.emf.persistence.ConverterService;
+import org.gecko.emf.persistence.api.ConverterService;
 
 /**
  * This class is thread safe

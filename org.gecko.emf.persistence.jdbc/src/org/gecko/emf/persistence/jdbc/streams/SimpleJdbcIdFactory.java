@@ -13,7 +13,7 @@ package org.gecko.emf.persistence.jdbc.streams;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.gecko.emf.persistence.PrimaryKeyFactory;
+import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;

@@ -2,10 +2,23 @@
 	jakarta.persistence-api;version=latest,\
 	org.osgi.framework;version=latest,\
 	org.osgi.util.tracker;version=latest,\
+	org.osgi.util.promise;version=latest,\
 	org.osgi.service.jpa;version=latest,\
+	org.osgi.service.jdbc;version=latest,\
+	org.eclipse.emf.common;version=latest,\
+	org.eclipse.emf.ecore;version=latest,\
 	org.eclipse.persistence.jpa;version=latest,\
 	org.eclipse.persistence.core;version=latest,\
-	org.eclipse.emf.ecore;version=latest,\
-	org.gecko.emf.persistence;version=snapshot
--privatepackage: org.gecko.emf.persistence.jpa.converter
+	org.gecko.emf.osgi.api;version=latest,\
+	org.gecko.persistence.datasource;version=snapshot,\
+	org.gecko.emf.persistence;version=snapshot,\
+	org.gecko.emf.util.model
+-privatepackage: \
+	org.gecko.emf.persistence.jpa.converter,\
+	org.gecko.emf.persistence.jpa.handler,\
+	org.gecko.emf.persistence.jpa.streams,\
+	org.gecko.emf.persistence.jpa.mapper,\
+	org.gecko.emf.persistence.jpa.query
 Export-Package: org.gecko.emf.persistence.jpa
+Bundle-Name: EMF Persistence JPA
+Bundle-Description: Gecko EMF Persistence JPA Implemention

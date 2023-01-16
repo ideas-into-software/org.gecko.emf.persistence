@@ -14,8 +14,8 @@ package org.gecko.emf.persistence.jdbc.pushstream;
 import java.sql.ResultSet;
 
 import org.eclipse.emf.ecore.EObject;
-import org.gecko.emf.persistence.jdbc.context.JdbcInputContext;
-import org.gecko.emf.persistence.jdbc.streams.JdbcInputMapper;
+import org.gecko.emf.persistence.context.ResultContext;
+import org.gecko.emf.persistence.mapping.IteratorMapper;
 import org.gecko.emf.persistence.pushstreams.PushEventSourceRunnable;
 import org.osgi.util.pushstream.PushEventConsumer;
 
@@ -24,14 +24,14 @@ import org.osgi.util.pushstream.PushEventConsumer;
  * @author mark
  * @since 17.06.2022
  */
-public class JdbcPushStreamRunnable extends PushEventSourceRunnable<ResultSet> {
+public class JdbcPushStreamRunnable extends PushEventSourceRunnable<ResultSet, IteratorMapper> {
 
-	private final JdbcInputMapper mapper;
+	private final IteratorMapper mapper;
 	
 	/**
 	 * Creates a new instance.
 	 */
-	public JdbcPushStreamRunnable(JdbcInputContext context, PushEventConsumer<? super EObject> consumer) {
+	public JdbcPushStreamRunnable(ResultContext<ResultSet, IteratorMapper> context, PushEventConsumer<? super EObject> consumer) {
 		super(context, consumer);
 		mapper = context.getMapper();
 	}

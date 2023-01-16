@@ -3,14 +3,21 @@
 -buildpath: \
 	org.osgi.framework;version=latest,\
 	org.osgi.annotation.bundle,\
-	org.osgi.annotation.versioning
+	org.osgi.annotation.versioning,\
+	org.osgi.util.promise,\
+	org.gecko.emf.collections
 	
 Bundle-Name: EMF Persistence API
 Bundle-Description: Gecko.io EMF Persistence API
 Export-Package: \
 	org.gecko.emf.persistence.helper,\
-	org.gecko.emf.persistence.input,\
+	org.gecko.emf.persistence.streams,\
 	org.gecko.emf.persistence,\
 	org.gecko.emf.persistence.converter,\
-	org.gecko.emf.persistence.codec
+	org.gecko.emf.persistence.codec,\
+	org.gecko.emf.persistence.context,\
+	org.gecko.emf.persistence.mapping,\
+	org.gecko.emf.persistence.api,\
+	org.gecko.emf.persistence.emf,\
+	org.gecko.emf.persistence.engine
 -privatepackage: org.gecko.emf.persistence.spi

@@ -37,13 +37,13 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.gecko.emf.collection.CollectionFactory;
 import org.gecko.emf.collection.EReferenceCollection;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.Keywords;
-import org.gecko.emf.persistence.Options;
-import org.gecko.emf.persistence.QueryEngine;
-import org.gecko.emf.persistence.input.InputContentHandler;
-import org.gecko.emf.persistence.input.InputContext;
-import org.gecko.emf.persistence.input.InputContextBuilder;
+import org.gecko.emf.persistence.context.ResultContextBuilder;
+import org.gecko.emf.persistence.mapping.InputContentHandler;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.Keywords;
+import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.QueryEngine;
+import org.gecko.emf.persistence.context.ResultContext;
 import org.gecko.emf.persistence.model.mongo.EMongoQuery;
 import org.gecko.emf.persistence.mongo.codecs.EObjectCodecProvider;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
@@ -180,7 +180,7 @@ public class MongoInputStream extends InputStream implements URIConverter.Loadab
 
 			final FindIterable<EObject> iterable = resultIterable;
 			
-			InputContext<FindIterable<EObject>> inputContext = new InputContextBuilder<FindIterable<EObject>>()
+			ResultContext<FindIterable<EObject>> inputContext = new ResultContextBuilder<FindIterable<EObject>>()
 					.options(mergedOptions)
 					.result(iterable)
 					.resourceCache(resourcesCache)

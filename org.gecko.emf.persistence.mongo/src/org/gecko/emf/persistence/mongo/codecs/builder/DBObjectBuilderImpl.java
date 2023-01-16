@@ -43,9 +43,9 @@ import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.Keywords;
-import org.gecko.emf.persistence.Options;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.Keywords;
+import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.converter.ValueConverter;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
 

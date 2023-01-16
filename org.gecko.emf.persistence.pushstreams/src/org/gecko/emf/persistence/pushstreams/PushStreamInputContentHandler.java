@@ -17,8 +17,9 @@ import java.util.concurrent.Executors;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.gecko.emf.persistence.input.InputContext;
-import org.gecko.emf.persistence.input.UncachedInputContentHandler;
+import org.gecko.emf.persistence.context.ResultContext;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
+import org.gecko.emf.persistence.mapping.UncachedInputContentHandler;
 import org.gecko.emf.pushstream.CustomPushStreamProvider;
 import org.gecko.emf.pushstream.PushStreamFactory;
 import org.osgi.util.pushstream.PushEventSource;
@@ -31,7 +32,7 @@ import org.osgi.util.pushstream.PushStreamProvider;
  * @author Mark Hoffmann
  * @since 17.06.2022
  */
-public abstract class PushStreamInputContentHandler<RESULT> extends UncachedInputContentHandler<RESULT> {
+public abstract class PushStreamInputContentHandler<RESULT, MAPPER extends EObjectMapper> extends UncachedInputContentHandler<RESULT, MAPPER> {
 
 	private final ExecutorService DEFAULT_EXECUTOR = Executors.newCachedThreadPool((r)->new Thread(r, "PushEventSource"));
 	private ExecutorService executor;
@@ -51,7 +52,7 @@ public abstract class PushStreamInputContentHandler<RESULT> extends UncachedInpu
 	 * @see org.gecko.emf.persistence.InputContentHandler#createContent(org.gecko.emf.persistence.InputContext)
 	 */
 	@Override
-	public EObject createContent(InputContext<RESULT> context) {
+	public EObject createContent(ResultContext<RESULT, MAPPER> context) {
 		CustomPushStreamProvider psp = PushStreamFactory.eINSTANCE.createCustomPushStreamProvider();
 		psp.setProvider(new PushStreamProvider());
 		ExecutorService es = getExecutor(context.getOptions());
@@ -86,7 +87,7 @@ public abstract class PushStreamInputContentHandler<RESULT> extends UncachedInpu
 	 * @param executor the optional {@link ExecutorService}
 	 * @return the {@link PushEventSource} instance
 	 */
-	protected PushEventSource<EObject> getEventSource(InputContext<RESULT> context, ExecutorService executor) {
+	protected PushEventSource<EObject> getEventSource(ResultContext<RESULT, MAPPER> context, ExecutorService executor) {
 		Map<Object, Object> options = context.getOptions();
 		boolean multiThreaded = Boolean.TRUE.equals(options.get(PushStreamConstants.OPTION_QUERY_PUSHSTREAM_MULTITHREAD));
 		return multiThreaded ? doGetMultithreadedEventSource(context, executor) : doGetSimpleEventSource(context);
@@ -98,7 +99,7 @@ public abstract class PushStreamInputContentHandler<RESULT> extends UncachedInpu
 	 * @param executor there might be an executor provided by the options, otherwise a default ExecutorService is provided
 	 * @return the {@link PushEventSource} instance, must not be <code>null</code>
 	 */
-	protected PushEventSource<EObject> doGetMultithreadedEventSource(InputContext<RESULT> context, ExecutorService executor) {
+	protected PushEventSource<EObject> doGetMultithreadedEventSource(ResultContext<RESULT, MAPPER> context, ExecutorService executor) {
 		return doGetSimpleEventSource(context);
 	}
 
@@ -107,6 +108,6 @@ public abstract class PushStreamInputContentHandler<RESULT> extends UncachedInpu
 	 * @param context the input context with result and options
 	 * @return the {@link PushEventSource} instance, must not be <code>null</code>
 	 */
-	abstract protected PushEventSource<EObject> doGetSimpleEventSource(InputContext<RESULT> context);
+	abstract protected PushEventSource<EObject> doGetSimpleEventSource(ResultContext<RESULT, MAPPER> context);
 	
 }

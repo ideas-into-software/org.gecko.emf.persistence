@@ -25,11 +25,10 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
 import org.eclipse.emf.common.util.URI;
-import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PROP_DATASOURCE_NAME;
-import org.gecko.emf.persistence.OutputStreamFactory;
-import org.gecko.emf.persistence.PersistenceConstants;
-import org.gecko.emf.persistence.PersistenceURIHandlerImpl;
-import org.gecko.emf.persistence.input.InputStreamFactory;
+import org.gecko.emf.persistence.api.PersistenceConstants;
+import org.gecko.emf.persistence.emf.PersistenceURIHandlerImpl;
+import org.gecko.emf.persistence.engine.InputStreamFactory;
+import org.gecko.emf.persistence.engine.OutputStreamFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.promise.PromiseFactory;

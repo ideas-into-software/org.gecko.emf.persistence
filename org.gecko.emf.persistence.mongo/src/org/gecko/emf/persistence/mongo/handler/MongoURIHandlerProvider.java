@@ -18,8 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.bson.Document;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.gecko.emf.osgi.UriHandlerProvider;
-import org.gecko.emf.persistence.OutputStreamFactory;
-import org.gecko.emf.persistence.input.InputStreamFactory;
+import org.gecko.emf.persistence.engine.InputStreamFactory;
+import org.gecko.emf.persistence.engine.OutputStreamFactory;
 import org.gecko.persistence.mongo.InfoMongoDatabase;
 
 import com.mongodb.client.MongoCollection;

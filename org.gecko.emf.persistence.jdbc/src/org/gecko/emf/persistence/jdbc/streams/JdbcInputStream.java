@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,18 +37,20 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.Countable;
-import org.gecko.emf.persistence.Options;
-import org.gecko.emf.persistence.QueryEngine;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.Countable;
+import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PersistenceException;
+import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.codec.EClassProvider;
+import org.gecko.emf.persistence.context.ResultContextBuilder;
+import org.gecko.emf.persistence.context.PersistenceInputContext;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
-import org.gecko.emf.persistence.input.InputContentHandler;
 import org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants;
-import org.gecko.emf.persistence.jdbc.context.JdbcInputContext;
-import org.gecko.emf.persistence.jdbc.context.JdbcInputContextBuilder;
 import org.gecko.emf.persistence.jdbc.query.JdbcCountQuery;
 import org.gecko.emf.persistence.jdbc.query.JdbcQuery;
+import org.gecko.emf.persistence.mapping.InputContentHandler;
+import org.gecko.emf.persistence.mapping.IteratorMapper;
 import org.osgi.util.promise.Promise;
 
 /**
@@ -60,9 +63,9 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	private final ConverterService converterService;
 	private URI uri;
 	private Map<Object, Object> mergedOptions = new HashMap<>();
-	private QueryEngine<JdbcQuery> queryEngine;
+	private QueryEngine<JdbcQuery, Statement> queryEngine;
 	private Promise<Connection> connectionPromise;
-	private List<InputContentHandler<ResultSet>> contentHandler;
+	private List<InputContentHandler<ResultSet, IteratorMapper>> contentHandler;
 	private Map<Object, Object> response;
 	private String eClassUri;
 	private String typeColumn;
@@ -76,7 +79,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	private static final String QUERY_COUNT = "SELECT COUNT(%s) FROM %s";
 	private static final String QUERY_ALL = "SELECT %s FROM %s";
 
-	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery>  queryEngine, Promise<Connection> connection, List<InputContentHandler<ResultSet>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery, Statement>  queryEngine, Promise<Connection> connection, List<InputContentHandler<ResultSet, IteratorMapper>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
 		this.response = response;
 		if (converterService == null)
 			throw new NullPointerException("The converter service must not be null");
@@ -102,7 +105,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		boolean needCache = true;
 
 		// determine the input content handler
-		Optional<InputContentHandler<ResultSet>> handlerOptional = contentHandler.stream()
+		Optional<InputContentHandler<ResultSet, IteratorMapper>> handlerOptional = contentHandler.stream()
 				.filter((ch)->ch.canHandle((Map<Object, Object>) mergedOptions))
 				.findFirst();
 		if (handlerOptional.isPresent()) {
@@ -142,7 +145,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 			ResultSet resultSet = jdbcQuery.executeQuery(connection, tableName, null);
 			
 			// Step 2 - build input context to handle the result
-			JdbcInputContext inputContext = (JdbcInputContext) new JdbcInputContextBuilder()
+			PersistenceInputContext<ResultSet, IteratorMapper> inputContext = (PersistenceInputContext<ResultSet, IteratorMapper>)new ResultContextBuilder<ResultSet, IteratorMapper>()
 					.result(resultSet)
 					.resource(resource)
 					.options(mergedOptions)
@@ -151,7 +154,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 					.build();
 
 			// Step 3 - create default mapper to create EObjects out of the result
-			final JdbcInputMapper inputMapper = new JdbcEObjectCodec(inputContext, this);
+			final IteratorMapper inputMapper = new JdbcEObjectCodec(inputContext, this);
 			inputMapper.initialize();
 
 
@@ -169,6 +172,9 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (PersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -290,6 +296,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		//				contents.add(dbObject);
 		//			}
 		//		}
+
 	}
 
 	/* 
@@ -442,7 +449,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	 * @param inputMapper the {@link EObject} mapper
 	 * @param resource the loading resource
 	 */
-	protected void defaultHandleResult(final JdbcInputMapper inputMapper, Resource resource) {
+	protected void defaultHandleResult(final IteratorMapper inputMapper, Resource resource) {
 		try {
 			EList<EObject> contents = resource.getContents();
 			// counter for all mapped elements
@@ -456,7 +463,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 				// If returning counting result / mapping results as response value is active
 				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(mappedCount));
 			}
-		} catch (SQLException e) {
+		} catch (PersistenceException e) {
 			inputMapper.close();
 			e.printStackTrace();
 		}

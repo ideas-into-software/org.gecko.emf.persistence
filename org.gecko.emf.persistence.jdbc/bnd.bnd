@@ -12,4 +12,4 @@
 	org.gecko.emf.collections;version=latest,\
 	org.gecko.emf.persistence;version=latest,\
 	org.gecko.emf.persistence.pushstreams;version=latest,\
-	org.gecko.emf.persistence.jdbc.dialect
+	org.gecko.persistence.datasource;version=snapshot

@@ -13,9 +13,11 @@
 package org.gecko.emf.persistence.jpa.converter;
 
 import static org.gecko.emf.persistence.jpa.JPAPersistenceConstants.PERSISTENCE_FILTER_PROP;
+
+import org.gecko.emf.persistence.api.ConverterService;
+
 import static org.gecko.emf.persistence.jpa.JPAPersistenceConstants.PERSISTENCE_FILTER;
 
-import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.converter.DefaultConverterService;
 import org.gecko.emf.persistence.converter.ValueConverter;
 import org.osgi.service.component.annotations.Component;

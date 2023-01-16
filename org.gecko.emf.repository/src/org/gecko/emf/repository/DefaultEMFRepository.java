@@ -35,9 +35,9 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.gecko.emf.osgi.ResourceSetFactory;
-import org.gecko.emf.persistence.ConstraintValidationException;
-import org.gecko.emf.persistence.Options;
-import org.gecko.emf.persistence.PersistenceConstants;
+import org.gecko.emf.persistence.api.ConstraintValidationException;
+import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PersistenceConstants;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
 
 /**

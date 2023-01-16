@@ -20,17 +20,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
-import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.DefaultStreamFactory;
-import org.gecko.emf.persistence.OutputStreamFactory;
-import org.gecko.emf.persistence.PrimaryKeyFactory;
-import org.gecko.emf.persistence.QueryEngine;
-import org.gecko.emf.persistence.input.InputContentHandler;
-import org.gecko.emf.persistence.input.InputStreamFactory;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.PrimaryKeyFactory;
+import org.gecko.emf.persistence.api.QueryEngine;
+import org.gecko.emf.persistence.engine.InputStreamFactory;
+import org.gecko.emf.persistence.engine.OutputStreamFactory;
 import org.gecko.emf.persistence.jdbc.query.JdbcQuery;
+import org.gecko.emf.persistence.mapping.InputContentHandler;
+import org.gecko.emf.persistence.mapping.IteratorMapper;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -46,7 +48,7 @@ import org.osgi.util.promise.Promise;
  * @since 08.04.2022
  */
 @Component(name="JdbcStreamFactory", immediate=true, service= {InputStreamFactory.class, OutputStreamFactory.class}, property = PERSISTENCE_FILTER_PROP)
-public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>, JdbcQuery, ResultSet> {
+public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>, JdbcQuery, ResultSet, Statement, IteratorMapper> {
 
 	/**
 	 * Sets the converter service
@@ -62,7 +64,7 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>,
 	 * @param queryEngine the query engine to set
 	 */
 	@Reference(name="JdbcQueryEngine", policy=ReferencePolicy.STATIC, cardinality=ReferenceCardinality.MANDATORY, target=PERSISTENCE_FILTER)
-	public void setQueryEngine(QueryEngine<JdbcQuery> queryEngine) {
+	public void setQueryEngine(QueryEngine<JdbcQuery, Statement> queryEngine) {
 		super.setQueryEngine(queryEngine);
 	}
 
@@ -88,7 +90,7 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>,
 	 * @param contentHandler the id factory to be added
 	 */
 	@Reference(name="JdbcInputHandler", policy=ReferencePolicy.STATIC, cardinality=ReferenceCardinality.AT_LEAST_ONE, unbind="removeInputHandler", target=PERSISTENCE_FILTER)
-	public void addInputHandler(InputContentHandler<ResultSet> contentHandler) {
+	public void addInputHandler(InputContentHandler<ResultSet, IteratorMapper> contentHandler) {
 		super.addInputHandler(contentHandler);
 	}
 
@@ -96,7 +98,7 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>,
 	 * Un-sets an {@link InputContentHandler} to be used
 	 * @param contentHandler the content handler to be removed
 	 */
-	public void removeInputHandler(InputContentHandler<ResultSet> contentHandler) {
+	public void removeInputHandler(InputContentHandler<ResultSet, IteratorMapper> contentHandler) {
 		super.removeInputHandler(contentHandler);
 	}
 

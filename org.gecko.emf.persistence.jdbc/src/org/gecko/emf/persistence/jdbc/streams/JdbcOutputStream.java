@@ -37,13 +37,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.gecko.emf.persistence.ConverterService;
-import org.gecko.emf.persistence.Options;
-import org.gecko.emf.persistence.PrimaryKeyFactory;
 import org.osgi.util.promise.Promise;
 import org.gecko.emf.collection.CollectionFactory;
 import org.gecko.emf.collection.ECollection;
 import org.gecko.emf.collection.EReferenceCollection;
+import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 
 /**
  * Mongo output stream, that can save a {@link Resource}

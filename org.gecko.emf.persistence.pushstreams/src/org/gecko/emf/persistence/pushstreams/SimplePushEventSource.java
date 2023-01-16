@@ -3,7 +3,8 @@ package org.gecko.emf.persistence.pushstreams;
 import java.util.Objects;
 
 import org.eclipse.emf.ecore.EObject;
-import org.gecko.emf.persistence.input.InputContext;
+import org.gecko.emf.persistence.context.ResultContext;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.osgi.util.pushstream.PushEventConsumer;
 
 /**
@@ -11,14 +12,14 @@ import org.osgi.util.pushstream.PushEventConsumer;
  * @author mark
  * @since 17.06.2022
  */
-public abstract class SimplePushEventSource<RESULT> implements PersistencePushEventSource<RESULT> {
+public abstract class SimplePushEventSource<RESULT, MAPPER extends EObjectMapper> implements PersistencePushEventSource<RESULT, MAPPER> {
 	
-	private final InputContext<RESULT> context;
+	private final ResultContext<RESULT, MAPPER> context;
 
 	/**
 	 * Creates a new instance.
 	 */
-	public SimplePushEventSource(InputContext<RESULT> context) {
+	public SimplePushEventSource(ResultContext<RESULT, MAPPER> context) {
 		Objects.requireNonNull(context);
 		this.context = context;
 	}
@@ -28,7 +29,7 @@ public abstract class SimplePushEventSource<RESULT> implements PersistencePushEv
 	 * @see org.gecko.emf.persistence.pushstreams.PersistencePushEventSource#getContext()
 	 */
 	@Override
-	final public InputContext<RESULT> getContext() {
+	final public ResultContext<RESULT, MAPPER> getContext() {
 		return context;
 	}
 
@@ -38,7 +39,7 @@ public abstract class SimplePushEventSource<RESULT> implements PersistencePushEv
 	 */
 	@Override
 	public AutoCloseable open(PushEventConsumer<? super EObject> aec) throws Exception {
-		PushEventSourceRunnable<RESULT> runnable = createRunnable(context, aec);
+		PushEventSourceRunnable<RESULT, MAPPER> runnable = createRunnable(context, aec);
 		try {
 			runnable.run();
 		} catch (Exception e) {

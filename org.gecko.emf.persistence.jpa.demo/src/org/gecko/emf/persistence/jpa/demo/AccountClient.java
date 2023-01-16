@@ -19,13 +19,9 @@ import java.util.List;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.dynamic.DynamicHelper;
 import org.eclipse.persistence.dynamic.DynamicTypeBuilder;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.queries.ReadAllQuery;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.gecko.emf.persistence.jpa.demo.classloader.OSGiJPADynamicHelper;
 import org.gecko.emf.persistence.jpa.demo.entities.Account;
 import org.gecko.emf.persistence.jpa.demo.entities.Customer;
@@ -61,7 +57,8 @@ public class AccountClient {
         }
         em.close();
     }
-    public void runDynamic(EntityManagerFactory emf) {
+    @SuppressWarnings("unchecked")
+	public void runDynamic(EntityManagerFactory emf) {
     	EntityManager em = emf.createEntityManager();
     	JPADynamicHelper helper = new OSGiJPADynamicHelper(em);
     	DynamicClassLoader dcl = helper.getDynamicClassLoader();

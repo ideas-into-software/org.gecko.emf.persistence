@@ -9,7 +9,8 @@ javac.target: 11
 	org.osgi.service.cm,\
 	org.apache.commons.commons-io,\
 	junit-jupiter-api,\
-	org.osgi.test.junit5
+	org.osgi.test.junit5,\
+	org.osgi.test.junit5.cm
 
 Private-Package: org.gecko.emf.persistence.api.tests
 

@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.XMLResource.URIHandler;
-import org.gecko.emf.persistence.ConverterService;
+import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.mongo.codecs.builder.DBObjectBuilder;
 import org.gecko.emf.persistence.mongo.codecs.builder.DBObjectBuilderImpl;
 import org.gecko.emf.persistence.mongo.codecs.builder.EObjectBuilder;

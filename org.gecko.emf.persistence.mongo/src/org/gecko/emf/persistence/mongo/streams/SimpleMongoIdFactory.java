@@ -12,7 +12,7 @@
 package org.gecko.emf.persistence.mongo.streams;
 
 import org.bson.types.ObjectId;
-import org.gecko.emf.persistence.PrimaryKeyFactory;
+import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 

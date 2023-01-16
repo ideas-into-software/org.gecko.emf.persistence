@@ -19,17 +19,18 @@ import java.util.logging.Logger;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.gecko.emf.persistence.PersistenceException;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.codec.BasicEObjectCodec;
 import org.gecko.emf.persistence.codec.EClassProvider;
-import org.gecko.emf.persistence.jdbc.context.JdbcInputContext;
+import org.gecko.emf.persistence.context.PersistenceInputContext;
+import org.gecko.emf.persistence.mapping.IteratorMapper;
 
 /**
  * Maps the Jdbc result into an {@link EObject}
  * @author Mark Hoffmann
  * @since 19.06.2022
  */
-public class JdbcEObjectCodec extends BasicEObjectCodec<ResultSet, JdbcInputContext> implements JdbcInputMapper {
+public class JdbcEObjectCodec extends BasicEObjectCodec<ResultSet, IteratorMapper, PersistenceInputContext<ResultSet, IteratorMapper>> implements IteratorMapper {
 	
 	private static final Logger LOGGER = Logger.getLogger(JdbcEObjectCodec.class.getName());
 	
@@ -39,56 +40,58 @@ public class JdbcEObjectCodec extends BasicEObjectCodec<ResultSet, JdbcInputCont
 	 * @param resultEClass the resulting {@link EClass}, can be <code>null</code>
 	 * @param typeColumn the type definition column name, can be <code>null</code>
 	 */
-	public JdbcEObjectCodec(JdbcInputContext context, EClassProvider eClassProvider) {
+	public JdbcEObjectCodec(PersistenceInputContext<ResultSet, IteratorMapper> context, EClassProvider eClassProvider) {
 		super(context, eClassProvider);
 	}
 	
 	/* 
 	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.jdbc.streams.JdbcInputMapper#initialize()
+	 * @see org.gecko.emf.persistence.mapping.EObjectMapper#initialize()
 	 */
 	@Override
-	public void initialize() throws SQLException {
+	public void initialize() throws PersistenceException {
 		EClass resultEClass = getEClassProvider().getConfiguredEClass();
-		ResultSetMetaData metaData = getResult().getMetaData();
-		for (int c = 1; c <= metaData.getColumnCount();c++) {
-			String columnName = metaData.getColumnName(c);
-			getColumns().add(columnName);
-		}
-		if (resultEClass != null) {
-			mappableFeatures.putAll(buildMappableFeaturesMap(resultEClass, getColumns()));
-		}
-
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.jdbc.streams.JdbcInputMapper#hasNext()
-	 */
-	@Override
-	public boolean hasNext() throws SQLException {
-		return getResult().next();
-	}
-
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.jdbc.streams.JdbcInputMapper#next()
-	 */
-	@Override
-	public EObject next() throws SQLException {
+		ResultSetMetaData metaData;
 		try {
-			return readEntry();
-		} catch (PersistenceException e) {
-			if (e.getCause() instanceof SQLException) {
-				throw (SQLException)e.getCause();
+			metaData = getResult().getMetaData();
+			for (int c = 1; c <= metaData.getColumnCount();c++) {
+				String columnName = metaData.getColumnName(c);
+				getColumns().add(columnName);
 			}
-			throw new SQLException("Cannot get read table entry", e);
+			if (resultEClass != null) {
+				mappableFeatures.putAll(buildMappableFeaturesMap(resultEClass, getColumns()));
+			}
+		} catch (SQLException e) {
+			throw new PersistenceException("Error initializing JDBC EObject mapper", e);
+		}
+
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.mapping.IteratorMapper#hasNext()
+	 */
+	@Override
+	public boolean hasNext() throws PersistenceException {
+		try {
+			return getResult().next();
+		} catch (SQLException e) {
+			throw new PersistenceException("Error calling next result in EObject mapper", e);
 		}
 	}
 
 	/* 
 	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.jdbc.streams.JdbcInputMapper#close()
+	 * @see org.gecko.emf.persistence.mapping.IteratorMapper#next()
+	 */
+	@Override
+	public EObject next() throws PersistenceException {
+		return readEntry();
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.mapping.EObjectMapper#close()
 	 */
 	@Override
 	public void close() {

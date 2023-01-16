@@ -11,11 +11,11 @@
  */
 package org.gecko.emf.persistence.helper;
 
-import static org.gecko.emf.persistence.PersistenceConstants.EXTENDED_METADATA_NAMESPACE;
-import static org.gecko.emf.persistence.PersistenceConstants.EXTENDED_METADATA_NAMESPACE_KEY;
-import static org.gecko.emf.persistence.PersistenceConstants.EXTENDED_METADATA_NAME_KEY;
-import static org.gecko.emf.persistence.PersistenceConstants.URI_HINT;
-import static org.gecko.emf.persistence.PersistenceConstants.URI_HINT_NAME_KEY;
+import static org.gecko.emf.persistence.api.PersistenceConstants.EXTENDED_METADATA_NAMESPACE;
+import static org.gecko.emf.persistence.api.PersistenceConstants.EXTENDED_METADATA_NAMESPACE_KEY;
+import static org.gecko.emf.persistence.api.PersistenceConstants.EXTENDED_METADATA_NAME_KEY;
+import static org.gecko.emf.persistence.api.PersistenceConstants.URI_HINT;
+import static org.gecko.emf.persistence.api.PersistenceConstants.URI_HINT_NAME_KEY;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,8 +43,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.ExtendedMetaData;
-import org.gecko.emf.persistence.ConstraintValidationException;
-import org.gecko.emf.persistence.Options;
+import org.gecko.emf.persistence.api.ConstraintValidationException;
+import org.gecko.emf.persistence.api.Options;
 
 /**
  * Some {@link EcoreUtil} extensions

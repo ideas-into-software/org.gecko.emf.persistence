@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.gecko.emf.persistence.Options;
+import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.mongo.codecs.builder.DBObjectBuilder;
 import org.gecko.emf.persistence.mongo.codecs.builder.EObjectBuilder;
 
