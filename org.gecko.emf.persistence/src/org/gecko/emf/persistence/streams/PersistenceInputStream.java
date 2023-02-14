@@ -42,7 +42,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 import org.gecko.emf.collection.CollectionFactory;
 import org.gecko.emf.collection.EReferenceCollection;
 import org.gecko.emf.persistence.api.ConverterService;
-import org.gecko.emf.persistence.api.Countable;
+import org.gecko.emf.persistence.api.CountableOld;
 import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.QueryEngine;
@@ -51,6 +51,7 @@ import org.gecko.emf.persistence.context.QueryContext;
 import org.gecko.emf.persistence.context.QueryContextBuilder;
 import org.gecko.emf.persistence.context.ResultContext;
 import org.gecko.emf.persistence.context.ResultContextBuilder;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.mapping.InputContentHandler;
@@ -61,8 +62,9 @@ import org.osgi.util.promise.Promise;
  * Abstract input stream implementation that handles loading of {@link Resource}
  * @author Mark Hoffmann
  * @since 16.01.2023
+ * @deprecated use {@link PersistenceEngine} instead
  */
-public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE, MAPPER extends EObjectMapper> extends InputStream implements URIConverter.Loadable, Countable, EClassProvider {
+public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE, MAPPER extends EObjectMapper> extends InputStream implements URIConverter.Loadable, CountableOld, EClassProvider {
 
 	private final ConverterService converterService;
 	private URI uri;
@@ -480,8 +482,8 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
 		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_KEY_ECLASS_URI, ECLASS_TYPE_COLUMN_NAME);
 
-		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_ID_ATTRIBUTE, false));
-		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_URI_FILTER, false));
+		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_ID_ATTRIBUTE, false));
+		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_URI_FILTER, false));
 		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
 		countResults = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
 	}

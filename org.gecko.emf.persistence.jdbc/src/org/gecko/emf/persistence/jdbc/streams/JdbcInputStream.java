@@ -38,7 +38,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.gecko.emf.persistence.api.ConverterService;
-import org.gecko.emf.persistence.api.Countable;
+import org.gecko.emf.persistence.api.CountableOld;
 import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.QueryEngine;
@@ -58,7 +58,7 @@ import org.osgi.util.promise.Promise;
  * @author bhunt
  * @author Mark Hoffmann
  */
-public class JdbcInputStream extends InputStream implements URIConverter.Loadable, Countable, EClassProvider {
+public class JdbcInputStream extends InputStream implements URIConverter.Loadable, CountableOld, EClassProvider {
 
 	private final ConverterService converterService;
 	private URI uri;
@@ -522,8 +522,8 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
 		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_KEY_ECLASS_URI, JdbcPersistenceConstants.ECLASS_TYPE_COLUMN_NAME);
 	
-		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_ID_ATTRIBUTE, false));
-		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_URI_FILTER, false));
+		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_ID_ATTRIBUTE, false));
+		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_URI_FILTER, false));
 		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
 		countResults = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
 	}

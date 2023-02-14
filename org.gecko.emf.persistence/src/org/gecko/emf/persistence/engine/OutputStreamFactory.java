@@ -27,6 +27,7 @@ import org.osgi.annotation.versioning.ProviderType;
  * @param <DRIVER> the table or collection type
  * @author Mark Hoffmann
  * @since 26.03.2022
+ * @deprecated use {@link PersistenceEngine} instead
  */
 @ProviderType
 public interface OutputStreamFactory<DRIVER> {

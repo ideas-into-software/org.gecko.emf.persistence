@@ -5,8 +5,11 @@ Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.
 # sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
 -buildpath: \
 	osgi.core;version=latest,\
-	org.osgi.test.junit5.cm,\
-	org.gecko.emf.persistence
+	org.gecko.emf.persistence,\
+	org.osgi.service.component,\
+	org.eclipse.emf.common,\
+	org.eclipse.emf.ecore,\
+	org.osgi.test.junit5.cm
 	
 Private-Package: org.gecko.emf.persistence.tests
 

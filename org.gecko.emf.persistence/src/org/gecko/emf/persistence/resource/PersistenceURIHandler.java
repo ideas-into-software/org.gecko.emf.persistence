@@ -16,11 +16,13 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.URIHandler;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 
 /**
  * Persistence URI handler with additional methods
  * @author Mark Hoffmann
  * @since 30.05.2022
+ * @deprecated use {@link PersistenceEngine} instead
  */
 public interface PersistenceURIHandler extends URIHandler {
 	

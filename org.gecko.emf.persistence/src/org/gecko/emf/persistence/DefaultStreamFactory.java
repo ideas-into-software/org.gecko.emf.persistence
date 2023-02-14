@@ -25,15 +25,17 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.gecko.emf.persistence.api.ConverterService;
-import org.gecko.emf.persistence.api.Countable;
-import org.gecko.emf.persistence.api.Deletable;
+import org.gecko.emf.persistence.api.CountableOld;
+import org.gecko.emf.persistence.api.DeletableOlf;
 import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.context.PersistenceContext;
+import org.gecko.emf.persistence.engine.DefaultPersistenceEngine;
 import org.gecko.emf.persistence.engine.InputStreamFactory;
 import org.gecko.emf.persistence.engine.OutputStreamFactory;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.mapping.InputContentHandler;
 
@@ -47,6 +49,7 @@ import org.gecko.emf.persistence.mapping.InputContentHandler;
  * @param <MAPPER> an mapper for result types to {@link EObject} and {@link EObject} to input type
  * @author Mark Hoffmann
  * @since 08.04.2022
+ * @deprecated use {@link DefaultPersistenceEngine} instead
  */
 public abstract class DefaultStreamFactory<DRIVER, DRIVER_RAW, QT, RT, ENGINE, MAPPER extends EObjectMapper> implements InputStreamFactory<DRIVER_RAW>, OutputStreamFactory<DRIVER_RAW> {
 	
@@ -189,8 +192,8 @@ public abstract class DefaultStreamFactory<DRIVER, DRIVER_RAW, QT, RT, ENGINE, M
 	public long createCountRequest(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response)
 			throws PersistenceException {
 		InputStream is = doCreateInputStream(uri, options, table, response);
-		if (is instanceof Countable) {
-			return ((Countable)is).count(uri, options, response);
+		if (is instanceof CountableOld) {
+			return ((CountableOld)is).count(uri, options, response);
 		}
 		throw new PersistenceException("InputStream does not implement Countable, to produce a result");
 	}
@@ -203,8 +206,8 @@ public abstract class DefaultStreamFactory<DRIVER, DRIVER_RAW, QT, RT, ENGINE, M
 	public void createDeleteRequest(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response)
 			throws PersistenceException {
 		InputStream is = doCreateInputStream(uri, options, table, response);
-		if (is instanceof Deletable) {
-			((Deletable)is).delete(uri, options, response);
+		if (is instanceof DeletableOlf) {
+			((DeletableOlf)is).delete(uri, options, response);
 		}
 		throw new PersistenceException("InputStream does not implement Deletable, to produce a result");
 	}
@@ -217,8 +220,8 @@ public abstract class DefaultStreamFactory<DRIVER, DRIVER_RAW, QT, RT, ENGINE, M
 	public boolean createExistRequest(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response)
 			throws PersistenceException {
 		InputStream is = doCreateInputStream(uri, options, table, response);
-		if (is instanceof Countable) {
-			return ((Countable)is).exists(uri, options, response);
+		if (is instanceof CountableOld) {
+			return ((CountableOld)is).exists(uri, options, response);
 		}
 		throw new PersistenceException("InputStream does not implement Countable, to produce a result");
 	}

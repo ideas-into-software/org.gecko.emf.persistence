@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 
 /**
  * An interface that is optionally implemented by the input streams returned from 
@@ -22,8 +23,9 @@ import org.eclipse.emf.ecore.resource.URIConverter;
  * It is responsible for existence checks or counting elements
  * @author Mark Hoffmann
  * @since 30.05.2022
+ * @deprecated use {@link Countable} instead
  */
-public interface Countable {
+public interface CountableOld {
 	
 	/**
 	 * This option can be set to tell the count to create a filter over the uri-type column. Only instances of of the given EClass URI are counted then.
@@ -45,17 +47,22 @@ public interface Countable {
 	
 	/**
 	 * Counts the elements that match the given {@link URI} and options
-	 * @param properties additional count properties
-	 * @throws PersistenceException thrown on lower level errors 
+	 * @param uri the uri to count elements for
+	 * @param options the count options
+	 * @param response the response options map
+	 * @return the number of elements or -1
+	 * @throws PersistenceException
 	 */
-	long count(Map<Object, Object> properties) throws PersistenceException;
+	long count(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException;
 	
 	/**
-	 * Checks if an element exists 
-	 * @param properties additional exist properties
+	 * Checks if an element exists for the given {@link URI} and options
+	 * @param uri the uri to check for existence
+	 * @param options the exist options
+	 * @param response the response options map
 	 * @return <code>true</code> if at least an element exists, otherwise <code>false</code>
-	 * @throws PersistenceException thrown on lower level errors 
+	 * @throws PersistenceException
 	 */
-	boolean exist(Map<Object, Object> properties) throws PersistenceException;
+	boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException;
 
 }

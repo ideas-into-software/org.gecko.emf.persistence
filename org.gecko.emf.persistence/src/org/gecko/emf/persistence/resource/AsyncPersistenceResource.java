@@ -56,7 +56,7 @@ public interface AsyncPersistenceResource {
 	 * @param options the load options
 	 * @return resolves, if load was successful
 	 */
-	Promise<Map<String, ?>> loadAsync(Map<?, ?> options);
+	Promise<Map<?, ?>> loadAsync(Map<?, ?> options);
 	
 	/**
 	 * Asynchronous call of the load method {@link Resource#load(InputStream, Map)}
@@ -64,14 +64,14 @@ public interface AsyncPersistenceResource {
 	 * @param options the load options
 	 * @return resolves, if load was successful
 	 */
-	Promise<Map<String, ?>> loadAsync(InputStream stream, Map<?, ?> options);
+	Promise<Map<?, ?>> loadAsync(InputStream stream, Map<?, ?> options);
 	
 	/**
 	 * Asynchronous call of the save method {@link Resource#save(Map)}
 	 * @param options the save options
 	 * @return resolves, if save was successful
 	 */
-	Promise<Map<String, ?>> saveAsync(Map<?, ?> options);
+	Promise<Map<?, ?>> saveAsync(Map<?, ?> options);
 	
 	/**
 	 * Asynchronous call of the save method {@link Resource#save(OutputStream, Map)}
@@ -79,13 +79,13 @@ public interface AsyncPersistenceResource {
 	 * @param options the save options
 	 * @return resolves, if save was successful
 	 */
-	Promise<Map<String, ?>> saveAsync(OutputStream stream, Map<?, ?> options);
+	Promise<Map<?, ?>> saveAsync(OutputStream stream, Map<?, ?> options);
 	
 	/**
 	 * Asynchronous call of the delete method {@link Resource#delete(Map)}
 	 * @param options the delete options
 	 * @return resolves, if delete was successful
 	 */
-	Promise<Map<String, ?>> deleteAsync(Map<?, ?> options);
+	Promise<Map<?, ?>> deleteAsync(Map<?, ?> options);
 	
 }

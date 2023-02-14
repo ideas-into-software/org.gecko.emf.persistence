@@ -6,7 +6,8 @@
 	org.osgi.annotation.versioning,\
 	org.osgi.util.promise,\
 	org.gecko.emf.collections,\
-	org.osgi.util.function
+	org.osgi.util.function,\
+	org.osgi.service.component
 	
 Bundle-Name: EMF Persistence API
 Bundle-Description: Gecko.io EMF Persistence API
@@ -22,3 +23,6 @@ Export-Package: \
 	org.gecko.emf.persistence.resource,\
 	org.gecko.emf.persistence.engine
 -privatepackage: org.gecko.emf.persistence.spi
+-testpath: \
+	org.osgi.test.common,\
+	org.osgi.test.junit5

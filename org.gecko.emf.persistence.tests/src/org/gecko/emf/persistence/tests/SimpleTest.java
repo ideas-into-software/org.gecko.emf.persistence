@@ -18,8 +18,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.gecko.emf.persistence.api.PersistenceEngine;
 import org.gecko.emf.persistence.api.QueryEngine;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

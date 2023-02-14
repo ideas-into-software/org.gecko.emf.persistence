@@ -15,13 +15,14 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.resource.Resource;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 
 /**
  * Resource extension for the persistence context
  * @author Mark Hoffmann
  * @since 30.05.2022
  */
-public interface PersistenceResource extends Resource {
+public interface PersistenceResource extends Resource, AutoCloseable {
 	
 	/**
 	 * Counts the elements of this resource
@@ -52,5 +53,11 @@ public interface PersistenceResource extends Resource {
 	 * @throws IOException
 	 */
 	boolean exist(Map<?, ?> options) throws IOException;
+	
+	/**
+	 * Returns the persistence engine. Must not return <code>null</code>
+	 * @return the persistence engine
+	 */
+	PersistenceEngine getEngine();
 	
 }

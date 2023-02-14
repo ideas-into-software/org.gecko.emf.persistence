@@ -13,21 +13,27 @@ package org.gecko.emf.persistence.api;
 
 import java.util.Map;
 
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.gecko.emf.persistence.engine.PersistenceEngine;
 
 /**
- * An interface that is optionally implemented by the {@link PersistenceEngine} to delete resources 
+ * An interface that is optionally implemented by the input streams returned from 
+ * {@link URIConverter#createInputStream(URI)} and {@link URIConverter#createInputStream(URI, Map)}.
  * @author Mark Hoffmann
- * @since 14.02.2023
+ * @since 30.05.2022
+ * @deprecated use {@link Deletable} instead
  */
-public interface Deletable {
+public interface DeletableOlf {
 	
 	/**
 	 * Executes a deletion
-	 * @param properties additional delete properties
-	 * @return <code>true</code>, if deletion was successful, otherwise <code>false</code>
-	 * @throws PersistenceException thrown on lower level errors 
+	 * @param uri 
+	 * @param options
+	 * @param response
+	 * @return
+	 * @throws PersistenceException
 	 */
-	boolean delete(Map<Object, Object> properties) throws PersistenceException;
+	boolean delete(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException;
 
 }

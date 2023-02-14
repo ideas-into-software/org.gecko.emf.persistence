@@ -31,6 +31,7 @@ import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.context.QueryContext;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.osgi.util.promise.Promise;
 
@@ -38,6 +39,7 @@ import org.osgi.util.promise.Promise;
  * Mongo output stream, that can save a {@link Resource}
  * @author Mark Hoffmann
  * @param <K>
+ * @deprecated use {@link PersistenceEngine} instead
  */
 public abstract class PersistenceOutputStream<DRIVER_RAW, DRIVER, MAPPER extends EObjectMapper> extends ByteArrayOutputStream implements URIConverter.Saveable {
 

@@ -23,12 +23,14 @@ import org.gecko.emf.persistence.api.PersistenceConstants;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.engine.InputStreamFactory;
 import org.gecko.emf.persistence.engine.OutputStreamFactory;
+import org.gecko.emf.persistence.engine.PersistenceEngine;
 
 /**
  * Basic implementation for an {@link URIHandlerImpl} for the persistence, It contains a default implementation
  * for the stream factories and persistence related additional methods
  * @author Mark Hoffmann
  * @since 30.05.2022
+ * @deprecated use {@link PersistenceEngine} instead
  */
 public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implements PersistenceURIHandler {
 

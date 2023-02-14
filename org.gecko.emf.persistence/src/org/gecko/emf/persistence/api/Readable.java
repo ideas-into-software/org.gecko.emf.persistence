@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2012 - 2022 Data In Motion and others.
+ * Copyright (c) 2012 - 2023 Data In Motion and others.
  * All rights reserved. 
  * 
  * This program and the accompanying materials are made available under the terms of the 
@@ -13,21 +13,18 @@ package org.gecko.emf.persistence.api;
 
 import java.util.Map;
 
-import org.gecko.emf.persistence.engine.PersistenceEngine;
-
 /**
- * An interface that is optionally implemented by the {@link PersistenceEngine} to delete resources 
+ * Interface to read data
  * @author Mark Hoffmann
  * @since 14.02.2023
  */
-public interface Deletable {
+public interface Readable {
 	
 	/**
-	 * Executes a deletion
-	 * @param properties additional delete properties
-	 * @return <code>true</code>, if deletion was successful, otherwise <code>false</code>
+	 * Executes a read operation
+	 * @param properties additional read properties
 	 * @throws PersistenceException thrown on lower level errors 
 	 */
-	boolean delete(Map<Object, Object> properties) throws PersistenceException;
+	void read(Map<Object, Object> properties) throws PersistenceException;
 
 }

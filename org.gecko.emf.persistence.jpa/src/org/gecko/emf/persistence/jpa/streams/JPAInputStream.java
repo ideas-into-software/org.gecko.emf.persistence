@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.gecko.emf.persistence.api.ConverterService;
-import org.gecko.emf.persistence.api.Countable;
+import org.gecko.emf.persistence.api.CountableOld;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.codec.EClassProvider;
@@ -42,7 +42,7 @@ import jakarta.persistence.Query;
  * Input stream implementation that handles loading of {@link Resource}
  * @author Mark Hoffmann
  */
-public class JPAInputStream extends PersistenceInputStream<EntityManagerFactory, EntityManagerFactory, Query, Query, EntityManager, JPAMapper> implements URIConverter.Loadable, Countable, EClassProvider {
+public class JPAInputStream extends PersistenceInputStream<EntityManagerFactory, EntityManagerFactory, Query, Query, EntityManager, JPAMapper> implements URIConverter.Loadable, CountableOld, EClassProvider {
 
 
 	public JPAInputStream(ConverterService converterService, QueryEngine<Query, EntityManager>  queryEngine, Promise<EntityManagerFactory> connection, List<InputContentHandler<Query, JPAMapper>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException {
