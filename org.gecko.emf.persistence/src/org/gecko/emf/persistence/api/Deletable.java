@@ -11,7 +11,6 @@
  */
 package org.gecko.emf.persistence.api;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -25,6 +24,14 @@ import org.eclipse.emf.ecore.resource.URIConverter;
  */
 public interface Deletable {
 	
-	boolean delete(URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException;
+	/**
+	 * Executes a deletion
+	 * @param uri 
+	 * @param options
+	 * @param response
+	 * @return
+	 * @throws PersistenceException
+	 */
+	boolean delete(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException;
 
 }

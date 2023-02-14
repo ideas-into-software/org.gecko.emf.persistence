@@ -31,7 +31,7 @@ import jakarta.persistence.EntityManagerFactory;
  * @author Mark Hoffmann
  * @since 16.01.2023
  */
-public class JPAOutputStream extends PersistenceOutputStream<EntityManagerFactory, JPAMapper> {
+public class JPAOutputStream extends PersistenceOutputStream<EntityManagerFactory, EntityManagerFactory, JPAMapper> {
 
 	public JPAOutputStream(ConverterService converterService, Promise<EntityManagerFactory> driver, URI uri, Map<String, PrimaryKeyFactory> idProviders, Map<?, ?> options, Map<Object, Object> response) {
 		super(converterService, driver, uri, idProviders, options, response);
@@ -62,7 +62,7 @@ public class JPAOutputStream extends PersistenceOutputStream<EntityManagerFactor
 	 * @see org.gecko.emf.persistence.streams.PersistenceOutputStream#saveMultipleObjects(org.gecko.emf.persistence.context.QueryContext)
 	 */
 	@Override
-	protected void saveMultipleObjects(QueryContext<EntityManagerFactory, JPAMapper> inputContext) {
+	protected void saveMultipleObjects(QueryContext<EntityManagerFactory, ?, JPAMapper> inputContext) {
 		// TODO Auto-generated method stub
 
 	}
@@ -82,7 +82,7 @@ public class JPAOutputStream extends PersistenceOutputStream<EntityManagerFactor
 	 * @see org.gecko.emf.persistence.streams.PersistenceOutputStream#saveSingleObject(org.gecko.emf.persistence.context.QueryContext)
 	 */
 	@Override
-	protected void saveSingleObject(QueryContext<EntityManagerFactory, JPAMapper> context) {
+	protected void saveSingleObject(QueryContext<EntityManagerFactory, ?, JPAMapper> context) {
 		// TODO Auto-generated method stub
 
 	}

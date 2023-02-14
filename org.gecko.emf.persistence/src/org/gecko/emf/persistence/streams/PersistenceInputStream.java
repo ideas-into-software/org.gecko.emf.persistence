@@ -33,9 +33,14 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.util.InternalEList;
+import org.gecko.emf.collection.CollectionFactory;
+import org.gecko.emf.collection.EReferenceCollection;
 import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.api.Countable;
 import org.gecko.emf.persistence.api.Options;
@@ -57,13 +62,13 @@ import org.osgi.util.promise.Promise;
  * @author Mark Hoffmann
  * @since 16.01.2023
  */
-public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER extends EObjectMapper> extends InputStream implements URIConverter.Loadable, Countable, EClassProvider {
+public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE, MAPPER extends EObjectMapper> extends InputStream implements URIConverter.Loadable, Countable, EClassProvider {
 
 	private final ConverterService converterService;
 	private URI uri;
 	private Map<Object, Object> mergedOptions = new HashMap<>();
 	private QueryEngine<QT, ENGINE> queryEngine;
-	private Promise<DRIVER> connectionPromise;
+	private Promise<DRIVER> driverPromise;
 	private List<InputContentHandler<RT, MAPPER>> contentHandler;
 	private Map<Object, Object> response;
 	private String eClassUri;
@@ -75,18 +80,20 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 	private boolean countTypeFilter;
 	private EClass eClass;
 	private Map<String, EClass> eClassCache;
+	private Resource resource;
+	private List<Resource> resourcesCache;
 
-	public PersistenceInputStream(ConverterService converterService, QueryEngine<QT, ENGINE>  queryEngine, Promise<DRIVER> connection, List<InputContentHandler<RT, MAPPER>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public PersistenceInputStream(ConverterService converterService, QueryEngine<QT, ENGINE>  queryEngine, Promise<DRIVER_RAW> driverRaw, List<InputContentHandler<RT, MAPPER>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException {
 		this.response = response;
 		if (converterService == null)
 			throw new NullPointerException("The converter service must not be null");
 		this.converterService = converterService;
-		if (connection == null)
+		if (driverRaw == null)
 			throw new NullPointerException("The database connection must not be null");
 
 		this.contentHandler = contentHandler == null ? Collections.emptyList() : contentHandler;
 		this.queryEngine = queryEngine;
-		this.connectionPromise = connection;
+		this.driverPromise = configureDriver(driverRaw);
 		this.uri = uri;
 		normalizeOptions(options);
 		readOptions(mergedOptions);
@@ -99,6 +106,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 	@Override
 	public void loadResource(Resource resource) throws IOException {
 
+		this.resource = resource;
 		boolean needCache = true;
 
 		// determine the input content handler
@@ -110,7 +118,6 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 		}
 
 		// We need to set up the XMLResource.URIHandler so that proxy URIs are handled properly.EObjectCodecProvider codecProvider = new EObjectCodecProvider(resourceSet);
-		final List<Resource> resourcesCache;
 		if(needCache){
 			resourcesCache = new ArrayList<>(resource.getContents().size());
 		} else {
@@ -118,8 +125,8 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 		}
 
 		try {
-			QueryContextBuilder<DRIVER, MAPPER> qcb = new QueryContextBuilder<>();
-			DRIVER driver = connectionPromise.getValue();
+			QueryContextBuilder<DRIVER, QT, MAPPER> qcb = new QueryContextBuilder<>();
+			DRIVER driver = driverPromise.getValue();
 			qcb.driver(driver);
 			long results = -1l;
 
@@ -135,21 +142,22 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 				qcb.idColumn(idAttributeName);
 			}
 			// Execute a count query to get a number of all matches for that query
+			QT query = queryEngine.buildQuery(uri, mergedOptions);
+			qcb.query(query);
 			if (countResults) {
 				String countCol = idAttributeName == null ? getTypeColumn() : idAttributeName;
 				qcb.column(countCol);
-				QueryContext<DRIVER, MAPPER> queryCtx = qcb.build();
+				QueryContext<DRIVER, QT, MAPPER> queryCtx = qcb.build();
 				results = executeCount(queryCtx);
 				// If returning counting result / mapping results as response value is active
 				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(results));
 			}
 			// Step 1 - create query and execute it
-			QT jpaQuery = queryEngine.buildQuery(uri, mergedOptions);
-			
-			QueryContext<DRIVER, MAPPER> queryCtx = qcb.build();
-			
+			QueryContext<DRIVER, QT, MAPPER> queryCtx = qcb.build();
+
+
 			RT result = executeQuery(queryCtx);
-			
+
 			// Step 2 - build input context to handle the result
 			ResultContext<RT, MAPPER> resultContext = new ResultContextBuilder<RT, MAPPER>()
 					.result(result)
@@ -160,7 +168,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 					.build();
 
 			// Step 3 - create default mapper to create EObjects out of the result
-			final MAPPER inputMapper = createMapper(resultContext, this);
+			final MAPPER inputMapper = createMapper(resultContext);
 			inputMapper.initialize();
 
 
@@ -171,7 +179,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 					resource.getContents().add(eResult);
 				}
 			}, ()->defaultHandleResult(inputMapper, resource));
-			
+
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -181,124 +189,14 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//		EObjectCodecProvider codecProvider = new EObjectCodecProvider(resource, mergedOptions, resourcesCache);
-		//		codecProvider.setConverterService(converterService);
-		//		CodecRegistry eobjectRegistry = CodecRegistries.fromProviders(codecProvider);
-		//		CodecRegistry defaultRegistry = collection.getCodecRegistry();
-		//
-		//		CodecRegistry codecRegistry = CodecRegistries.fromRegistries(eobjectRegistry, defaultRegistry);
-		//		// get collections and clear it
-		//		MongoCollection<EObject> curCollection = collection.withCodecRegistry(codecRegistry).withDocumentClass(EObject.class);
-		//
-		//
-		//		// If the URI contains a query string, use it to locate a collection of objects from
-		//		// MongoDB, otherwise simply get the object from MongoDB using the id.
-		//
-		//		EList<EObject> contents = resource.getContents();
-		//		
-		//		if (uri.query() != null && !isProjectionOnly(uri.query())) {
-		//			if (queryEngine == null) {
-		//				throw new IOException("The query engine was not found");
-		//			}
-		//
-		//			Request queryRequest = queryEngine.buildQuery(uri, mergedOptions);
-		//			ResultSet resultIterable = null;
-		//
-		//			boolean countResults = false;
-		//			Object optionCountResult = mergedOptions.get(Options.OPTION_COUNT_RESULT);
-		//			countResults = optionCountResult != null && Boolean.TRUE.equals(optionCountResult);
-		//
-		//			Bson filter = queryRequest.getFilter();
-		//			Document projection = queryRequest.getProjection();
-		//
-		//			long elementCount = -1l;
-		//			if (filter != null) {
-		//				resultIterable = curCollection.find(filter);
-		//				if (countResults) {
-		//					elementCount = curCollection.countDocuments(filter);
-		//				}
-		//			} else {
-		//				resultIterable = curCollection.find();
-		//				if (countResults) {
-		//					elementCount = curCollection.countDocuments();
-		//				}
-		//			}
-		//			if (countResults) {
-		//				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
-		//			}
-		//			
-		//
-		//			if (projection != null) {
-		//				resultIterable.projection(projection);
-		//			}
-		//
-		//			if (queryRequest.getSkip() != null && queryRequest.getSkip() > 0)
-		//				resultIterable.skip(queryRequest.getSkip());
-		//
-		//			if (queryRequest.getSort() != null)
-		//				resultIterable = resultIterable.sort(queryRequest.getSort());
-		//
-		//			if (queryRequest.getLimit() != null && queryRequest.getLimit() > 0)
-		//				resultIterable = resultIterable.limit(queryRequest.getLimit());
-		//
-		//			if (queryRequest.getBatchSize() != null && queryRequest.getBatchSize() > 0) {
-		//				resultIterable.batchSize(queryRequest.getBatchSize().intValue());
-		//			}
-		//
-		//			final FindIterable<EObject> iterable = resultIterable;
-		//			
-		//			handlerOptional.ifPresent((ich)->{
-		//				EObject result = ich.createContent(iterable, (Map<Object, Object>) mergedOptions, resourcesCache);
-		//				if (result != null) {
-		//					contents.add(result);
-		//				}
-		//			});
-		//
-		//			if (!handlerOptional.isPresent()) {
-		//
-		//				EReferenceCollection eCollection = CollectionFactory.eINSTANCE.createEReferenceCollection();
-		//				InternalEList<EObject> values = (InternalEList<EObject>) eCollection.getValues();
-		//				try(MongoCursor<EObject> mongoCursor = resultIterable.iterator()){
-		//					while (mongoCursor.hasNext()){
-		//						EObject dbObject = mongoCursor.next();
-		//						if(Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_LAZY_RESULT_LOADING))){
-		//							((InternalEObject) dbObject).eSetProxyURI(EcoreUtil.getURI(dbObject).appendQuery(null));
-		//							detachEObject(dbObject);
-		//						}
-		//						if (Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_READ_DETACHED))) {
-		//							detachEObject(dbObject);
-		//						}
-		//						values.addUnique(dbObject);
-		//					}
-		//				}
-		//
-		//				contents.add(eCollection);
-		//			}
-		//			if(!Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_LAZY_RESULT_LOADING)) && needCache){
-		//				resource.getResourceSet().getResources().addAll(resourcesCache);
-		//			}
-		//		} else {
-		//			
-		//			FindIterable<EObject> find = curCollection.find(new Document(Keywords.ID_KEY, MongoUtils.getID(uri)), EObject.class);
-		//			
-		//			if(uri.query() != null) {
-		//				if (queryEngine == null) {
-		//					throw new IOException("The query engine was not found");
-		//				}
-		//
-		//				EMongoQuery mongoQuery = queryEngine.buildQuery(uri, mergedOptions);
-		//				Document projectionOnly = mongoQuery.getProjectionOnly();
-		//				if (projectionOnly != null) {
-		//					find = find.projection(projectionOnly);
-		//				}
-		//				
-		//			}
-		//			EObject dbObject = find.first();
-		//
-		//			if (dbObject != null) {
-		//				contents.add(dbObject);
-		//			}
-		//		}
+	}
+
+	/**
+	 * @param driver
+	 * @return
+	 */
+	protected Promise<DRIVER> configureDriver(Promise<DRIVER_RAW> driverRawPromise) {
+		return driverRawPromise.map(dr->(DRIVER)dr);
 	}
 
 	/* 
@@ -322,11 +220,11 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 		try {
 			if (countIdAttributeFilter) {
 				if (idAttributeName != null) {
-	
+
 				}
 			}
-			QueryContextBuilder<DRIVER, MAPPER> qcb = new QueryContextBuilder<>();
-			DRIVER driver = connectionPromise.getValue();
+			QueryContextBuilder<DRIVER, QT, MAPPER> qcb = new QueryContextBuilder<>();
+			DRIVER driver = driverPromise.getValue();
 			qcb.driver(driver);
 			String tableName = getTable(uri, mergedOptions);
 			qcb.table(tableName);
@@ -353,7 +251,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 	 * @see org.gecko.emf.persistence.Countable#exists(org.eclipse.emf.common.util.URI, java.util.Map, java.util.Map)
 	 */
 	@Override
-	public boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException {
 		return count(uri, options, response) > 0;
 	}
 
@@ -371,7 +269,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 				return (EClass) eClassifier;
 			}
 		}
-	
+
 		return (EClass) resourceSet.getEObject(theUri, true);
 	}
 
@@ -383,7 +281,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 		if (eClassCache != null) {
 			synchronized (eClassCache) {
 				EClass eClass = eClassCache.get(eClassURI);
-	
+
 				if (eClass == null) {
 					eClass = getEClassFromResourceSet(resourceSet, eClassURI);
 					eClassCache.put(eClassURI, eClass);
@@ -391,7 +289,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 				return eClass;
 			}
 		}
-	
+
 		return getEClassFromResourceSet(resourceSet, eClassURI);
 	}
 
@@ -402,7 +300,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 	public String getTypeColumn() {
 		return typeColumn;
 	}
-	
+
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.jdbc.streams.EClassProvider#getIDColumn()
@@ -421,48 +319,58 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 		return eClass;
 	}
 
-	
+	/**
+	 * Returns the converterService.
+	 * @return the converterService
+	 */
+	public ConverterService getConverterService() {
+		return converterService;
+	}
 
-//	/**
-//	 * @param query
-//	 * @return
-//	 */
-//	private boolean isProjectionOnly(String query) {
-//		//		Document d = Document.parse(URI.decode(query));
-//		//		return d.containsKey("projectionOnly");
-//		return false;
-//	}
-//
-//	/**
-//	 * Detaches the given {@link EObject}
-//	 * @param eobject the eobject instance
-//	 */
-//	private void detachEObject(EObject eobject) {
-//		if (eobject == null) {
-//			return;
-//		}
-//		Resource resource = eobject.eResource();
-//		if (resource != null) {
-//			resource.getContents().clear();
-//			if(resource.getResourceSet() != null){
-//				resource.getResourceSet().getResources().remove(resource);
-//			}
-//		}
-//	}
-	
+	/**
+	 * Returns the resource.
+	 * @return the resource
+	 */
+	public Resource getResource() {
+		return resource;
+	}
+
+	/**
+	 * Returns the resourcesCache.
+	 * @return the resourcesCache
+	 */
+	public List<Resource> getResourcesCache() {
+		return resourcesCache;
+	}
+
+	/**
+	 * Returns the mergedOptions.
+	 * @return the mergedOptions
+	 */
+	public Map<Object, Object> getMergedOptions() {
+		return mergedOptions;
+	}
+
+	/**
+	 * Returns the countResults.
+	 * @return the countResults
+	 * @deprecated Use {@link QueryContext#countResult()} instead
+	 */
+	public boolean isCountResults() {
+		return countResults;
+	}
 	/**
 	 * @param inputContext
 	 * @param persistenceInputStream
 	 * @return
 	 */
-	protected abstract MAPPER createMapper(ResultContext<RT, MAPPER> inputContext,
-			PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER> persistenceInputStream);
+	protected abstract MAPPER createMapper(ResultContext<RT, MAPPER> inputContext);
 
 	/**
 	 * @param queryCtx
 	 * @return
 	 */
-	protected abstract RT executeQuery(QueryContext<DRIVER, MAPPER> queryCtx);
+	protected abstract RT executeQuery(QueryContext<DRIVER, QT, MAPPER> queryCtx);
 
 	/**
 	 * Default way to handle mapping of the results
@@ -479,8 +387,9 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 	 * Default way to handle mapping of the results
 	 * @param mapper the {@link EObject} mapper
 	 * @param resource the loading resource
+	 * @deprecated use {@link PersistenceInputStream#defaultHandleIteratorResult(IteratorMapper, Resource)}
 	 */
-	protected void defaultHandleIteratorResult(final IteratorMapper mapper, Resource resource) {
+	protected void defaultHandleIteratorResultOld(final IteratorMapper mapper, Resource resource) {
 		try {
 			EList<EObject> contents = resource.getContents();
 			// counter for all mapped elements
@@ -488,6 +397,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 			while (mapper.hasNext()) {
 				EObject next = mapper.next();
 				contents.add(next);
+				mappedCount++;
 			}
 			// write count results
 			if (!countResults) {
@@ -501,6 +411,42 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 	}
 
 	/**
+	 * Default way to handle mapping of the results
+	 * @param mapper the {@link EObject} mapper
+	 * @param resource the loading resource
+	 */
+	protected void defaultHandleIteratorResult(final IteratorMapper mapper, Resource resource) {
+		EReferenceCollection eCollection = CollectionFactory.eINSTANCE.createEReferenceCollection();
+		InternalEList<EObject> values = (InternalEList<EObject>) eCollection.getValues();
+		EList<EObject> contents = resource.getContents();
+		// counter for all mapped elements
+		long mappedCount = 0l;
+		try {
+			while (mapper.hasNext()){
+				EObject dbObject = mapper.next();
+				if(Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_LAZY_RESULT_LOADING))){
+					((InternalEObject) dbObject).eSetProxyURI(EcoreUtil.getURI(dbObject).appendQuery(null));
+					detachEObject(dbObject);
+				}
+				if (Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_READ_DETACHED))) {
+					detachEObject(dbObject);
+				}
+				values.addUnique(dbObject);
+				mappedCount++;
+			}
+			// write count results
+			if (!countResults) {
+				// If returning counting result / mapping results as response value is active
+				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(mappedCount));
+			}
+		} catch (PersistenceException e) {
+			mapper.close();
+			e.printStackTrace();
+		}
+		contents.add(eCollection);
+	}
+
+	/**
 	 * Executes a count statement
 	 * @param emf the databse connection
 	 * @param tableName the table name to count
@@ -508,7 +454,9 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 	 * @return the count result;
 	 * @throws SQLException
 	 */
-	protected abstract long executeCount(QueryContext<DRIVER, MAPPER> context) throws PersistenceException;
+	protected abstract long executeCount(QueryContext<DRIVER, QT, MAPPER> context) throws PersistenceException;
+
+	protected abstract boolean isProjectionOnly(String query);
 
 	protected String getId(URI uri, Map<?, ?> options) {
 		return uri.segmentCount() > 2 ? uri.segment(2) : null;
@@ -531,7 +479,7 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 		eClassUri = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
 		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
 		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_KEY_ECLASS_URI, ECLASS_TYPE_COLUMN_NAME);
-	
+
 		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_ID_ATTRIBUTE, false));
 		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(Countable.OPTION_COUNT_URI_FILTER, false));
 		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
@@ -548,6 +496,23 @@ public abstract class PersistenceInputStream<DRIVER, QT, RT, ENGINE, MAPPER exte
 		EClass collectionEClass = Options.getTableEClass(options);
 		if (collectionEClass != null && filterEClass == null) {
 			mergedOptions.put(Options.OPTION_FILTER_ECLASS, collectionEClass);
+		}
+	}
+
+	/**
+	 * Detaches the given {@link EObject}
+	 * @param eobject the eobject instance
+	 */
+	private void detachEObject(EObject eobject) {
+		if (eobject == null) {
+			return;
+		}
+		Resource resource = eobject.eResource();
+		if (resource != null) {
+			resource.getContents().clear();
+			if(resource.getResourceSet() != null){
+				resource.getResourceSet().getResources().remove(resource);
+			}
 		}
 	}
 

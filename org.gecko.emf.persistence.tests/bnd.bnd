@@ -1,22 +1,16 @@
-javac.source: 11
-javac.target: 11
+Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
 
-# enables JUnit 5 support for this project
+-library: enableOSGi-Test
 
 # sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
 -buildpath: \
-	org.osgi.framework,\
-	org.osgi.service.cm,\
-	org.apache.commons.commons-io,\
-	junit-jupiter-api,\
-	org.osgi.test.junit5,\
-	org.osgi.test.junit5.cm
-
-Private-Package: org.gecko.emf.persistence.api.tests
+	osgi.core;version=latest,\
+	org.osgi.test.junit5.cm,\
+	org.gecko.emf.persistence
+	
+Private-Package: org.gecko.emf.persistence.tests
 
 Bundle-Version: 1.0.0.SNAPSHOT
-
--includeresource: data=data
 
 # Sometimes without DynamicImport Mockito will not find certain classes
 #DynamicImport-Package: *

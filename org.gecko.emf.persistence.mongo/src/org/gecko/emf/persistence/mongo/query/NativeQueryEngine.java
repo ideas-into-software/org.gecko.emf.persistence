@@ -12,8 +12,10 @@
  */
 package org.gecko.emf.persistence.mongo.query;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.bson.BsonDocument;
@@ -25,6 +27,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.gecko.emf.persistence.api.Keywords;
 import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.api.QueryEngine;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.model.mongo.EMongoQuery;
 import org.gecko.emf.persistence.model.mongo.MongoFactory;
 import org.gecko.emf.persistence.mongo.util.ProjectionHelper;
@@ -38,7 +41,7 @@ import com.mongodb.client.model.Filters;
  * @since 03.07.2016
  */
 @Component(name="MongoNativeQueryEngine", immediate=true, service=QueryEngine.class)
-public class NativeQueryEngine implements QueryEngine<EMongoQuery> {
+public class NativeQueryEngine implements QueryEngine<EMongoQuery, EObjectMapper> {
 	
 	/* 
 	 * (non-Javadoc)
@@ -46,7 +49,7 @@ public class NativeQueryEngine implements QueryEngine<EMongoQuery> {
 	 */
 	@Override
 	public EMongoQuery buildQuery(URI uri) {
-		return buildQuery(uri, null);
+		return buildQuery(uri, Collections.emptyMap());
 	}
 
 	/* 
@@ -189,5 +192,40 @@ public class NativeQueryEngine implements QueryEngine<EMongoQuery> {
 		map.put(Keywords.EXTRINSIC_ID_KEY, 1);
 		Document proxyProjection = new Document(map);
 		return proxyProjection;
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.api.QueryEngine#setNativeEngine(java.lang.Object)
+	 */
+	@Override
+	public void setNativeEngine(EObjectMapper nativeEngine) {
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.api.QueryEngine#getNativeEngine()
+	 */
+	@Override
+	public Optional<EObjectMapper> getNativeEngine() {
+		return Optional.empty();
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.api.QueryEngine#buildQuery(org.eclipse.emf.common.util.URI, java.lang.Object)
+	 */
+	@Override
+	public EMongoQuery buildQuery(URI uri, EObjectMapper nativeEngine) {
+		return buildQuery(uri);
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.api.QueryEngine#buildQuery(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object)
+	 */
+	@Override
+	public EMongoQuery buildQuery(URI uri, Map<?, ?> options, EObjectMapper nativeEngine) {
+		return buildQuery(uri, options);
 	}
 }

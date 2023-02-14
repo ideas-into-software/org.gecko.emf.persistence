@@ -25,10 +25,10 @@ import org.gecko.emf.persistence.mapping.EObjectMapper;
  * @author mark
  * @since 17.06.2022
  */
-public interface QueryContext<DRIVER, MAPPER extends EObjectMapper> {
+public interface QueryContext<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	
-	public static <DRIVER, MAPPER extends EObjectMapper> QueryContextBuilder<DRIVER, MAPPER> createContextBuilder() {
-		return new QueryContextBuilder<DRIVER, MAPPER>();
+	public static <DRIVER, QUERY, MAPPER extends EObjectMapper> QueryContextBuilder<DRIVER, QUERY, MAPPER> createContextBuilder() {
+		return new QueryContextBuilder<DRIVER, QUERY, MAPPER>();
 	}
 	
 	/**
@@ -42,6 +42,12 @@ public interface QueryContext<DRIVER, MAPPER extends EObjectMapper> {
 	 * @return the driver
 	 */
 	DRIVER getDriver();
+	
+	/**
+	 * Returns the query object
+	 * @return the query object
+	 */
+	QUERY getQuery();
 	
 	/**
 	 * Returns the input mapper, if there is one
@@ -77,7 +83,7 @@ public interface QueryContext<DRIVER, MAPPER extends EObjectMapper> {
 	 * Return the loading resource
 	 * @return the loading resource
 	 */
-	Resource getLoadResource();
+	Resource getResource();
 	
 	/**
 	 * Returns the resource cache if there is any
@@ -90,5 +96,29 @@ public interface QueryContext<DRIVER, MAPPER extends EObjectMapper> {
 	 * @return the converter service
 	 */
 	Optional<ConverterService> getConverter();
+	
+	/**
+	 * Returns the response map 
+	 * @return the response map
+	 */
+	Map<Object, Object> getResponse();
+	
+	/**
+	 * Returns <code>true</code>, if the elements should be only counted, <code>false</code>, if not 
+	 * @return <code>true</code>, if the elements should be only counted
+	 */
+	boolean countOnly();
+	
+	/**
+	 * Returns <code>true</code>, if the result should be mapped for only projected fields, otherwise <code>false</code>
+	 * @return <code>true</code>, if the result should be mapped for only projected fields
+	 */
+	boolean projectOnly();
+	
+	/**
+	 * Returns <code>true</code>, if the resulting elements should be counted as well. It returns <code>false</code>, if {@link QueryContext#countOnly()} returns <code>true</code>
+	 * @return <code>true</code>, if the resulting elements should be counted as well.
+	 */
+	boolean countResult();
 
 }

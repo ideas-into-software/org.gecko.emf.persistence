@@ -15,7 +15,6 @@ package org.gecko.emf.persistence.jdbc.streams;
 import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PERSISTENCE_FILTER;
 import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PERSISTENCE_FILTER_PROP;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
@@ -26,6 +25,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.gecko.emf.persistence.DefaultStreamFactory;
 import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.engine.InputStreamFactory;
@@ -48,7 +48,7 @@ import org.osgi.util.promise.Promise;
  * @since 08.04.2022
  */
 @Component(name="JdbcStreamFactory", immediate=true, service= {InputStreamFactory.class, OutputStreamFactory.class}, property = PERSISTENCE_FILTER_PROP)
-public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>, JdbcQuery, ResultSet, Statement, IteratorMapper> {
+public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>, Promise<Connection>, JdbcQuery, ResultSet, Statement, IteratorMapper> {
 
 	/**
 	 * Sets the converter service
@@ -115,7 +115,7 @@ public class JdbcStreamFactory extends DefaultStreamFactory<Promise<Connection>,
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
-	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, Promise<Connection> connection, Map<Object, Object> response) throws IOException {
+	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, Promise<Connection> connection, Map<Object, Object> response) throws PersistenceException {
 		return new JdbcInputStream(converterService, queryEngine, connection, handlerList, uri, options, response);
 	}
 

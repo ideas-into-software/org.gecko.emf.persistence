@@ -79,7 +79,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	private static final String QUERY_COUNT = "SELECT COUNT(%s) FROM %s";
 	private static final String QUERY_ALL = "SELECT %s FROM %s";
 
-	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery, Statement>  queryEngine, Promise<Connection> connection, List<InputContentHandler<ResultSet, IteratorMapper>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public JdbcInputStream(ConverterService converterService, QueryEngine<JdbcQuery, Statement>  queryEngine, Promise<Connection> connection, List<InputContentHandler<ResultSet, IteratorMapper>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException {
 		this.response = response;
 		if (converterService == null)
 			throw new NullPointerException("The converter service must not be null");
@@ -347,7 +347,7 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	 * @see org.gecko.emf.persistence.Countable#exists(org.eclipse.emf.common.util.URI, java.util.Map, java.util.Map)
 	 */
 	@Override
-	public boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException {
 		return count(uri, options, response) > 0;
 	}
 

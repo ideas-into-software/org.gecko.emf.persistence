@@ -13,7 +13,6 @@
  */
 package org.gecko.emf.persistence.jpa.streams;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +42,10 @@ import jakarta.persistence.Query;
  * Input stream implementation that handles loading of {@link Resource}
  * @author Mark Hoffmann
  */
-public class JPAInputStream extends PersistenceInputStream<EntityManagerFactory, Query, Query, EntityManager, JPAMapper> implements URIConverter.Loadable, Countable, EClassProvider {
+public class JPAInputStream extends PersistenceInputStream<EntityManagerFactory, EntityManagerFactory, Query, Query, EntityManager, JPAMapper> implements URIConverter.Loadable, Countable, EClassProvider {
 
 
-	public JPAInputStream(ConverterService converterService, QueryEngine<Query, EntityManager>  queryEngine, Promise<EntityManagerFactory> connection, List<InputContentHandler<Query, JPAMapper>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException {
+	public JPAInputStream(ConverterService converterService, QueryEngine<Query, EntityManager>  queryEngine, Promise<EntityManagerFactory> connection, List<InputContentHandler<Query, JPAMapper>> contentHandler, URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException {
 		super(converterService, queryEngine, connection, contentHandler, uri, options, response);
 	}
 
@@ -55,8 +54,7 @@ public class JPAInputStream extends PersistenceInputStream<EntityManagerFactory,
 	 * @see org.gecko.emf.persistence.input.PersistenceInputStream#createMapper(org.gecko.emf.persistence.context.ResultContext, org.gecko.emf.persistence.input.PersistenceInputStream)
 	 */
 	@Override
-	protected JPAMapper createMapper(ResultContext<Query, JPAMapper> inputContext,
-			PersistenceInputStream<EntityManagerFactory, Query, Query, EntityManager, JPAMapper> persistenceInputStream) {
+	protected JPAMapper createMapper(ResultContext<Query, JPAMapper> inputContext) {
 		// TODO Auto-generated method stub
 		return new JPAMapper() {
 			
@@ -91,7 +89,7 @@ public class JPAInputStream extends PersistenceInputStream<EntityManagerFactory,
 	 * @see org.gecko.emf.persistence.input.PersistenceInputStream#executeQuery(org.gecko.emf.persistence.context.QueryContext)
 	 */
 	@Override
-	protected Query executeQuery(QueryContext<EntityManagerFactory, JPAMapper> queryCtx) {
+	protected Query executeQuery(QueryContext<EntityManagerFactory, Query, JPAMapper> queryCtx) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -101,9 +99,18 @@ public class JPAInputStream extends PersistenceInputStream<EntityManagerFactory,
 	 * @see org.gecko.emf.persistence.input.PersistenceInputStream#executeCount(org.gecko.emf.persistence.context.QueryContext)
 	 */
 	@Override
-	protected long executeCount(QueryContext<EntityManagerFactory, JPAMapper> context) throws PersistenceException {
+	protected long executeCount(QueryContext<EntityManagerFactory, Query, JPAMapper> context) throws PersistenceException {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.streams.PersistenceInputStream#isProjectionOnly(java.lang.String)
+	 */
+	@Override
+	protected boolean isProjectionOnly(String query) {
+		return false;
 	}
 
 }

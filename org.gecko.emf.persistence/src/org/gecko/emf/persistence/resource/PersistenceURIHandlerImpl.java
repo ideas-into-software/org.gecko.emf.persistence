@@ -9,7 +9,7 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.emf;
+package org.gecko.emf.persistence.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.URIHandlerImpl;
 import org.gecko.emf.persistence.api.PersistenceConstants;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.engine.InputStreamFactory;
 import org.gecko.emf.persistence.engine.OutputStreamFactory;
 
@@ -90,7 +91,11 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 	@SuppressWarnings("unchecked")
 	@Override
 	public OutputStream createOutputStream(final URI uri, final Map<?, ?> options) throws IOException {
-		return outputStreamFactory.createOutputStream(uri, (Map<Object, Object>) options, getConnection(uri, options), getResponse(options));
+		try {
+			return outputStreamFactory.createOutputStream(uri, (Map<Object, Object>) options, getConnection(uri, options), getResponse(options));
+		} catch (PersistenceException e) {
+			throw new IOException(e);
+		}
 	}
 
 	/* 
@@ -100,7 +105,11 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 	@SuppressWarnings("unchecked")
 	@Override
 	public InputStream createInputStream(final URI uri, final Map<?, ?> options) throws IOException {
-		return inputStreamFactory.createInputStream(uri, (Map<Object, Object>) options, getConnection(uri, options), getResponse(options));
+		try {
+			return inputStreamFactory.createInputStream(uri, (Map<Object, Object>) options, getConnection(uri, options), getResponse(options));
+		} catch (PersistenceException e) {
+			throw new IOException(e);
+		}
 	}
 
 	/* 
@@ -109,7 +118,11 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 	 */
 	@Override
 	public void delete(URI uri, Map<?, ?> options) throws IOException {
-		inputStreamFactory.createDeleteRequest(uri, options, getConnection(uri, options), getResponse(options));
+		try {
+			inputStreamFactory.createDeleteRequest(uri, options, getConnection(uri, options), getResponse(options));
+		} catch (PersistenceException e) {
+			throw new IOException(e);
+		}
 	}
 
 	/* 
@@ -120,7 +133,7 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 	public boolean exists(URI uri, Map<?, ?> options) {
 		try {
 			return inputStreamFactory.createExistRequest(uri, options, getConnection(uri, options), getResponse(options));
-		} catch (IOException e) {
+		} catch (PersistenceException e) {
 			return false;
 		}
 	}
@@ -130,7 +143,11 @@ public abstract class PersistenceURIHandlerImpl<C> extends URIHandlerImpl implem
 	 * @see org.gecko.emf.persistence.PersistenceURIHandler#count(org.eclipse.emf.common.util.URI, java.util.Map)
 	 */
 	public long count(URI uri, Map<?, ?> options) throws IOException {
-		return inputStreamFactory.createCountRequest(uri, options, getConnection(uri, options), getResponse(options));
+		try {
+			return inputStreamFactory.createCountRequest(uri, options, getConnection(uri, options), getResponse(options));
+		} catch (PersistenceException e) {
+			throw new IOException(e);
+		}
 	}
 
 }

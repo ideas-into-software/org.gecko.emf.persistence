@@ -19,9 +19,9 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.gecko.emf.persistence.api.PersistenceConstants;
-import org.gecko.emf.persistence.emf.PersistenceURIHandlerImpl;
 import org.gecko.emf.persistence.engine.InputStreamFactory;
 import org.gecko.emf.persistence.engine.OutputStreamFactory;
+import org.gecko.emf.persistence.resource.PersistenceURIHandlerImpl;
 import org.gecko.persistence.datasource.DataSourceFactoryHolder;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.promise.PromiseFactory;

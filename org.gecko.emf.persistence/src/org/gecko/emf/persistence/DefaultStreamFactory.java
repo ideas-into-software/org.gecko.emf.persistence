@@ -12,7 +12,6 @@
  */
 package org.gecko.emf.persistence;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.ResultSet;
@@ -29,6 +28,7 @@ import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.api.Countable;
 import org.gecko.emf.persistence.api.Deletable;
 import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.context.PersistenceContext;
@@ -39,6 +39,7 @@ import org.gecko.emf.persistence.mapping.InputContentHandler;
 
 /**
  * This is a base component class for input and output streams
+ * @param <DRIVER_RAW> Driver, Table or Collection type, whatever is the base to do something on the database
  * @param <DRIVER> Driver, Table or Collection type, whatever is the base to do something on the database
  * @param <QT> the query object type of you implementation
  * @param <RT> the result type {@link ResultSet} for jdbc or a FindIterable for MongoDB
@@ -47,7 +48,7 @@ import org.gecko.emf.persistence.mapping.InputContentHandler;
  * @author Mark Hoffmann
  * @since 08.04.2022
  */
-public abstract class DefaultStreamFactory<DRIVER, QT, RT, ENGINE, MAPPER extends EObjectMapper> implements InputStreamFactory<DRIVER>, OutputStreamFactory<DRIVER> {
+public abstract class DefaultStreamFactory<DRIVER, DRIVER_RAW, QT, RT, ENGINE, MAPPER extends EObjectMapper> implements InputStreamFactory<DRIVER_RAW>, OutputStreamFactory<DRIVER_RAW> {
 	
 	/** queryEngine for query type and native query engine*/
 	protected QueryEngine<QT, ENGINE> queryEngine;
@@ -166,8 +167,8 @@ public abstract class DefaultStreamFactory<DRIVER, QT, RT, ENGINE, MAPPER extend
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public InputStream createInputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response)
-			throws IOException {
+	public InputStream createInputStream(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response)
+			throws PersistenceException {
 		return doCreateInputStream(uri, options, table, response);
 	}
 	
@@ -176,7 +177,7 @@ public abstract class DefaultStreamFactory<DRIVER, QT, RT, ENGINE, MAPPER extend
 	 * @see org.gecko.emf.persistence.OutputStreamFactory#createOutputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public OutputStream createOutputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException  {
+	public OutputStream createOutputStream(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response) throws PersistenceException  {
 		return doCreateOutputStream(uri, options, table, response);
 	}
 	
@@ -185,13 +186,13 @@ public abstract class DefaultStreamFactory<DRIVER, QT, RT, ENGINE, MAPPER extend
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createCountRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public long createCountRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response)
-			throws IOException {
+	public long createCountRequest(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response)
+			throws PersistenceException {
 		InputStream is = doCreateInputStream(uri, options, table, response);
 		if (is instanceof Countable) {
 			return ((Countable)is).count(uri, options, response);
 		}
-		throw new IOException("InputStream does not implement Countable, to produce a result");
+		throw new PersistenceException("InputStream does not implement Countable, to produce a result");
 	}
 	
 	/* 
@@ -199,13 +200,13 @@ public abstract class DefaultStreamFactory<DRIVER, QT, RT, ENGINE, MAPPER extend
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createDeleteRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void createDeleteRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response)
-			throws IOException {
+	public void createDeleteRequest(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response)
+			throws PersistenceException {
 		InputStream is = doCreateInputStream(uri, options, table, response);
 		if (is instanceof Deletable) {
 			((Deletable)is).delete(uri, options, response);
 		}
-		throw new IOException("InputStream does not implement Deletable, to produce a result");
+		throw new PersistenceException("InputStream does not implement Deletable, to produce a result");
 	}
 	
 	/* 
@@ -213,17 +214,17 @@ public abstract class DefaultStreamFactory<DRIVER, QT, RT, ENGINE, MAPPER extend
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createExistRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public boolean createExistRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response)
-			throws IOException {
+	public boolean createExistRequest(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response)
+			throws PersistenceException {
 		InputStream is = doCreateInputStream(uri, options, table, response);
 		if (is instanceof Countable) {
 			return ((Countable)is).exists(uri, options, response);
 		}
-		throw new IOException("InputStream does not implement Countable, to produce a result");
+		throw new PersistenceException("InputStream does not implement Countable, to produce a result");
 	}
 	
-	protected abstract OutputStream doCreateOutputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException ;
+	protected abstract OutputStream doCreateOutputStream(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response) throws PersistenceException ;
 
-	protected abstract InputStream doCreateInputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException ;
+	protected abstract InputStream doCreateInputStream(URI uri, Map<?, ?> options, DRIVER_RAW table, Map<Object, Object> response) throws PersistenceException ;
 
 }

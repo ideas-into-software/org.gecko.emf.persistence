@@ -15,16 +15,15 @@ package org.gecko.emf.persistence.jpa.streams;
 import static org.gecko.emf.persistence.jpa.JPAPersistenceConstants.PERSISTENCE_FILTER;
 import static org.gecko.emf.persistence.jpa.JPAPersistenceConstants.PERSISTENCE_FILTER_PROP;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.gecko.emf.persistence.DefaultStreamFactory;
 import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.engine.InputStreamFactory;
@@ -50,7 +49,7 @@ import jakarta.persistence.Query;
  * @since 15.01.2023
  */
 @Component(name="JPAStreamFactory", immediate=true, service= {InputStreamFactory.class, OutputStreamFactory.class}, property = PERSISTENCE_FILTER_PROP)
-public class JPAStreamFactory extends DefaultStreamFactory<Promise<EntityManagerFactory>, Query, Query, EntityManager, JPAMapper> {
+public class JPAStreamFactory extends DefaultStreamFactory<Promise<EntityManagerFactory>, Promise<EntityManagerFactory>, Query, Query, EntityManager, JPAMapper> {
 
 	/**
 	 * Sets the converter service
@@ -117,7 +116,7 @@ public class JPAStreamFactory extends DefaultStreamFactory<Promise<EntityManager
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
-	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, Promise<EntityManagerFactory> connection, Map<Object, Object> response) throws IOException {
+	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, Promise<EntityManagerFactory> connection, Map<Object, Object> response) throws PersistenceException {
 		return new JPAInputStream(converterService, queryEngine, connection, handlerList, uri, options, response);
 	}
 

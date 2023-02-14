@@ -15,6 +15,7 @@ package org.gecko.emf.persistence.mongo.streams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.bson.Document;
@@ -25,10 +26,12 @@ import org.gecko.emf.persistence.DefaultStreamFactory;
 import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.api.Keywords;
 import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.engine.InputStreamFactory;
 import org.gecko.emf.persistence.engine.OutputStreamFactory;
+import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.mapping.InputContentHandler;
 import org.gecko.emf.persistence.model.mongo.EMongoQuery;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
@@ -36,6 +39,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.util.promise.Promise;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
@@ -51,15 +55,15 @@ import com.mongodb.client.result.DeleteResult;
  * @since 08.04.2022
  */
 @Component(name="MongoStreamFactory", immediate=true, service= {InputStreamFactory.class, OutputStreamFactory.class})
-public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Document>, EMongoQuery, FindIterable<EObject>> {
+public class MongoStreamFactory extends DefaultStreamFactory<Promise<MongoCollection<EObject>>, Promise<MongoCollection<Document>>, EMongoQuery, FindIterable<EObject>, FindIterable<EObject>, EObjectMapper> {
 
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.OutputStreamFactory#createOutputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public OutputStream createOutputStream(URI uri, Map<?, ?> options, MongoCollection<Document> collection, Map<Object, Object> response) {
-		return new MongoOutputStream(converterService, collection, uri, idFactories, options, response);
+	public OutputStream createOutputStream(URI uri, Map<?, ?> options, Promise<MongoCollection<Document>> collection, Map<Object, Object> response) {
+		return new MongoOutputStream2(converterService, collection, uri, idFactories, options, response);
 	}
 
 	/* 
@@ -67,8 +71,8 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public InputStream createInputStream(URI uri, Map<?, ?> options, MongoCollection<Document> collection, Map<Object, Object> response) throws IOException {
-		return new MongoInputStream(converterService, queryEngine, collection, handlerList, uri, options, response);
+	public InputStream createInputStream(URI uri, Map<?, ?> options, Promise<MongoCollection<Document>> collection, Map<Object, Object> response) throws PersistenceException {
+		return new MongoInputStream2(converterService, queryEngine, collection, handlerList, uri, options, response);
 	}
 
 	/* 
@@ -76,45 +80,55 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createDeleteRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void createDeleteRequest(URI uri, Map<?, ?> options, MongoCollection<Document> collection,
-			Map<Object, Object> response) throws IOException {
+	public void createDeleteRequest(URI uri, Map<?, ?> options, Promise<MongoCollection<Document>> collectionPromise,
+			Map<Object, Object> response) throws PersistenceException {
 		normalizeOptions(options);
+		MongoCollection<Document> collection;
+		try {
+			collection = collectionPromise.getValue();
+		} catch (InvocationTargetException | InterruptedException e) {
+			throw new PersistenceException("Cannot get collection", e);
+		}
 		boolean countResults = false;
 		Object optionCountResult = mergedOptions.get(Options.OPTION_COUNT_RESULT);
 		long elementCount = -1l;
 		countResults = optionCountResult != null && Boolean.TRUE.equals(optionCountResult);
 		DeleteResult deleteResult = null;
 
-		if (uri.query() != null) {
-			if (queryEngine == null) {
-				throw new IOException("The query engine was not found");
-			}
-
-			EMongoQuery mongoQuery = queryEngine.buildQuery(uri, mergedOptions);
-
-			Bson filter = mongoQuery.getFilter();
-
-			if (filter != null) {
-				deleteResult = collection.deleteMany(filter);
-				if (countResults) {
-					elementCount = deleteResult.getDeletedCount();
+		try {
+			if (uri.query() != null) {
+				if (queryEngine == null) {
+					throw new PersistenceException("The query engine was not found");
 				}
+
+				EMongoQuery mongoQuery = queryEngine.buildQuery(uri, mergedOptions);
+
+				Bson filter = mongoQuery.getFilter();
+
+				if (filter != null) {
+					deleteResult = collection.deleteMany(filter);
+					if (countResults) {
+						elementCount = deleteResult.getDeletedCount();
+					}
+				} else {
+					deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
+					if (countResults) {
+						elementCount = deleteResult.getDeletedCount();
+					}
+				}
+				if (countResults) {
+					response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
+				}
+
 			} else {
 				deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
 				if (countResults) {
 					elementCount = deleteResult.getDeletedCount();
+					response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
 				}
 			}
-			if (countResults) {
-				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
-			}
-
-		} else {
-			deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
-			if (countResults) {
-				elementCount = deleteResult.getDeletedCount();
-				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
-			}
+		} catch (IOException e) {
+			throw new PersistenceException(e);
 		}
 	}
 
@@ -123,9 +137,8 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createExistRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public boolean createExistRequest(URI uri, Map<?, ?> options, MongoCollection<Document> table,
-			Map<Object, Object> response) throws IOException {
-		// TODO Auto-generated method stub
+	public boolean createExistRequest(URI uri, Map<?, ?> options, Promise<MongoCollection<Document>> table,
+			Map<Object, Object> response) throws PersistenceException {
 		return false;
 	}
 
@@ -134,8 +147,8 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @see org.gecko.emf.persistence.InputStreamFactory#createCountRequest(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public long createCountRequest(URI uri, Map<?, ?> options, MongoCollection<Document> table,
-			Map<Object, Object> response) throws IOException {
+	public long createCountRequest(URI uri, Map<?, ?> options, Promise<MongoCollection<Document>> table,
+			Map<Object, Object> response) throws PersistenceException {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -154,7 +167,7 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @param queryEngine the query engine to set
 	 */
 	@Reference(name="QueryEngine", policy=ReferencePolicy.STATIC, cardinality=ReferenceCardinality.MANDATORY)
-	public void setQueryEngine(QueryEngine<EMongoQuery> queryEngine) {
+	public void setQueryEngine(QueryEngine<EMongoQuery, FindIterable<EObject>> queryEngine) {
 		super.setQueryEngine(queryEngine);
 	}
 
@@ -180,7 +193,7 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @param contentHandler the id factory to be added
 	 */
 	@Reference(name="InputHandler", policy=ReferencePolicy.DYNAMIC, cardinality=ReferenceCardinality.MULTIPLE, unbind="removeInputHandler")
-	public void addInputHandler(InputContentHandler<FindIterable<EObject>> contentHandler) {
+	public void addInputHandler(InputContentHandler<FindIterable<EObject>, EObjectMapper> contentHandler) {
 		super.addInputHandler(contentHandler);
 	}
 
@@ -188,7 +201,7 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * Un-sets an {@link InputContentHandler} to be used
 	 * @param contentHandler the content handler to be removed
 	 */
-	public void removeInputHandler(InputContentHandler<FindIterable<EObject>> contentHandler) {
+	public void removeInputHandler(InputContentHandler<FindIterable<EObject>, EObjectMapper> contentHandler) {
 		super.removeInputHandler(contentHandler);
 	}
 
@@ -197,9 +210,9 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateOutputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	protected OutputStream doCreateOutputStream(URI uri, Map<?, ?> options, MongoCollection<Document> collection,
-			Map<Object, Object> response) throws IOException {
-		return new MongoOutputStream(converterService, collection, uri, idFactories, options, response);
+	protected OutputStream doCreateOutputStream(URI uri, Map<?, ?> options, Promise<MongoCollection<Document>> collection,
+			Map<Object, Object> response) throws PersistenceException {
+		return new MongoOutputStream2(converterService, collection, uri, idFactories, options, response);
 	}
 
 	/* 
@@ -207,9 +220,9 @@ public class MongoStreamFactory extends DefaultStreamFactory<MongoCollection<Doc
 	 * @see org.gecko.emf.persistence.DefaultStreamFactory#doCreateInputStream(org.eclipse.emf.common.util.URI, java.util.Map, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, MongoCollection<Document> collection,
-			Map<Object, Object> response) throws IOException {
-		return new MongoInputStream(converterService, queryEngine, collection, handlerList, uri, options, response);
+	protected InputStream doCreateInputStream(URI uri, Map<?, ?> options, Promise<MongoCollection<Document>> collection,
+			Map<Object, Object> response) throws PersistenceException {
+		return new MongoInputStream2(converterService, queryEngine, collection, handlerList, uri, options, response);
 	}
 
 }

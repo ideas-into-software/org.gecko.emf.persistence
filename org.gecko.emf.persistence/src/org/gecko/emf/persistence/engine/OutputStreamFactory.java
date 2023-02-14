@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -39,5 +40,5 @@ public interface OutputStreamFactory<DRIVER> {
 	 * @param response the EMF response
 	 * @return the stream for saving the EMF object to a persistence layer
 	 */
-	OutputStream createOutputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException ;
+	OutputStream createOutputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws PersistenceException ;
 } 

@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.osgi.annotation.versioning.ProviderType;
 
 /**
@@ -42,7 +43,7 @@ public interface InputStreamFactory<DRIVER> {
 	 * @return the stream for loading an EMF object from a persistence store
 	 * @throws IOException if there is a problem constructing the EMF object
 	 */
-	InputStream createInputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException;
+	InputStream createInputStream(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws PersistenceException;
 
 	/**
 	 * Constructs a remove request
@@ -51,8 +52,9 @@ public interface InputStreamFactory<DRIVER> {
 	 * @param table the persistence table / collection specified in the URI
 	 * @param response the EMF response
 	 * @throws IOException if there is a problem constructing the remove 
+	 * @throws PersistenceException 
 	 */
-	void createDeleteRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException;
+	void createDeleteRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws PersistenceException;
 	
 	/**
 	 * Creates an exist request for the given uri
@@ -63,7 +65,7 @@ public interface InputStreamFactory<DRIVER> {
 	 * @return <code>true</code>, if an object for the uri exists, otherwise <code>false</code>
 	 * @throws IOException
 	 */
-	boolean createExistRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException;
+	boolean createExistRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws PersistenceException;
 	
 	/**
 	 * Creates an count request for the given uri
@@ -74,6 +76,6 @@ public interface InputStreamFactory<DRIVER> {
 	 * @return the number of elements, or -1 on errors
 	 * @throws IOException
 	 */
-	long createCountRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws IOException;
+	long createCountRequest(URI uri, Map<?, ?> options, DRIVER table, Map<Object, Object> response) throws PersistenceException;
 
 }

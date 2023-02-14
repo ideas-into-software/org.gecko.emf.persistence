@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.gecko.emf.collection.ECollection;
 import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.context.QueryContext;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
@@ -38,7 +39,7 @@ import org.osgi.util.promise.Promise;
  * @author Mark Hoffmann
  * @param <K>
  */
-public abstract class PersistenceOutputStream<DRIVER, MAPPER extends EObjectMapper> extends ByteArrayOutputStream implements URIConverter.Saveable {
+public abstract class PersistenceOutputStream<DRIVER_RAW, DRIVER, MAPPER extends EObjectMapper> extends ByteArrayOutputStream implements URIConverter.Saveable {
 
 	private Promise<DRIVER> driver;
 	private final Map<Object, Object> mergedOptions = new HashMap<>();
@@ -50,7 +51,7 @@ public abstract class PersistenceOutputStream<DRIVER, MAPPER extends EObjectMapp
 	private final boolean forceInsert;
 	private final boolean clearResourceAfterInsert;
 
-	public PersistenceOutputStream(ConverterService converterService, Promise<DRIVER> driver, URI uri, Map<String, PrimaryKeyFactory> idProviders, Map<?, ?> options, Map<Object, Object> response) {
+	public PersistenceOutputStream(ConverterService converterService, Promise<DRIVER_RAW> driver, URI uri, Map<String, PrimaryKeyFactory> idProviders, Map<?, ?> options, Map<Object, Object> response) {
 		if (converterService == null) {
 			throw new NullPointerException("The converter service must not be null");
 		}
@@ -58,7 +59,7 @@ public abstract class PersistenceOutputStream<DRIVER, MAPPER extends EObjectMapp
 		if (driver == null) {
 			throw new NullPointerException("The driver must not be null");
 		}
-		this.driver = driver;
+		this.driver = configureDriver(driver);
 		this.uri = uri;
 		this.idFactories = idProviders;
 		normalizeOptions(options);
@@ -77,10 +78,10 @@ public abstract class PersistenceOutputStream<DRIVER, MAPPER extends EObjectMapp
 		super.close();
 
 		try {
-			DRIVER d = configureDriver(driver.getValue());
-			
+			DRIVER d = driver.getValue();
+
 			MAPPER mapper = createMapper();
-			QueryContext<DRIVER, MAPPER> inputContext = QueryContext.<DRIVER, MAPPER>createContextBuilder().
+			QueryContext<DRIVER, ?, MAPPER> inputContext = QueryContext.<DRIVER, Object, MAPPER>createContextBuilder().
 					converterService(converterService).
 					mapper(mapper).
 					driver(d).
@@ -128,104 +129,50 @@ public abstract class PersistenceOutputStream<DRIVER, MAPPER extends EObjectMapp
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (PersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		//		}
 	}
 
 	/**
 	 * @param driver
 	 * @return
 	 */
-	protected DRIVER configureDriver(DRIVER driver) {
-		return driver;
-		//			EObjectCodecProvider codecProvider = new EObjectCodecProvider(resource, mergedOptions, null);
-		//			codecProvider.setConverterService(converterService);
-		//			CodecRegistry eobjectRegistry = CodecRegistries.fromProviders(codecProvider);
-		//			CodecRegistry defaultRegistry = collection.getCodecRegistry();
-		//			CodecRegistry codecRegistry = CodecRegistries.fromRegistries(eobjectRegistry, defaultRegistry);
-		//			// get collections and clear it
-		//			MongoCollection<EObject> curCollection = collection.withCodecRegistry(codecRegistry).withDocumentClass(EObject.class);
+	@SuppressWarnings("unchecked")
+	protected Promise<DRIVER> configureDriver(Promise<DRIVER_RAW> driver) {
+		return driver.map(dr->(DRIVER)dr);
 	}
 
 	/**
 	 * @return
 	 */
 	protected abstract Object createNativeId();
-	//new ObjectId();
 
 	/**
 	 * @param uri2
 	 * @return
 	 */
 	protected abstract String getIDUriSegment(URI uri);
-	//	String uriId = MongoUtils.getIDAsString(uri);
-
-	/**
-	 * @param inputContext
-	 */
-	protected abstract void saveMultipleObjects(QueryContext<DRIVER, MAPPER> inputContext);
-	//	/**
-	//	 * Saves many objects using bulk/batch operations
-	//	 * @param collection the collection to save the {@link EObject}'s in
-	//	 * @throws IOException thrown on errors during save
-	//	 */
-	//	private void saveMultipleObjects(MongoCollection<EObject> collection) throws IOException {
-	//		resource.setURI(resource.getURI().trimSegments(1).appendSegment(""));
-	//		List<EObject> contents = null;
-	//
-	//		if (resource.getContents().get(0) instanceof ECollection) {
-	//			contents = ((ECollection) resource.getContents().get(0)).getValues();
-	//		} else {
-	//			contents = resource.getContents();
-	//		}
-	//
-	//		List<WriteModel<EObject>> bulk = new ArrayList<>(contents.size()); 
-	//		for (EObject eObject : contents) {
-	//			EAttribute idAttribute = eObject.eClass().getEIDAttribute();
-	//
-	//			if(idAttribute == null && useIdAttributeAsPrimaryKey){
-	//				throw new IllegalStateException("EObjects have no ID Attribute to be used together with option " +  Options.OPTION_USE_ID_ATTRIBUTE_AS_PRIMARY_KEY);
-	//			}
-	//
-	//			if (idAttribute != null && useIdAttributeAsPrimaryKey) {
-	//				Object id = eObject.eGet(idAttribute);
-	//				if(id == null){
-	//					id = normalizeMongoId(null);
-	//					eObject.eSet(idAttribute, EcoreUtil.createFromString(idAttribute.getEAttributeType(), id.toString()));
-	//				}
-	//			}
-	//			if(forceInsert){
-	//				bulk.add(new InsertOneModel<EObject>(eObject));
-	//			} else {
-	//				Bson updateFilter = createUpdateFilter(eObject);
-	//				bulk.add(new ReplaceOneModel<EObject>(updateFilter, eObject, UPDATE_OPTIONS));
-	//			}
-	//		}
-	//		collection.bulkWrite(bulk);
-	//
-	//		if(clearResourceAfterInsert){
-	//			resource.getContents().clear();
-	//		} else {
-	//			URI baseURI = resource.getURI().trimSegments(1);
-	//			InternalEObject[] eObjects = contents.toArray(new InternalEObject[contents.size()]);
-	//			EReferenceCollection eCollection = CollectionFactory.eINSTANCE.createEReferenceCollection();
-	//			InternalEList<EObject> values = (InternalEList<EObject>) eCollection.getValues();
-	//
-	//			for (int i = 0; i < contents.size(); i++) {
-	//				InternalEObject internalEObject = eObjects[i];
-	//				internalEObject.eSetProxyURI(baseURI.appendSegment(EcoreUtil.getID(internalEObject)).appendFragment("/"));
-	//				internalEObject.eAdapters().clear();
-	//				values.addUnique(internalEObject);
-	//			}
-	//			resource.getContents().clear();
-	//			resource.getContents().add(eCollection);
-	//		}
-	//	}
 
 	/**
 	 * @return
 	 */
 	protected abstract MAPPER createMapper();
+
+	/**
+	 * Saves many objects using bulk/batch operations
+	 * @param inputContext the input context
+	 * @throws PersistenceException thrown on errors during save
+	 */
+	protected abstract void saveMultipleObjects(QueryContext<DRIVER, ?, MAPPER> inputContext) throws PersistenceException;
+
+	/**
+	 * Saves a single object into a driver
+	 * @param context the input context
+	 * @throws PersistenceException thrown on errors during saving
+	 */
+	protected abstract void saveSingleObject(QueryContext<DRIVER, ?, MAPPER> context) throws PersistenceException;
 
 	/* 
 	 * (non-Javadoc)
@@ -236,90 +183,69 @@ public abstract class PersistenceOutputStream<DRIVER, MAPPER extends EObjectMapp
 		this.resource = resource;
 	}
 
-	protected abstract void saveSingleObject(QueryContext<DRIVER, MAPPER> context);
-	//
-	//	/**
-	//	 * Saves a single object into a collection
-	//	 * @param collection the collection to save the object for
-	//	 * @throws IOException thrown on errors during saving
-	//	 */
-	//	private void saveSingleObject(MongoCollection<EObject> collection) throws IOException {
-	//		EObject eObject = resource.getContents().get(0);
-	//		if(forceInsert){
-	//			collection.insertOne(eObject);
-	//		} else {
-	//			Bson updateFilter = createUpdateFilter(eObject);
-	//			FindOneAndReplaceOptions farOptions = new FindOneAndReplaceOptions().upsert(true).returnDocument(ReturnDocument.AFTER);
-	//			EAttribute idAttribute = eObject.eClass().getEIDAttribute();
-	//			// Minimize the load by just adding projection for minimum set of attributes
-	//			if (idAttribute != null) {
-	//				String eClassKey = Options.getEClassKey((Map<?, ?>) mergedOptions);
-	//				farOptions = farOptions.projection(Projections.include(idAttribute.getName(), eClassKey));
-	//			}
-	//			EObject replaced = collection.findOneAndReplace(updateFilter, eObject, farOptions);
-	//			Resource replacedResource = replaced.eResource();
-	//			String primaryKey = replacedResource.getURI().lastSegment();
-	//			if (replacedResource.equals(resource)) {
-	//				replacedResource.getContents().remove(replaced);
-	//			} else {
-	//				replacedResource.getContents().remove(replaced);
-	//				replacedResource.getResourceSet().getResources().remove(replacedResource);
-	//			}
-	//			if (primaryKey != null) {
-	//				resource.setURI(resource.getURI().trimSegments(1).appendSegment(primaryKey));
-	//			}
-	//		}
-	//	}
-	//
-	//	private Bson createUpdateFilter(EObject eObject) throws IOException {
-	//		String idKey = "_id";
-	//		Object id = null;
-	//		if (!useIdAttributeAsPrimaryKey) {
-	//			String pkId = MongoUtils.getIDAsString(resource.getURI());
-	//			if (pkId != null && !pkId.isEmpty()) {
-	//				id = normalizeMongoId(pkId);
-	//			} else {
-	//				EAttribute idAttribute = eObject.eClass().getEIDAttribute();
-	//				idKey = idAttribute == null ? "_id" : idAttribute.getName();
-	//				id = EcoreUtil.getID(eObject);
-	//			}
-	//		} else {
-	//			id = EcoreUtil.getID(eObject);
-	//			if(id == null){
-	//				id = MongoUtils.getID(uri);
-	//			} else {
-	//				id = normalizeMongoId(id);
-	//			}
-	//		}
-	//
-	//		return Filters.eq(idKey, id);
-	//	}
-	//
-	//	/**
-	//	 * Returns the normalized mongo id
-	//	 * @param id a prepared id
-	//	 * @return the normalized mongo id
-	//	 */
-	//	private Object normalizeMongoId(Object id) {
-	//		if (id == null) {
-	//			PrimaryKeyFactory mongoIdFactory = idFactories.get(uri.trimSegments(uri.segmentCount() - 2).toString());
-	//			if (mongoIdFactory != null) {
-	//				id = mongoIdFactory.getNextId();
-	//			} 
-	//		}
-	//		if (id == null) {
-	//			return new ObjectId();
-	//		}
-	//		if (id instanceof ObjectId) {
-	//			return id;
-	//		}
-	//		if(ObjectId.isValid(id.toString())){
-	//			id = new ObjectId(id.toString());
-	//		} else {
-	//			id = id.toString();
-	//		}
-	//		return id;
-	//	}
+	/**
+	 * Returns the clearResourceAfterInsert.
+	 * @return the clearResourceAfterInsert
+	 */
+	public boolean isClearResourceAfterInsert() {
+		return clearResourceAfterInsert;
+	}
+
+	/**
+	 * Returns the forceInsert.
+	 * @return the forceInsert
+	 */
+	public boolean isForceInsert() {
+		return forceInsert;
+	}
+
+	/**
+	 * Returns the useIdAttributeAsPrimaryKey.
+	 * @return the useIdAttributeAsPrimaryKey
+	 */
+	public boolean isUseIdAttributeAsPrimaryKey() {
+		return useIdAttributeAsPrimaryKey;
+	}
+
+	/**
+	 * Returns the converterService.
+	 * @return the converterService
+	 */
+	public ConverterService getConverterService() {
+		return converterService;
+	}
+
+	/**
+	 * Returns the mergedOptions.
+	 * @return the mergedOptions
+	 */
+	public Map<Object, Object> getMergedOptions() {
+		return mergedOptions;
+	}
+
+	/**
+	 * Returns the resource.
+	 * @return the resource
+	 */
+	public Resource getResource() {
+		return resource;
+	}
+
+	/**
+	 * Returns the uri.
+	 * @return the uri
+	 */
+	public URI getUri() {
+		return uri;
+	}
+
+	/**
+	 * Returns the idFactories.
+	 * @return the idFactories
+	 */
+	public Map<String, PrimaryKeyFactory> getIdFactories() {
+		return idFactories;
+	}
 
 	/**
 	 * Normalizes the save options

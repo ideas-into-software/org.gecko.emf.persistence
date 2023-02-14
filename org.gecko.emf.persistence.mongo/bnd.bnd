@@ -19,7 +19,9 @@ src: src,src-gen
 	org.gecko.emf.collections,\
 	org.gecko.persistence.mongo,\
 	org.osgi.annotation.versioning,\
-	org.osgi.annotation.bundle
+	org.osgi.annotation.bundle,\
+	org.osgi.util.promise,\
+	org.osgi.util.function
 
 -includeresource.model: model=model
 Bundle-Name: Gecko Mongo EMF Persistence

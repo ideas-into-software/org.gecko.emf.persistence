@@ -9,7 +9,7 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.emf;
+package org.gecko.emf.persistence.resource;
 
 import java.io.IOException;
 import java.util.Map;

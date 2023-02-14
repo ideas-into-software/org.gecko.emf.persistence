@@ -11,7 +11,6 @@
  */
 package org.gecko.emf.persistence.api;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -50,9 +49,9 @@ public interface Countable {
 	 * @param options the count options
 	 * @param response the response options map
 	 * @return the number of elements or -1
-	 * @throws IOException
+	 * @throws PersistenceException
 	 */
-	long count(URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException;
+	long count(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException;
 	
 	/**
 	 * Checks if an element exists for the given {@link URI} and options
@@ -60,8 +59,8 @@ public interface Countable {
 	 * @param options the exist options
 	 * @param response the response options map
 	 * @return <code>true</code> if at least an element exists, otherwise <code>false</code>
-	 * @throws IOException
+	 * @throws PersistenceException
 	 */
-	boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws IOException;
+	boolean exists(URI uri, Map<?, ?> options, Map<Object, Object> response) throws PersistenceException;
 
 }
