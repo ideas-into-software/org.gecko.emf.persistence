@@ -9,22 +9,20 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.api;
+package org.gecko.emf.persistence.engine;
 
 import java.util.Map;
 
+import org.osgi.util.promise.Promise;
+
 /**
- * Interface to read data
- * @author Mark Hoffmann
- * @since 14.02.2023
+ * @param <DRIVER>
+ * @param <DRIVERRAW>
+ * @author mark
+ * @since 15.02.2023
  */
-public interface Readable {
+public interface DriverHandler<DRIVER, DRIVERRAW> {
 	
-	/**
-	 * Executes a read operation
-	 * @param properties additional read properties
-	 * @throws PersistenceException thrown on lower level errors 
-	 */
-	void read(Map<Object, Object> properties) throws PersistenceException;
+	Promise<DRIVER> getDriver(DRIVERRAW rawDRiver, Map<?, ?> properties);
 	
 }

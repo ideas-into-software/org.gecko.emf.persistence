@@ -57,5 +57,5 @@ public interface Countable {
 	 * @throws PersistenceException thrown on lower level errors 
 	 */
 	boolean exist(Map<Object, Object> properties) throws PersistenceException;
-
+	
 }

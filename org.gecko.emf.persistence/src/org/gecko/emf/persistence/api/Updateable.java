@@ -33,5 +33,5 @@ public interface Updateable {
 	 * @throws PersistenceException thrown on lower level errors 
 	 */
 	void create(Map<Object, Object> properties) throws PersistenceException;
-
+	
 }

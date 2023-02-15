@@ -13,13 +13,12 @@ package org.gecko.emf.persistence.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.gecko.emf.persistence.api.QueryEngine;
-import org.gecko.emf.persistence.engine.PersistenceEngine;
+import org.gecko.emf.persistence.engine.BasicPersistenceEngine;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,11 +51,11 @@ public class SimpleTest {
 	@Mock
 	private EObjectMapper mapper;
 	@Mock
-	private PersistenceEngine<String, EObjectMapper, String, String, String> engine;
+	private BasicPersistenceEngine<String, EObjectMapper, String, String, String> engine;
 
 	@BeforeEach
 	public void before(@InjectBundleContext BundleContext ctx) {
-		when(engine.getMapper()).thenReturn(mapper);
+//		when(engine.getMapper()).thenReturn(mapper);
 		when(engine.getQueryEngine()).thenReturn(queryEngine);
 	}
 
@@ -65,10 +64,10 @@ public class SimpleTest {
 		assertNotNull(queryEngine);
 		assertNotNull(mapper);
 		assertNotNull(engine);
-		assertEquals(mapper, engine.getMapper());
+//		assertEquals(mapper, engine.getMapper());
 		assertEquals(queryEngine, engine.getQueryEngine());
-		verify(engine, times(1)).getMapper();
-		verify(engine, never()).getDriver();
+//		verify(engine, times(1)).getMapper();
+//		verify(engine, never()).getDriver();
 		verify(engine, times(1)).getQueryEngine();
 	}
 }

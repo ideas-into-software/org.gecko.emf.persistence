@@ -27,6 +27,7 @@ import org.gecko.emf.persistence.api.Options;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.api.QueryEngine;
 import org.gecko.emf.persistence.context.PersistenceContext;
+import org.gecko.emf.persistence.helper.EMFHelper;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.mapping.InputContentHandler;
 import org.gecko.emf.persistence.resource.PersistenceResource;
@@ -118,6 +119,10 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 	 */
 	public Map<Object, Object> getMergedOptions() {
 		return mergedOptions;
+	}
+	
+	public Map<Object, Object> getResponse() {
+		return EMFHelper.getResponse(getMergedOptions());
 	}
 	
 	protected List<InputContentHandler<RESULTTYPE, MAPPER>> getContentHandler() {
