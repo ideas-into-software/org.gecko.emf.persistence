@@ -11,6 +11,7 @@
  */
 package org.gecko.emf.persistence.helper;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +40,38 @@ public class EMFHelper {
 		Map<?, ?> response = options == null ? null : (Map<?, ?>)options.get(URIConverter.OPTION_RESPONSE);
 		return response == null ? new HashMap<>() : (Map<Object, Object>) response;
 	}
-	
+
+	/**
+	 * Merges 2 maps, without changing any of them.  If map2 and map1
+	 * have the same key for an entry, map1's value will be the one in
+	 * the merged map.
+	 */
+	public static Map<?, ?> mergeMaps(Map<?, ?> map1, Map<?, ?> map2) {
+		if (map1 == null || map1.isEmpty()) {
+			return map2;
+		} else if (map2 == null || map2.isEmpty()) {
+			return map1;
+		} else {
+			HashMap<Object, Object> map = new HashMap<>(map1.size() + map2.size());
+			map.putAll(map1);
+			map.putAll(map2);
+			return map;
+		}
+	}
+
+	/**
+	 * Returns the effective options as an unmodifiable {@link Map}
+	 * @param options external options
+	 * @param defaultOptions internal, default options
+	 * @return an unmodifiable merged {@link Map}
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<Object, Object> getEffectiveOptions(Map<?, ?> options, Map<?, ?> defaultOptions) {
+		Map<Object, Object> effective = (Map<Object, Object>) mergeMaps(options, defaultOptions);
+		effective.put(URIConverter.OPTION_RESPONSE, getResponse(options));
+		return Collections.unmodifiableMap(effective);
+	}
+
 	public static EClass getEClassFromResourceSet(ResourceSet resourceSet, String eClassURI) {
 		URI theUri = URI.createURI(eClassURI);
 		String classifier = theUri.lastSegment();
@@ -53,7 +85,7 @@ public class EMFHelper {
 
 		return (EClass) resourceSet.getEObject(theUri, true);
 	}
-	
+
 	public static EClass getEClass(ResourceSet resourceSet, String eClassURI, Map<String, EClass> eClassCache) {
 		if (eClassCache != null) {
 			synchronized (eClassCache) {

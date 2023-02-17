@@ -24,6 +24,16 @@ import org.gecko.emf.persistence.engine.PersistenceEngine;
  */
 public interface PersistenceResource extends Resource, AutoCloseable {
 	
+	Map<Object, Object> getDefaultLoadOptions();
+	
+	Map<Object, Object> getDefaultSaveOptions();
+	
+	Map<Object, Object> getDefaultDeleteOptions();
+	
+	Map<Object, Object> getDefaultCountOptions();
+	
+	Map<Object, Object> getDefaultExistOptions();
+	
 	/**
 	 * Counts the elements of this resource
 	 * @return the number of elements 

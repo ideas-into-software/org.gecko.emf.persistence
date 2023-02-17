@@ -11,6 +11,9 @@
  */
 package org.gecko.emf.persistence.resource;
 
+import static org.gecko.emf.persistence.helper.EMFHelper.getEffectiveOptions;
+import static org.gecko.emf.persistence.helper.EMFHelper.getResponse;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,9 +26,12 @@ import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.resource.Resource.IOWrappedException;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.gecko.emf.persistence.api.Countable;
 import org.gecko.emf.persistence.api.Deletable;
@@ -100,6 +106,28 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 		return defaultExistOptions;
 	}
 
+	/**
+	 * Return the default load options
+	 * @return the load option map
+	 */
+	public Map<Object, Object> getDefaultLoadOptions() {
+		if (defaultLoadOptions == null) {
+			defaultLoadOptions = new HashMap<Object, Object>();
+		}
+		return defaultLoadOptions;
+	}
+
+	/**
+	 * Return the default save options
+	 * @return the save option map
+	 */
+	public Map<Object, Object> getDefaultSaveOptions() {
+		if (defaultSaveOptions == null) {
+			defaultSaveOptions = new HashMap<Object, Object>();
+		}
+		return defaultSaveOptions;
+	}
+
 	/* 
 	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.PersistenceResource#count()
@@ -117,20 +145,26 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	public long count(Map<?, ?> options) throws IOException  {
 		if (engine instanceof Countable) {
 			Countable countable = (Countable) engine;
+			Map<Object,Object> effectiveOptions = getEffectiveOptions(options, getDefaultCountOptions());
 			try {
 				isLoading = true;
-				long elements = countable.count((Map<Object, Object>) getEffectiveOptions(options, defaultCountOptions));
-				handleResponse(options, true);
+				if (isLoaded()) {
+					return getContents().size();
+				}
+				long elements = countable.count(effectiveOptions);
 				return elements;
 			} catch (PersistenceException e) {
 				handleErrors(e);
 				throw new IOException(e);
 			} finally {
-				unload();
-				ResourceSet resourceSet = getResourceSet();
-				if (resourceSet != null)
-				{
-					resourceSet.getResources().remove(this);
+				if (!isLoaded()) {
+					unload();
+					handleResponse(effectiveOptions, true);
+					ResourceSet resourceSet = getResourceSet();
+					if (resourceSet != null)
+					{
+						resourceSet.getResources().remove(this);
+					}
 				}
 				isLoading = false;
 				setModified(false);
@@ -156,25 +190,28 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	@Override
 	public boolean exist(Map<?, ?> options) throws IOException {
 		if (engine instanceof Countable) {
-			Countable countable = (Countable) engine;
+			Countable countable = (Countable) engine; 
+			Map<Object,Object> effectiveOptions = getEffectiveOptions(options, getDefaultExistOptions());
 			try {
 				isLoading = true;
-				boolean exist = countable.exist((Map<Object, Object>) getEffectiveOptions(options, defaultExistOptions));
-				if (!exist) {
-					handleResponse(options, true);
+				if (isLoaded()) {
+					return !getContents().isEmpty();
 				}
+				boolean exist = countable.exist(effectiveOptions);
 				return exist;
 			} catch (PersistenceException e) {
 				handleErrors(e);
 				throw new IOException(e);
 			} finally {
-				unload();
-				ResourceSet resourceSet = getResourceSet();
-				if (resourceSet != null)
-				{
-					resourceSet.getResources().remove(this);
+				if (!isLoaded()) {
+					unload();
+					handleResponse(effectiveOptions, true);
+					ResourceSet resourceSet = getResourceSet();
+					if (resourceSet != null)
+					{
+						resourceSet.getResources().remove(this);
+					}
 				}
-				isLoading = false;
 				setModified(false);
 			}
 		} else {
@@ -188,7 +225,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	 */
 	@Override
 	public void load(Map<?, ?> options) throws IOException {
-		load(null, getEffectiveOptions(options, null));
+		doLoad(null, getEffectiveOptions(options, getDefaultLoadOptions()));
 	}
 
 	/* 
@@ -199,24 +236,42 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	protected void doLoad(InputStream inputStream, Map<?, ?> options) throws IOException {
 		if (engine instanceof Readable) {
 			Readable readable = (Readable) engine;
-			try {
-				readable.read((Map<Object, Object>) options);
-				handleResponse(options, true);
-			} catch (PersistenceException e) {
-				handleErrors(e);
+			if (!isLoaded) {
+				Notification notification = setLoaded(true);
+				isLoading = true;
+
+				if (errors != null) {
+					errors.clear();
+				}
+				if (warnings != null){
+					warnings.clear();
+				}
+				try {
+					readable.read((Map<Object, Object>) options);
+					handleResponse(options, true);
+				} catch (PersistenceException e) {
+					handleErrors(e);
+				} finally {
+					isLoading = false;
+
+					if (notification != null) {
+						eNotify(notification);
+					}
+					setModified(false);
+				}
 			}
 		} else {
-			throw new UnsupportedOperationException("The persistence engine does not implement Updatable. A save via create or update is not available for this engine.");
+			throw new UnsupportedOperationException("The persistence engine does not implement Readable. A load / read is not available for this engine.");
 		}
 	}
-	
+
 	/* 
 	 * (non-Javadoc)
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#save(java.util.Map)
 	 */
 	@Override
 	public void save(Map<?, ?> options) throws IOException {
-		save(null, getEffectiveOptions(options, null));
+		save(null, getEffectiveOptions(options, getDefaultSaveOptions()));
 	}
 
 	/* 
@@ -252,9 +307,9 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 			Deletable deletable = (Deletable) engine;
 			try {
 				isLoading = true;
-				if (!deletable.delete((Map<Object, Object>) getEffectiveOptions(options, defaultDeleteOptions))) {
-					handleResponse(options, true);
-				}
+				Map<Object,Object> effectiveOptions = getEffectiveOptions(options, getDefaultDeleteOptions());
+				deletable.delete(effectiveOptions); 
+				handleResponse(effectiveOptions, true);
 			} catch (PersistenceException e) {
 				handleErrors(e);
 			} finally {
@@ -419,22 +474,6 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 		} else {
 			handleSaveResponse(response, options);
 		}
-	}
-
-	/**
-	 * Returns the response map
-	 * @param options the options to get the response from
-	 * @return
-	 */
-	private Map<Object, Object> getResponse(Map<?, ?> options) {
-		Map<?, ?> response = options == null ? null : (Map<?, ?>)options.get(URIConverter.OPTION_RESPONSE);
-		return response == null ? new HashMap<>() : (Map<Object, Object>) response;
-	}
-
-	private Map<Object, Object> getEffectiveOptions(Map<?, ?> options, Map<?, ?> defaultOptions) {
-		Map<Object, Object> effective = (Map<Object, Object>) mergeMaps(options, defaultOptions);
-		effective.put(URIConverter.OPTION_RESPONSE, getResponse(options));
-		return effective;
 	}
 
 }
