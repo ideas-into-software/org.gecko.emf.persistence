@@ -90,7 +90,7 @@ public class MongoStreamFactory extends DefaultStreamFactory<Promise<MongoCollec
 			throw new PersistenceException("Cannot get collection", e);
 		}
 		boolean countResults = false;
-		Object optionCountResult = mergedOptions.get(Options.OPTION_COUNT_RESULT);
+		Object optionCountResult = mergedOptions.get(Options.READ_COUNT_RESULT);
 		long elementCount = -1l;
 		countResults = optionCountResult != null && Boolean.TRUE.equals(optionCountResult);
 		DeleteResult deleteResult = null;
@@ -117,14 +117,14 @@ public class MongoStreamFactory extends DefaultStreamFactory<Promise<MongoCollec
 					}
 				}
 				if (countResults) {
-					response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
+					response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(elementCount));
 				}
 
 			} else {
 				deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
 				if (countResults) {
 					elementCount = deleteResult.getDeletedCount();
-					response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
+					response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(elementCount));
 				}
 			}
 		} catch (IOException e) {

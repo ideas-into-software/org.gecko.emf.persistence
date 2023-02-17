@@ -417,7 +417,7 @@ public class EObjectBuilderImpl implements EObjectBuilder {
 	 */
 	@SuppressWarnings("unchecked")
 	private Optional<String> getProxyQuery(EReference reference) {
-		return Optional.ofNullable(options.get(Options.OPTION_QUERY_FOR_PROXIES))
+		return Optional.ofNullable(options.get(Options.READ_QUERY_FOR_PROXIES))
 				.map(o -> (Map<EReference, String>) o)
 				.map(m -> m.get(reference))
 				.map(Document::parse)
@@ -611,7 +611,7 @@ public class EObjectBuilderImpl implements EObjectBuilder {
 			String value = reader.readString();
 			if (eDataType != null && eDataType instanceof EEnum) {
 				EEnumLiteral literal = null;
-				if (Boolean.TRUE.equals(options.get(Options.OPTION_USE_ENUM_LITERAL))) {
+				if (Boolean.TRUE.equals(options.get(Options.SAVE_USE_ENUM_LITERAL))) {
 					literal = ((EEnum) eDataType).getEEnumLiteralByLiteral(value);
 				} 
 				if (literal == null) {

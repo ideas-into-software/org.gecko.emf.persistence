@@ -598,7 +598,7 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 				return -1;
 			}
 			Map<Object, Object> responseMap = (Map<Object, Object>) loadOptions.get(URIConverter.OPTION_RESPONSE);
-			Object count = responseMap.getOrDefault(Options.OPTION_COUNT_RESPONSE, -1l);
+			Object count = responseMap.getOrDefault(Options.READ_COUNT_RESPONSE, -1l);
 			return count instanceof Long ? (Long)count : -1l;
 		} catch (IOException e) {
 			throw new IllegalStateException("No content/table found for URI " + uri.toString(), e); 

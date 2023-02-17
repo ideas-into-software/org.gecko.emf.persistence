@@ -196,7 +196,7 @@ public abstract class DefaultPersistenceEngine<DRIVER, MAPPER extends EObjectMap
 				QueryContext<DRIVER, QUERYTYPE, MAPPER> queryCtx = qcb.build();
 				results = executeCount(queryCtx);
 				// If returning counting result / mapping results as response value is active
-				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(results));
+				response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(results));
 			}
 			// Step 1 - create query and execute it
 			QueryContext<DRIVER, QUERYTYPE, MAPPER> queryCtx = qcb.build();
@@ -283,7 +283,7 @@ public abstract class DefaultPersistenceEngine<DRIVER, MAPPER extends EObjectMap
 				QueryContext<DRIVER, QUERYTYPE, MAPPER> queryCtx = qcb.build();
 				results = executeDelete(queryCtx);
 				// If returning counting result / mapping results as response value is active
-				context.response().put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(results));
+				context.response().put(Options.READ_COUNT_RESPONSE, Long.valueOf(results));
 			}
 			return true;
 		} catch (InvocationTargetException e) {
@@ -440,11 +440,11 @@ public abstract class DefaultPersistenceEngine<DRIVER, MAPPER extends EObjectMap
 		try {
 			while (mapper.hasNext()){
 				EObject dbObject = mapper.next();
-				if(Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_LAZY_RESULT_LOADING))){
+				if(Boolean.TRUE.equals(mergedOptions.get(Options.READ_LAZY_RESULT_LOADING))){
 					((InternalEObject) dbObject).eSetProxyURI(EcoreUtil.getURI(dbObject).appendQuery(null));
 					detachEObject(dbObject);
 				}
-				if (Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_READ_DETACHED))) {
+				if (Boolean.TRUE.equals(mergedOptions.get(Options.READ_READ_DETACHED))) {
 					detachEObject(dbObject);
 				}
 				values.addUnique(dbObject);
@@ -453,7 +453,7 @@ public abstract class DefaultPersistenceEngine<DRIVER, MAPPER extends EObjectMap
 			// write count results
 			if (!context.countResults()) {
 				// If returning counting result / mapping results as response value is active
-				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(mappedCount));
+				response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(mappedCount));
 			}
 		} catch (PersistenceException e) {
 			mapper.close();
@@ -501,16 +501,16 @@ public abstract class DefaultPersistenceEngine<DRIVER, MAPPER extends EObjectMap
 		EClass eClass = (EClass) effectiveOptions.getOrDefault(Options.OPTION_ECLASS_HINT, null);
 		String eClassUri = (String) effectiveOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
 		String idAttributeName = (String) effectiveOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
-		String typeColumn = (String) effectiveOptions.getOrDefault(Options.OPTION_KEY_ECLASS_URI, ECLASS_TYPE_COLUMN_NAME);
+		String typeColumn = (String) effectiveOptions.getOrDefault(Options.OPTION_FIELD_ECLASS_URI, ECLASS_TYPE_COLUMN_NAME);
 		
 		Boolean useIdAttributeAsPrimaryKey = Boolean.TRUE.equals(options.get(Options.OPTION_USE_ID_ATTRIBUTE_AS_PRIMARY_KEY));
-		Boolean forceInsert = Boolean.TRUE.equals(options.get(Options.OPTION_FORCE_INSERT));
-		Boolean clearResourceAfterInsert = !options.containsKey(Options.OPTION_CLEAR_RESOURCE_AFTER_BATCH_INSERT) || Boolean.TRUE.equals(options.get(Options.OPTION_CLEAR_RESOURCE_AFTER_BATCH_INSERT));
+		Boolean forceInsert = Boolean.TRUE.equals(options.get(Options.SAVE_FORCE_INSERT));
+		Boolean clearResourceAfterInsert = !options.containsKey(Options.SAVE_CLEAR_RESOURCE_AFTER_BATCH_INSERT) || Boolean.TRUE.equals(options.get(Options.SAVE_CLEAR_RESOURCE_AFTER_BATCH_INSERT));
 
 		Boolean countIdAttributeFilter = Boolean.TRUE.equals(effectiveOptions.getOrDefault(Countable.OPTION_COUNT_ID_ATTRIBUTE, false));
 		Boolean countTypeFilter = Boolean.TRUE.equals(effectiveOptions.getOrDefault(Countable.OPTION_COUNT_URI_FILTER, false));
-		Boolean countOnly = Boolean.TRUE.equals(effectiveOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
-		Boolean countResults = Boolean.TRUE.equals(effectiveOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
+		Boolean countOnly = Boolean.TRUE.equals(effectiveOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
+		Boolean countResults = Boolean.TRUE.equals(effectiveOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
 		String eClassUriHint = (String) effectiveOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
 
 		return new EngineContext() {

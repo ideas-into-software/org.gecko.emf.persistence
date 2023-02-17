@@ -104,7 +104,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 	 * @return <code>true</code>, if the suüper type field should be created
 	 */
 	private boolean getSerializeSuperTypes(Map<?, ?> options) {
-		Boolean serializeSuperTypes = (Boolean) options.get(Options.OPTION_STORE_SUPERTYPE);
+		Boolean serializeSuperTypes = (Boolean) options.get(Options.SAVE_STORE_SUPERTYPE);
 		return Boolean.TRUE.equals(serializeSuperTypes);
 	}
 
@@ -115,7 +115,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 	 * @return <code>true</code>, if the default values should be serialized too
 	 */
 	private boolean getSerializeAllEClassUrisOption(Map<?, ?> options) {
-		Boolean serializeOption = (Boolean) options.get(Options.OPTION_SERIALIZE_ALL_ECLASS_URIS);
+		Boolean serializeOption = (Boolean) options.get(Options.SAVE_SERIALIZE_ALL_ECLASS_URIS);
 		return Boolean.TRUE.equals(serializeOption);
 	}
 
@@ -125,7 +125,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 	 * @return <code>true</code>, if the default values should be serialized too
 	 */
 	private boolean getSerializeDefaultOption(Map<?, ?> options) {
-		Boolean serializeOption = (Boolean) options.get(Options.OPTION_SERIALIZE_DEFAULT_ATTRIBUTE_VALUES);
+		Boolean serializeOption = (Boolean) options.get(Options.SAVE_SERIALIZE_DEFAULT_ATTRIBUTE_VALUES);
 		return Boolean.TRUE.equals(serializeOption);
 	}
 
@@ -556,7 +556,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 			String writeValue = enumValue.name();
 			if( enumValue instanceof Enumerator) {
 				writeValue = ((Enumerator) enumValue).getName();
-				if (Boolean.TRUE.equals(options.get(Options.OPTION_USE_ENUM_LITERAL))) {
+				if (Boolean.TRUE.equals(options.get(Options.SAVE_USE_ENUM_LITERAL))) {
 					writeValue = ((Enumerator)enumValue).getLiteral();
 				}
 			}

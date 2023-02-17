@@ -215,7 +215,7 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 				if (countOnly()) {
 					return false;
 				}
-				Object optionCountResult = mergedOptions.get(Options.OPTION_COUNT_RESULT);
+				Object optionCountResult = mergedOptions.get(Options.READ_COUNT_RESULT);
 				return optionCountResult != null && Boolean.TRUE.equals(optionCountResult);
 			}
 			@Override
@@ -295,10 +295,10 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	 */
 	private <K extends Object, V extends Object> void normalizeOptions(Map<K, V> options) {
 		mergedOptions.putAll(options);
-		EClass filterEClass = (EClass) options.getOrDefault(Options.OPTION_FILTER_ECLASS, null);
+		EClass filterEClass = (EClass) options.getOrDefault(Options.READ_FILTER_ECLASS, null);
 		EClass collectionEClass = Options.getTableEClass(options);
 		if (collectionEClass != null && filterEClass == null) {
-			mergedOptions.put(Options.OPTION_FILTER_ECLASS, collectionEClass);
+			mergedOptions.put(Options.READ_FILTER_ECLASS, collectionEClass);
 		}
 	}
 

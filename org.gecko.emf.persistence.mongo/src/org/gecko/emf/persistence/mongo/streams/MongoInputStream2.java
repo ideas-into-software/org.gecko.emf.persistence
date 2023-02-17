@@ -117,7 +117,7 @@ public class MongoInputStream2 extends PersistenceInputStream<MongoCollection<EO
 			}
 		}
 		if (countResults) {
-			queryCtx.getResponse().put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
+			queryCtx.getResponse().put(Options.READ_COUNT_RESPONSE, Long.valueOf(elementCount));
 		}
 		
 
@@ -166,7 +166,7 @@ public class MongoInputStream2 extends PersistenceInputStream<MongoCollection<EO
 			}
 		}
 		if (context.countResult()) {
-			context.getResponse().put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(elementCount));
+			context.getResponse().put(Options.READ_COUNT_RESPONSE, Long.valueOf(elementCount));
 		}
 		return elementCount;
 	}
@@ -198,10 +198,10 @@ public class MongoInputStream2 extends PersistenceInputStream<MongoCollection<EO
 	 */
 	private <K extends Object, V extends Object> void normalizeOptions(Map<K, V> options) {
 		mergedOptions.putAll(options);
-		EClass filterEClass = (EClass) options.getOrDefault(Options.OPTION_FILTER_ECLASS, null);
+		EClass filterEClass = (EClass) options.getOrDefault(Options.READ_FILTER_ECLASS, null);
 		EClass collectionEClass = Options.getTableEClass(options);
 		if (collectionEClass != null && filterEClass == null) {
-			mergedOptions.put(Options.OPTION_FILTER_ECLASS, collectionEClass);
+			mergedOptions.put(Options.READ_FILTER_ECLASS, collectionEClass);
 		}
 	}
 

@@ -158,10 +158,10 @@ public abstract class DefaultStreamFactory<DRIVER, DRIVER_RAW, QT, RT, ENGINE, M
 	 */
 	protected <K extends Object, V extends Object> void normalizeOptions(Map<K, V> options) {
 		mergedOptions.putAll(options);
-		EClass filterEClass = (EClass) options.getOrDefault(Options.OPTION_FILTER_ECLASS, null);
+		EClass filterEClass = (EClass) options.getOrDefault(Options.READ_FILTER_ECLASS, null);
 		EClass collectionEClass = Options.getTableEClass(options);
 		if (collectionEClass != null && filterEClass == null) {
-			mergedOptions.put(Options.OPTION_FILTER_ECLASS, collectionEClass);
+			mergedOptions.put(Options.READ_FILTER_ECLASS, collectionEClass);
 		}
 	}
 	

@@ -195,8 +195,8 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 	protected void normalizeOptions(Map<Object, Object> options) {
 		mergedOptions.putAll(options);
 		EClass collectionEClass = Options.getTableEClass(options);
-		if (collectionEClass != null && !options.containsKey(Options.OPTION_FILTER_ECLASS)) {
-			mergedOptions.put(Options.OPTION_FILTER_ECLASS, collectionEClass);
+		if (collectionEClass != null && !options.containsKey(Options.READ_FILTER_ECLASS)) {
+			mergedOptions.put(Options.READ_FILTER_ECLASS, collectionEClass);
 		}
 	}
 	

@@ -79,7 +79,7 @@ public abstract class PushEventSourceRunnable<RESULT, MAPPER extends EObjectMapp
 			try {
 				while (doHasNext() && !isClosed() && !Thread.currentThread().isInterrupted()){
 					EObject eo = doGetNext();
-					if (Boolean.TRUE.equals(options.get(Options.OPTION_READ_DETACHED))) {
+					if (Boolean.TRUE.equals(options.get(Options.READ_READ_DETACHED))) {
 						detachEObject(eo);
 					}
 					long r = getConsumer().accept(PushEvent.data(eo));

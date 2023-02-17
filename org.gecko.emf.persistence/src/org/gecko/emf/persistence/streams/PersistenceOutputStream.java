@@ -67,8 +67,8 @@ public abstract class PersistenceOutputStream<DRIVER_RAW, DRIVER, MAPPER extends
 		normalizeOptions(options);
 		Boolean useIdAttributeAsPrimaryKey = (Boolean) options.get(Options.OPTION_USE_ID_ATTRIBUTE_AS_PRIMARY_KEY);
 		this.useIdAttributeAsPrimaryKey = (useIdAttributeAsPrimaryKey == null || useIdAttributeAsPrimaryKey);
-		this.forceInsert = Boolean.TRUE.equals(options.get(Options.OPTION_FORCE_INSERT));
-		this.clearResourceAfterInsert = !options.containsKey(Options.OPTION_CLEAR_RESOURCE_AFTER_BATCH_INSERT) || Boolean.TRUE.equals(options.get(Options.OPTION_CLEAR_RESOURCE_AFTER_BATCH_INSERT));
+		this.forceInsert = Boolean.TRUE.equals(options.get(Options.SAVE_FORCE_INSERT));
+		this.clearResourceAfterInsert = !options.containsKey(Options.SAVE_CLEAR_RESOURCE_AFTER_BATCH_INSERT) || Boolean.TRUE.equals(options.get(Options.SAVE_CLEAR_RESOURCE_AFTER_BATCH_INSERT));
 	}
 
 	/* 
@@ -255,10 +255,10 @@ public abstract class PersistenceOutputStream<DRIVER_RAW, DRIVER, MAPPER extends
 	 */
 	private <K extends Object, V extends Object> void normalizeOptions(Map<K, V> options) {
 		mergedOptions.putAll(options);
-		Boolean storeSuperType = (Boolean) options.getOrDefault(Options.OPTION_STORE_SUPERTYPE, null);
+		Boolean storeSuperType = (Boolean) options.getOrDefault(Options.SAVE_STORE_SUPERTYPE, null);
 		String collectionName = Options.getTableName(options);
 		if (collectionName != null && storeSuperType == null) {
-			mergedOptions.put(Options.OPTION_STORE_SUPERTYPE, Boolean.TRUE);
+			mergedOptions.put(Options.SAVE_STORE_SUPERTYPE, Boolean.TRUE);
 		}
 	}
 

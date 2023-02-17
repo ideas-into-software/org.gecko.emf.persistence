@@ -92,7 +92,7 @@ public class NativeQueryEngine implements QueryEngine<EMongoQuery, EObjectMapper
 		Document projection = (Document) rawQuery.get("projection");
 		projection = createEMFProjection(projection, options);
 
-		if (projection == null && Boolean.TRUE.equals(options.get(Options.OPTION_LAZY_RESULT_LOADING))) {
+		if (projection == null && Boolean.TRUE.equals(options.get(Options.READ_LAZY_RESULT_LOADING))) {
 			projection = createLazyLoadingProjection(options);
 		}
 		query.setProjection(projection);
@@ -142,7 +142,7 @@ public class NativeQueryEngine implements QueryEngine<EMongoQuery, EObjectMapper
 		if (eClass == null) {
 			return existingFilter;
 		}
-		boolean strict = options != null && Boolean.TRUE.equals(options.get(Options.OPTION_FILTER_ECLASS_STRICT));
+		boolean strict = options != null && Boolean.TRUE.equals(options.get(Options.READ_FILTER_ECLASS_STRICT));
 		String eClassKey = Options.getEClassKey(options);
 		String superTypeKey = Options.getSuperType(options);
 

@@ -152,7 +152,7 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 				QueryContext<DRIVER, QT, MAPPER> queryCtx = qcb.build();
 				results = executeCount(queryCtx);
 				// If returning counting result / mapping results as response value is active
-				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(results));
+				response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(results));
 			}
 			// Step 1 - create query and execute it
 			QueryContext<DRIVER, QT, MAPPER> queryCtx = qcb.build();
@@ -404,7 +404,7 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 			// write count results
 			if (!countResults) {
 				// If returning counting result / mapping results as response value is active
-				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(mappedCount));
+				response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(mappedCount));
 			}
 		} catch (PersistenceException e) {
 			mapper.close();
@@ -426,11 +426,11 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 		try {
 			while (mapper.hasNext()){
 				EObject dbObject = mapper.next();
-				if(Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_LAZY_RESULT_LOADING))){
+				if(Boolean.TRUE.equals(mergedOptions.get(Options.READ_LAZY_RESULT_LOADING))){
 					((InternalEObject) dbObject).eSetProxyURI(EcoreUtil.getURI(dbObject).appendQuery(null));
 					detachEObject(dbObject);
 				}
-				if (Boolean.TRUE.equals(mergedOptions.get(Options.OPTION_READ_DETACHED))) {
+				if (Boolean.TRUE.equals(mergedOptions.get(Options.READ_READ_DETACHED))) {
 					detachEObject(dbObject);
 				}
 				values.addUnique(dbObject);
@@ -439,7 +439,7 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 			// write count results
 			if (!countResults) {
 				// If returning counting result / mapping results as response value is active
-				response.put(Options.OPTION_COUNT_RESPONSE, Long.valueOf(mappedCount));
+				response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(mappedCount));
 			}
 		} catch (PersistenceException e) {
 			mapper.close();
@@ -480,12 +480,12 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 		eClass = (EClass) mergedOptions.getOrDefault(Options.OPTION_ECLASS_HINT, null);
 		eClassUri = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
 		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
-		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_KEY_ECLASS_URI, ECLASS_TYPE_COLUMN_NAME);
+		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_FIELD_ECLASS_URI, ECLASS_TYPE_COLUMN_NAME);
 
 		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_ID_ATTRIBUTE, false));
 		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_URI_FILTER, false));
-		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
-		countResults = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.OPTION_COUNT_RESULT, false));
+		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
+		countResults = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
 	}
 
 	/**
@@ -494,10 +494,10 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 	 */
 	private <K extends Object, V extends Object> void normalizeOptions(Map<K, V> options) {
 		mergedOptions.putAll(options);
-		EClass filterEClass = (EClass) options.getOrDefault(Options.OPTION_FILTER_ECLASS, null);
+		EClass filterEClass = (EClass) options.getOrDefault(Options.READ_FILTER_ECLASS, null);
 		EClass collectionEClass = Options.getTableEClass(options);
 		if (collectionEClass != null && filterEClass == null) {
-			mergedOptions.put(Options.OPTION_FILTER_ECLASS, collectionEClass);
+			mergedOptions.put(Options.READ_FILTER_ECLASS, collectionEClass);
 		}
 	}
 
