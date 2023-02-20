@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
@@ -77,7 +78,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	 * Return the default delete options
 	 * @return the delete option map
 	 */
-	public Map<Object, Object> getDefaultDeleteOptions() {
+	protected Map<Object, Object> getDefaultDeleteOptions() {
 		if (defaultDeleteOptions == null) {
 			defaultDeleteOptions = new HashMap<Object, Object>();
 		}
@@ -88,7 +89,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	 * Return the default count options
 	 * @return the count option map
 	 */
-	public Map<Object, Object> getDefaultCountOptions() {
+	protected Map<Object, Object> getDefaultCountOptions() {
 		if (defaultCountOptions == null) {
 			defaultCountOptions = new HashMap<Object, Object>();
 		}
@@ -99,7 +100,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	 * Return the default exist options
 	 * @return the exist option map
 	 */
-	public Map<Object, Object> getDefaultExistOptions() {
+	protected Map<Object, Object> getDefaultExistOptions() {
 		if (defaultExistOptions == null) {
 			defaultExistOptions = new HashMap<Object, Object>();
 		}
@@ -110,7 +111,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	 * Return the default load options
 	 * @return the load option map
 	 */
-	public Map<Object, Object> getDefaultLoadOptions() {
+	protected Map<Object, Object> getDefaultLoadOptions() {
 		if (defaultLoadOptions == null) {
 			defaultLoadOptions = new HashMap<Object, Object>();
 		}
@@ -121,11 +122,51 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	 * Return the default save options
 	 * @return the save option map
 	 */
-	public Map<Object, Object> getDefaultSaveOptions() {
+	protected Map<Object, Object> getDefaultSaveOptions() {
 		if (defaultSaveOptions == null) {
 			defaultSaveOptions = new HashMap<Object, Object>();
 		}
 		return defaultSaveOptions;
+	}
+
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.resource.PersistenceResource#updateDefaultOptions(java.util.Map, org.gecko.emf.persistence.resource.PersistenceResource.ActionType[])
+	 */
+	@Override
+	public void updateDefaultOptions(Map<Object, Object> options, ActionType... types) {
+		if (options == null) {
+			return;
+		}
+		Objects.requireNonNull(types, "At least one action type must be provided");
+		for (ActionType type : types) {
+			switch (type) {
+			case LOAD:
+				getDefaultLoadOptions().putAll(options);
+				break;
+			case SAVE:
+				getDefaultSaveOptions().putAll(options);
+				break;
+			case COUNT:
+				getDefaultCountOptions().putAll(options);
+				break;
+			case EXIST:
+				getDefaultExistOptions().putAll(options);
+				break;
+			case DELETE:
+				getDefaultDeleteOptions().putAll(options);
+				break;
+			case ALL:
+				getDefaultLoadOptions().putAll(options);
+				getDefaultSaveOptions().putAll(options);
+				getDefaultCountOptions().putAll(options);
+				getDefaultExistOptions().putAll(options);
+				getDefaultDeleteOptions().putAll(options);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	/* 

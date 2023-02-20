@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//.settings/org.eclipse.core.resources.prefs=UTF-8
+encoding//src/org/gecko/emf/persistence/tests/PersistenceConfigurationTest.java=UTF-8
 encoding//src/org/gecko/emf/persistence/tests/PersistenceResourceFactoryTests.java=UTF-8
 encoding//src/org/gecko/emf/persistence/tests/PersistenceResourceTests.java=UTF-8
 encoding//src/org/gecko/emf/persistence/tests/SimpleTest.java=UTF-8

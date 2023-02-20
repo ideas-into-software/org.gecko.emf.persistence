@@ -46,6 +46,7 @@ import org.gecko.emf.persistence.engine.PersistenceEngineFactory;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.resource.PersistenceResource;
 import org.gecko.emf.persistence.resource.PersistenceResourceFactory;
+import org.gecko.emf.persistence.resource.PersistenceResource.ActionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -573,7 +574,7 @@ public class PersistenceResourceTests {
 	 * @throws PersistenceException
 	 */
 	@Test
-	public void testSaveOptions() throws PersistenceException {
+	public void testUpdateSaveOptions() throws PersistenceException {
 		when(ef02.createEngine(any(URI.class))).thenReturn(engine02);
 		when(ef01.canHandle(any(URI.class))).thenReturn(false);
 		when(ef02.canHandle(any(URI.class))).thenReturn(true);
@@ -584,9 +585,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
-			Map<Object,Object> defaultSaveOptions = pr.getDefaultSaveOptions();
-			assertNotNull(defaultSaveOptions);
-			defaultSaveOptions.put("foo", "bar");
+			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.SAVE);
 			
 			assertDoesNotThrow(()->pr.save(null));
 			Updateable ue02 = (Updateable) engine02;
@@ -659,7 +658,7 @@ public class PersistenceResourceTests {
 	}
 	
 	@Test
-	public void testLoadOptions() throws PersistenceException {
+	public void testUpdateLoadOptions() throws PersistenceException {
 		when(ef02.createEngine(any(URI.class))).thenReturn(engine02);
 		when(ef01.canHandle(any(URI.class))).thenReturn(false);
 		when(ef02.canHandle(any(URI.class))).thenReturn(true);
@@ -673,9 +672,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
-			Map<Object,Object> defaultLoadOptions = pr.getDefaultLoadOptions();
-			assertNotNull(defaultLoadOptions);
-			defaultLoadOptions.put("foo", "bar");
+			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.LOAD);
 			
 			assertDoesNotThrow(()->pr.save(null));
 			
@@ -748,7 +745,7 @@ public class PersistenceResourceTests {
 	}
 	
 	@Test
-	public void testCountOptions() throws PersistenceException {
+	public void testUpdateCountOptions() throws PersistenceException {
 		when(ef02.createEngine(any(URI.class))).thenReturn(engine02);
 		when(ef01.canHandle(any(URI.class))).thenReturn(false);
 		when(ef02.canHandle(any(URI.class))).thenReturn(true);
@@ -762,9 +759,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
-			Map<Object,Object> defaultCountOptions = pr.getDefaultCountOptions();
-			assertNotNull(defaultCountOptions);
-			defaultCountOptions.put("foo", "bar");
+			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.COUNT);
 			
 			assertDoesNotThrow(()->pr.save(null));
 			
@@ -836,7 +831,7 @@ public class PersistenceResourceTests {
 	}
 	
 	@Test
-	public void testExistOptions() throws PersistenceException {
+	public void testUpdateExistOptions() throws PersistenceException {
 		when(ef02.createEngine(any(URI.class))).thenReturn(engine02);
 		when(ef01.canHandle(any(URI.class))).thenReturn(false);
 		when(ef02.canHandle(any(URI.class))).thenReturn(true);
@@ -850,9 +845,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
-			Map<Object,Object> defaultExistOptions = pr.getDefaultExistOptions();
-			assertNotNull(defaultExistOptions);
-			defaultExistOptions.put("foo", "bar");
+			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.EXIST);
 			
 			assertDoesNotThrow(()->pr.save(null));
 			
@@ -924,7 +917,7 @@ public class PersistenceResourceTests {
 	}
 	
 	@Test
-	public void testDeleteOptions() throws PersistenceException {
+	public void testUpdateDeleteOptions() throws PersistenceException {
 		when(ef02.createEngine(any(URI.class))).thenReturn(engine02);
 		when(ef01.canHandle(any(URI.class))).thenReturn(false);
 		when(ef02.canHandle(any(URI.class))).thenReturn(true);
@@ -938,9 +931,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
-			Map<Object,Object> defaultDeleteOptions = pr.getDefaultDeleteOptions();
-			assertNotNull(defaultDeleteOptions);
-			defaultDeleteOptions.put("foo", "bar");
+			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.DELETE);
 			
 			assertDoesNotThrow(()->pr.save(null));
 			
@@ -1005,6 +996,189 @@ public class PersistenceResourceTests {
 			ac = ArgumentCaptor.forClass(Map.class);
 			verify(de02, times(3)).delete(ac.capture());
 			assertFooBarFizzBuzz(ac, true, true);
+		} catch (Exception e) {
+			fail("Unexpected exception on close");
+		}
+		
+	}
+	
+	@Test
+	public void testUpdateAllOptions() throws PersistenceException {
+		when(ef02.createEngine(any(URI.class))).thenReturn(engine02);
+		when(ef01.canHandle(any(URI.class))).thenReturn(false);
+		when(ef02.canHandle(any(URI.class))).thenReturn(true);
+		resourceFactory.addEngine(ef01);
+		resourceFactory.addEngine(ef02);
+		URI uri = URI.createURI("dummy://bar/world");
+		Resource resource = resourceFactory.createResource(uri);
+		assertNotNull(resource);
+		assertInstanceOf(PersistenceResource.class, resource);
+		assertInstanceOf(PersistenceResource.class, resource);
+		try (PersistenceResource pr = (PersistenceResource) resource) {
+			
+			assertEquals(engine02, pr.getEngine());
+			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.ALL);
+			
+			assertDoesNotThrow(()->pr.save(null));
+			
+			Updateable ue02 = (Updateable) engine02;
+			ArgumentCaptor<Map> ac = ArgumentCaptor.forClass(Map.class);
+			verify(ue02, times(1)).create(ac.capture());
+			verify(ue02, never()).update(anyMap());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.load(null));
+			Readable re02 = (Readable) engine02;
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(re02, times(1)).read(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			pr.unload();
+			
+			assertDoesNotThrow(()->pr.count(null));
+			Countable ce02 = (Countable) engine02;
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(1)).count(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.exist(null));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(1)).exist(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.delete(null));
+			Deletable de02 = (Deletable) engine02;
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(de02, times(1)).delete(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.save(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ue02, times(1)).create(anyMap());
+			verify(ue02, times(1)).update(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.load(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(re02, times(2)).read(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			pr.unload();
+			
+			assertDoesNotThrow(()->pr.count(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(2)).count(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.count(Collections.singletonMap("fizz", "buzz")));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(3)).count(ac.capture());
+			assertFooBarFizzBuzz(ac, true, true);
+			
+			assertDoesNotThrow(()->pr.exist(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(2)).exist(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.exist(Collections.singletonMap("fizz", "buzz")));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(3)).exist(ac.capture());
+			assertFooBarFizzBuzz(ac, true, true);
+			
+			assertDoesNotThrow(()->pr.delete(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(de02, times(2)).delete(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.delete(Collections.singletonMap("fizz", "buzz")));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(de02, times(3)).delete(ac.capture());
+			assertFooBarFizzBuzz(ac, true, true);
+		} catch (Exception e) {
+			fail("Unexpected exception on close");
+		}
+		
+	}
+	
+	@Test
+	public void testUpdateManyOptions() throws PersistenceException {
+		when(ef02.createEngine(any(URI.class))).thenReturn(engine02);
+		when(ef01.canHandle(any(URI.class))).thenReturn(false);
+		when(ef02.canHandle(any(URI.class))).thenReturn(true);
+		resourceFactory.addEngine(ef01);
+		resourceFactory.addEngine(ef02);
+		URI uri = URI.createURI("dummy://bar/world");
+		Resource resource = resourceFactory.createResource(uri);
+		assertNotNull(resource);
+		assertInstanceOf(PersistenceResource.class, resource);
+		assertInstanceOf(PersistenceResource.class, resource);
+		try (PersistenceResource pr = (PersistenceResource) resource) {
+			
+			assertEquals(engine02, pr.getEngine());
+			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.LOAD, ActionType.COUNT);
+			
+			assertDoesNotThrow(()->pr.save(null));
+			
+			Updateable ue02 = (Updateable) engine02;
+			ArgumentCaptor<Map> ac = ArgumentCaptor.forClass(Map.class);
+			verify(ue02, times(1)).create(ac.capture());
+			verify(ue02, never()).update(anyMap());
+			assertFooBarFizzBuzz(ac, false, false);
+			
+			assertDoesNotThrow(()->pr.load(null));
+			Readable re02 = (Readable) engine02;
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(re02, times(1)).read(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			pr.unload();
+			
+			assertDoesNotThrow(()->pr.count(null));
+			Countable ce02 = (Countable) engine02;
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(1)).count(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.exist(null));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(1)).exist(ac.capture());
+			assertFooBarFizzBuzz(ac, false, false);
+			
+			assertDoesNotThrow(()->pr.delete(null));
+			Deletable de02 = (Deletable) engine02;
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(de02, times(1)).delete(ac.capture());
+			assertFooBarFizzBuzz(ac, false, false);
+			
+			assertDoesNotThrow(()->pr.save(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ue02, times(1)).create(anyMap());
+			verify(ue02, times(1)).update(ac.capture());
+			assertFooBarFizzBuzz(ac, false, false);
+			
+			assertDoesNotThrow(()->pr.load(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(re02, times(2)).read(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			pr.unload();
+			
+			assertDoesNotThrow(()->pr.count(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(2)).count(ac.capture());
+			assertFooBarFizzBuzz(ac, true, false);
+			
+			assertDoesNotThrow(()->pr.count(Collections.singletonMap("fizz", "buzz")));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(3)).count(ac.capture());
+			assertFooBarFizzBuzz(ac, true, true);
+			
+			assertDoesNotThrow(()->pr.exist(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(ce02, times(2)).exist(ac.capture());
+			assertFooBarFizzBuzz(ac, false, false);
+			
+			assertDoesNotThrow(()->pr.delete(Collections.emptyMap()));
+			ac = ArgumentCaptor.forClass(Map.class);
+			verify(de02, times(2)).delete(ac.capture());
+			assertFooBarFizzBuzz(ac, false, false);
+			
 		} catch (Exception e) {
 			fail("Unexpected exception on close");
 		}

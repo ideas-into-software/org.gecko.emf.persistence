@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.swing.Action;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.gecko.emf.persistence.api.ConverterService;
@@ -31,6 +33,7 @@ import org.gecko.emf.persistence.helper.EMFHelper;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.mapping.InputContentHandler;
 import org.gecko.emf.persistence.resource.PersistenceResource;
+import org.gecko.emf.persistence.resource.PersistenceResource.ActionType;
 
 /**
  * This is a base component class for input and output streams
@@ -62,6 +65,7 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 	public void configure(PersistenceResource resource, Map<Object, Object> properties) {
 		this.resource = resource;
 		this.properties = properties;
+		this.resource.updateDefaultOptions(properties, ActionType.ALL);
 		normalizeOptions(properties);
 	}
 	
@@ -156,20 +160,20 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 	
 	/**
 	 * Sets the id factory 
-	 * @param pkFactory the id factory to be added
+	 * @param primaryKeyFactory the id factory to be added
 	 */
-	protected void addPrimaryKeyFactory(PrimaryKeyFactory pkFactory) {
-		idFactories.put(pkFactory.getTableURI(), pkFactory);
+	protected void addPrimaryKeyFactory(PrimaryKeyFactory primaryKeyFactory) {
+		idFactories.put(primaryKeyFactory.getTableURI(), primaryKeyFactory);
 	}
 
 	/**
 	 * Un-sets the id factory 
-	 * @param pkFactory the id factory to be removed
+	 * @param primaryKeyFactory the id factory to be removed
 	 */
-	protected void removePrimaryKeyFactory(PrimaryKeyFactory pkFactory) {
-		PrimaryKeyFactory target = idFactories.get(pkFactory.getTableURI());
-		if (pkFactory == target)
-			idFactories.remove(pkFactory.getTableURI());
+	protected void removePrimaryKeyFactory(PrimaryKeyFactory primaryKeyFactory) {
+		PrimaryKeyFactory target = idFactories.get(primaryKeyFactory.getTableURI());
+		if (primaryKeyFactory == target)
+			idFactories.remove(primaryKeyFactory.getTableURI());
 	}
 	
 	/**
@@ -199,6 +203,5 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 			mergedOptions.put(Options.READ_FILTER_ECLASS, collectionEClass);
 		}
 	}
-	
 
 }

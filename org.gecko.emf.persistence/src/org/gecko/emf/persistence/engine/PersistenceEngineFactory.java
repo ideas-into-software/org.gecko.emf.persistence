@@ -15,7 +15,8 @@ import org.eclipse.emf.common.util.URI;
 import org.gecko.emf.persistence.api.PersistenceException;
 
 /**
- * Factory that creates {@link PersistenceEngine} instance and releases them
+ * Factory that creates {@link PersistenceEngine} instance and releases them.
+ * For each implementation usually just one factory is needed, that can then handle multiple configurations for the engines
  * @author Mark Hoffmann
  * @since 14.02.2023
  */

@@ -7,7 +7,8 @@
 	org.osgi.util.promise,\
 	org.gecko.emf.collections,\
 	org.osgi.util.function,\
-	org.osgi.service.component
+	org.osgi.service.component,\
+	org.osgi.service.cm
 	
 Bundle-Name: EMF Persistence API
 Bundle-Description: Gecko.io EMF Persistence API

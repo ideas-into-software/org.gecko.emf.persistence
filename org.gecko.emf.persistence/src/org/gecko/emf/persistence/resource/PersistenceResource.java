@@ -24,15 +24,20 @@ import org.gecko.emf.persistence.engine.PersistenceEngine;
  */
 public interface PersistenceResource extends Resource, AutoCloseable {
 	
-	Map<Object, Object> getDefaultLoadOptions();
+	public static enum ActionType {
+		LOAD,
+		SAVE,
+		DELETE,
+		COUNT,
+		EXIST,
+		ALL
+	}
 	
-	Map<Object, Object> getDefaultSaveOptions();
-	
-	Map<Object, Object> getDefaultDeleteOptions();
-	
-	Map<Object, Object> getDefaultCountOptions();
-	
-	Map<Object, Object> getDefaultExistOptions();
+	/**
+	 * Updates the default options of the {@link Resource} 
+	 * @param options the default options
+	 */
+	void updateDefaultOptions(Map<Object, Object> options, ActionType... types);
 	
 	/**
 	 * Counts the elements of this resource
