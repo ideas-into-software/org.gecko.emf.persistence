@@ -30,33 +30,14 @@ public class BasicModel {
 	private String user;
 	private String password;
 	protected Map<String, Object> properties = new HashMap<>();
-	private final BasicModel parent;
-	
-	/**
-	 * Creates a new instance.
-	 */
-	public BasicModel() {
-		this.parent = null;
-	}
-	
-	/**
-	 * Creates a new instance.
-	 */
-	public BasicModel(BasicModel parent) {
-		this.parent = parent;
-	}
-	
-	/**
-	 * Returns the fqn.
-	 * @return the fqn
-	 */
-	public String getFqn() {
-		String fqnPrefix = parent == null ? "" : parent.getFqn() + ".";
-		return fqnPrefix + getName();
-	}
+	private BasicModel parent;
 	
 	public BasicModel getParent() {
 		return parent == null ? null : parent;
+	}
+	
+	void setParent(BasicModel parent) {
+		this.parent = parent;
 	}
 	
 	/**

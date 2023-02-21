@@ -198,14 +198,14 @@ public abstract class DefaultPersistenceConfigurator {
 	 * @param databaseModel
 	 */
 	private void createDatabaseConfig(DatabaseModel databaseModel) {
-		String dbName = databaseModel.getFqn();
+		String dbName = databaseModel.getName();
 		Configuration c = doSetupDatabaseConfiguration(databaseModel);
 		if (nonNull(c)) {
-			dbConfigMap.put(databaseModel.getFqn(), c);
+			dbConfigMap.put(databaseModel.getName(), c);
 		}
 		c = doSetupEngineConfiguration(databaseModel);
 		if (nonNull(c)) {
-			engineConfigMap.put(databaseModel.getFqn(), c);
+			engineConfigMap.put(databaseModel.getName(), c);
 		}
 		dbModelMap.put(dbName, databaseModel);
 	}
@@ -215,7 +215,7 @@ public abstract class DefaultPersistenceConfigurator {
 	 * @param databaseModel
 	 */
 	private void removeDatabaseConfig(DatabaseModel databaseModel) {
-		String dbName = databaseModel.getFqn();
+		String dbName = databaseModel.getName();
 		dbModelMap.remove(dbName);
 		Configuration config = dbConfigMap.remove(dbName);
 		if (config != null) {

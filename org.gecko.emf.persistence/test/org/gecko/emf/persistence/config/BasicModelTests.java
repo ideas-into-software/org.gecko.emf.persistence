@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * @author Mark Hoffmann
  * @since 20.02.2023
  */
-public class BasicConfigurationTests {
+public class BasicModelTests {
 	
 	@Test
 	public void testGetPropertiesNPE() {

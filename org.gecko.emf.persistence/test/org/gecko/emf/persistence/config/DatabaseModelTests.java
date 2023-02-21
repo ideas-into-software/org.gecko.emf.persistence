@@ -36,7 +36,7 @@ import org.osgi.service.cm.ConfigurationException;
  * @author Mark Hoffmann
  * @since 20.02.2023
  */
-public class DatabaseConfigurationTests {
+public class DatabaseModelTests {
 
 	@Test
 	public void testGetDatabasesFail() throws ConfigurationException {
@@ -107,7 +107,33 @@ public class DatabaseConfigurationTests {
 	}
 	
 	@Test
-	public void testGetDatabaseConfiguration() throws ConfigurationException {
+	public void testGetDatabasesModelParent() throws ConfigurationException {
+		DatabaseModel config = DatabaseModel.createDatabaseModel("foo", "bar", Collections.emptyMap());
+		assertEquals("foo.bar", config.getName());
+		assertNull(config.getPassword());
+		assertNull(config.getUser());
+		assertTrue(config.getProperties().isEmpty());
+		
+		config = DatabaseModel.createDatabaseModel("foo", null, Collections.emptyMap());
+		assertNull(config);
+		
+		config = DatabaseModel.createDatabaseModel("foo", "bar", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+				"foo." + PROP_CONNECTION_URIS, "derby:test,jpa:test2", 
+				"foo." + PROP_USER, "emil", 
+				"foo." + PROP_PASSWORD, "1234", 
+				"foo.bar." + PROP_USER, "foobar", 
+				"foo.bar." + PROP_PASSWORD, "4321", 
+				"foo." + PROP_DATABASES,	"testDB", 
+				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE"));
+		assertEquals("foo.bar", config.getName());
+		assertEquals("4321", config.getPassword());
+		assertEquals("foobar", config.getUser());
+		assertTrue(config.getProperties().isEmpty());
+		assertNull(config.getParent());
+	}
+	
+	@Test
+	public void testGetDatabaseModel() throws ConfigurationException {
 		
 		assertThrows(NullPointerException.class, ()->DatabaseModel.createDatabaseModel(null, null, null));
 		assertThrows(NullPointerException.class, ()->DatabaseModel.createDatabaseModel("test", null, null));
@@ -142,7 +168,7 @@ public class DatabaseConfigurationTests {
 	}
 	
 	@Test
-	public void testGetDatabaseConfigurationProperties() throws ConfigurationException {
+	public void testGetDatabaseModelProperties() throws ConfigurationException {
 		
 		DatabaseModel config = DatabaseModel.createDatabaseModel("foo", "bar", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo.bar." + PROP_USER, "DBUSER",

@@ -28,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.gecko.emf.persistence.config.PersistenceConfiguratorConstants.RepositoryType;
@@ -41,7 +42,7 @@ import org.osgi.service.cm.ConfigurationException;
  * @author Mark Hoffmann
  * @since 20.02.2023
  */
-public class InstanceConfigurationTests {
+public class InstanceModelTests {
 	
 	@Test
 	public void testGetInstancesFail() throws ConfigurationException {
@@ -86,7 +87,7 @@ public class InstanceConfigurationTests {
 	}
 	
 	@Test
-	public void testGetInstanceConfiguration() throws ConfigurationException {
+	public void testGetInstanceModel() throws ConfigurationException {
 		
 		assertThrows(NullPointerException.class, ()->InstanceModel.createInstanceModel(null, null));
 		assertThrows(NullPointerException.class, ()->InstanceModel.createInstanceModel("test", null));
@@ -119,7 +120,7 @@ public class InstanceConfigurationTests {
 	}
 	
 	@Test
-	public void testGetInstanceConfigurationProperties() throws ConfigurationException {
+	public void testGetInstanceModelProperties() throws ConfigurationException {
 		
 		InstanceModel config = InstanceModel.createInstanceModel("foo", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE"));
@@ -148,7 +149,7 @@ public class InstanceConfigurationTests {
 	}
 	
 	@Test
-	public void testGetInstanceConfigurationDatabases() throws ConfigurationException {
+	public void testGetInstanceModelDatabases() throws ConfigurationException {
 		
 		InstanceModel config = InstanceModel.createInstanceModel("foo", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE"));
@@ -176,15 +177,37 @@ public class InstanceConfigurationTests {
 		assertEquals("authDB", config.getAuthenticationSource());
 		assertEquals(2, config.getDatabaseModels().size());
 		Iterator<DatabaseModel> iterator = config.getDatabaseModels().iterator();
-		assertEquals("foo.bar", iterator.next().getName());
-		assertEquals("foo.foo", iterator.next().getName());
+		List<String> names = List.of("foo.foo", "foo.bar");
+		assertTrue(names.contains(iterator.next().getName()));
+		assertTrue(names.contains(iterator.next().getName()));
 		assertEquals(1, config.getProperties().size());
 		assertEquals("test", config.getProperties().get("myTest"));
 		
 	}
 	
 	@Test
-	public void testGetInstanceConfigurationRepoType() throws ConfigurationException {
+	public void testDatabaseModelParent() throws ConfigurationException {
+		
+		InstanceModel config = InstanceModel.createInstanceModel("foo", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+				"foo." + PROP_PROPERTIES + ".myTest", "test",
+				"foo." + PROP_DATABASES, "foo,bar"));
+		assertEquals("foo", config.getName());
+		assertEquals("authDB", config.getAuthenticationSource());
+		assertEquals(2, config.getDatabaseModels().size());
+		Iterator<DatabaseModel> iterator = config.getDatabaseModels().iterator();
+		DatabaseModel dbm01 = iterator.next();
+		DatabaseModel dbm02 = iterator.next();
+		assertEquals("foo.bar", dbm01.getName());
+		assertEquals(config, dbm01.getParent());
+		assertEquals("foo.foo", dbm02.getName());
+		assertEquals(config, dbm02.getParent());
+		assertEquals(1, config.getProperties().size());
+		assertEquals("test", config.getProperties().get("myTest"));
+		
+	}
+	
+	@Test
+	public void testGetInstanceModelRepoType() throws ConfigurationException {
 		
 		InstanceModel config = InstanceModel.createInstanceModel("foo", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE"));

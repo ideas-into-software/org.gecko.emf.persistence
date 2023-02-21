@@ -39,15 +39,6 @@ public class InstanceModel extends BasicModel {
 	private String authSource;
 	private Set<DatabaseModel> databases = new HashSet<>();
 	
-	/* 
-	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.config.model.BasicConfiguration#getFqn()
-	 */
-	@Override
-	public String getFqn() {
-		return super.getName();
-	}
-
 	/**
 	 * @param valueOf
 	 */
@@ -97,6 +88,7 @@ public class InstanceModel extends BasicModel {
 		if (configurations == null) {
 			return;
 		}
+		configurations.forEach(dbc->dbc.setParent(this));
 		databases.addAll(configurations);
 	}
 
