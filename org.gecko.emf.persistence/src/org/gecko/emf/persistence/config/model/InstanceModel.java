@@ -32,12 +32,21 @@ import org.osgi.service.cm.ConfigurationException;
  * @author Mark Hoffmann
  * @since 17.02.2023
  */
-public class InstanceConfiguration extends BasicConfiguration {
+public class InstanceModel extends BasicModel {
 
 	private RepositoryType repositoryType;
 	private String connectionUris;
 	private String authSource;
-	private Set<DatabaseConfiguration> databaseConfigurations = new HashSet<>();
+	private Set<DatabaseModel> databases = new HashSet<>();
+	
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.config.model.BasicConfiguration#getFqn()
+	 */
+	@Override
+	public String getFqn() {
+		return super.getName();
+	}
 
 	/**
 	 * @param valueOf
@@ -84,19 +93,19 @@ public class InstanceConfiguration extends BasicConfiguration {
 		return authSource;
 	}
 	
-	void updateDatabaseConfigurations(Set<DatabaseConfiguration> configurations) {
+	void updateDatabaseModels(Set<DatabaseModel> configurations) {
 		if (configurations == null) {
 			return;
 		}
-		databaseConfigurations.addAll(configurations);
+		databases.addAll(configurations);
 	}
 
 	/**
 	 * Returns the databaseConfig.
 	 * @return the databaseConfig
 	 */
-	public Set<DatabaseConfiguration> getDatabaseConfigurations() {
-		return databaseConfigurations;
+	public Set<DatabaseModel> getDatabaseModels() {
+		return databases;
 	}
 	/**
 	 * Returns the instance array for a instance configuration
@@ -118,16 +127,16 @@ public class InstanceConfiguration extends BasicConfiguration {
 	/**
 	 * Returns all instance configurations that are configured in the given properties map
 	 * @param properties the source properties
-	 * @return a {@link Set} of {@link InstanceConfiguration}
+	 * @return a {@link Set} of {@link InstanceModel}
 	 * @throws ConfigurationException
 	 */
-	public static Set<InstanceConfiguration> createInstanceConfigurations(Map<Object, Object> properties) throws ConfigurationException {
+	public static Set<InstanceModel> createInstanceModels(Map<Object, Object> properties) throws ConfigurationException {
 		requireNonNull(properties, "The properties map must no be null");
 		String[] instances = getInstances(properties); 
-		Set<InstanceConfiguration> instanceConfigs = new HashSet<>();
+		Set<InstanceModel> instanceConfigs = new HashSet<>();
 		for (String instance : instances) {
 			try {
-				InstanceConfiguration config = createInstanceConfiguration(instance, properties);
+				InstanceModel config = createInstanceModel(instance, properties);
 				instanceConfigs.add(config);
 			} catch (Exception e) {
 				if (e instanceof ConfigurationException) {
@@ -141,20 +150,20 @@ public class InstanceConfiguration extends BasicConfiguration {
 	}
 
 	/**
-	 * Creates a {@link InstanceConfiguration} for the given instance name and properities
+	 * Creates a {@link InstanceModel} for the given instance name and properities
 	 * @param instance the instance name
 	 * @param instanceProperties the properties to get data from
-	 * @return the {@link InstanceConfiguration}
+	 * @return the {@link InstanceModel}
 	 * @throws ConfigurationException
 	 */
-	public static InstanceConfiguration createInstanceConfiguration(String instance, Map<Object, Object> instanceProperties) throws ConfigurationException {
+	public static InstanceModel createInstanceModel(String instance, Map<Object, Object> instanceProperties) throws ConfigurationException {
 		requireNonNull(instance, "The instance name must not be null");
 		requireNonNull(instanceProperties, "The properties map must no be null");
 		if (instance.isBlank() || instance.isEmpty()) {
 			throw new ConfigurationException(instance, "Instance value must not be empty or blank");
 		}
 		try {
-			InstanceConfiguration config = new InstanceConfiguration();
+			InstanceModel config = new InstanceModel();
 			config.setName(instance);
 			String instancePrefix = instance + ".";
 			String authSource = (String) instanceProperties.get(instancePrefix + PROP_AUTH_SOURCE);
@@ -177,11 +186,11 @@ public class InstanceConfiguration extends BasicConfiguration {
 				RepositoryType repoType = RepositoryType.valueOf(repoTypeString.toUpperCase());
 				config.setRepositoryType(repoType);
 			}
-			Set<DatabaseConfiguration> databaseConfigs = DatabaseConfiguration.createDatabaseConfigurations(instance, instanceProperties);
-			config.updateDatabaseConfigurations(databaseConfigs);
+			Set<DatabaseModel> databaseConfigs = DatabaseModel.createDatabaseModels(instance, instanceProperties);
+			config.updateDatabaseModels(databaseConfigs);
 			
 			String propertiesPrefix = instancePrefix + PROP_PROPERTIES + ".";
-			config.addProperties(BasicConfiguration.createProperties(propertiesPrefix, instanceProperties));
+			config.addProperties(BasicModel.createProperties(propertiesPrefix, instanceProperties));
 			return config;
 		} catch (IllegalStateException e) {
 			throw e;

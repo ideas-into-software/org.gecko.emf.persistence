@@ -18,6 +18,8 @@ Export-Package: \
 	org.gecko.emf.persistence,\
 	org.gecko.emf.persistence.converter,\
 	org.gecko.emf.persistence.codec,\
+	org.gecko.emf.persistence.config,\
+	org.gecko.emf.persistence.config.model,\
 	org.gecko.emf.persistence.context,\
 	org.gecko.emf.persistence.mapping,\
 	org.gecko.emf.persistence.api,\

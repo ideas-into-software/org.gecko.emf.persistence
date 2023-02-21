@@ -24,12 +24,40 @@ import java.util.stream.Collectors;
  * @author Mark Hoffmann
  * @since 17.02.2023
  */
-public class BasicConfiguration {
+public class BasicModel {
 
 	private String name;
 	private String user;
 	private String password;
 	protected Map<String, Object> properties = new HashMap<>();
+	private final BasicModel parent;
+	
+	/**
+	 * Creates a new instance.
+	 */
+	public BasicModel() {
+		this.parent = null;
+	}
+	
+	/**
+	 * Creates a new instance.
+	 */
+	public BasicModel(BasicModel parent) {
+		this.parent = parent;
+	}
+	
+	/**
+	 * Returns the fqn.
+	 * @return the fqn
+	 */
+	public String getFqn() {
+		String fqnPrefix = parent == null ? "" : parent.getFqn() + ".";
+		return fqnPrefix + getName();
+	}
+	
+	public BasicModel getParent() {
+		return parent == null ? null : parent;
+	}
 	
 	/**
 	 * @param name

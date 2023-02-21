@@ -28,8 +28,17 @@ import org.osgi.service.cm.ConfigurationException;
  * @author mark
  * @since 17.02.2023
  */
-public class DatabaseConfiguration extends BasicConfiguration {
+public class DatabaseModel extends BasicModel {
 
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.persistence.config.model.BasicConfiguration#getParent()
+	 */
+	@Override
+	public InstanceModel getParent() {
+		return (InstanceModel)super.getParent();
+	}
+	
 	/**
 	 * Returns the databases array for a databases config of an instance
 	 * @return the array of databases
@@ -56,17 +65,17 @@ public class DatabaseConfiguration extends BasicConfiguration {
 	/**
 	 * Returns all instance configurations that are configured in the given properties map
 	 * @param properties the source properties
-	 * @return a {@link Set} of {@link InstanceConfiguration}
+	 * @return a {@link Set} of {@link InstanceModel}
 	 * @throws ConfigurationException
 	 */
-	public static Set<DatabaseConfiguration> createDatabaseConfigurations(String instance, Map<Object, Object> properties) throws ConfigurationException {
+	public static Set<DatabaseModel> createDatabaseModels(String instance, Map<Object, Object> properties) throws ConfigurationException {
 		requireNonNull(instance, "The instance name must not be null");
 		requireNonNull(properties, "The properties map must no be null");
 		String[] databases = getDatabases(instance, properties); 
-		Set<DatabaseConfiguration> databaseConfigs = new HashSet<>();
+		Set<DatabaseModel> databaseConfigs = new HashSet<>();
 		for (String database : databases) {
 			try {
-				DatabaseConfiguration config = createDatabaseConfiguration(instance, database, properties);
+				DatabaseModel config = createDatabaseModel(instance, database, properties);
 				databaseConfigs.add(config);
 			} catch (Exception e) {
 				if (e instanceof ConfigurationException) {
@@ -80,13 +89,13 @@ public class DatabaseConfiguration extends BasicConfiguration {
 	}
 
 	/**
-	 * Creates a {@link InstanceConfiguration} for the given instance name and properities
+	 * Creates a {@link InstanceModel} for the given instance name and properities
 	 * @param instance the instance name
 	 * @param instanceProperties the properties to get data from
-	 * @return the {@link InstanceConfiguration}
+	 * @return the {@link InstanceModel}
 	 * @throws ConfigurationException
 	 */
-	public static DatabaseConfiguration createDatabaseConfiguration(String instance, String database, Map<Object, Object> instanceProperties) throws ConfigurationException {
+	public static DatabaseModel createDatabaseModel(String instance, String database, Map<Object, Object> instanceProperties) throws ConfigurationException {
 		requireNonNull(instance, "The instance name must not be null");
 		requireNonNull(instanceProperties, "The properties map must no be null");
 		if(database == null) {
@@ -99,7 +108,7 @@ public class DatabaseConfiguration extends BasicConfiguration {
 			throw new ConfigurationException(database, "Database value must not be empty or blank");
 		}
 		try {
-			DatabaseConfiguration config = new DatabaseConfiguration();
+			DatabaseModel config = new DatabaseModel();
 			String instancePrefix = instance + ".";
 			String databasePrefix = instancePrefix + database + ".";
 			config.setName(instancePrefix + database);
@@ -113,7 +122,7 @@ public class DatabaseConfiguration extends BasicConfiguration {
 				config.setPassword(pwd);
 			}
 			String propertiesPrefix = databasePrefix + PROP_PROPERTIES + ".";
-			config.addProperties(BasicConfiguration.createProperties(propertiesPrefix, instanceProperties));
+			config.addProperties(BasicModel.createProperties(propertiesPrefix, instanceProperties));
 			return config;
 		} catch (IllegalStateException e) {
 			throw e;

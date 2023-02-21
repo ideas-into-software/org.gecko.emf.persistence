@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 import org.eclipse.emf.common.util.URI;
 import org.gecko.emf.persistence.api.PersistenceException;
-import org.gecko.emf.persistence.config.model.InstanceConfiguration;
+import org.gecko.emf.persistence.config.model.InstanceModel;
 import org.osgi.service.component.ComponentServiceObjects;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;

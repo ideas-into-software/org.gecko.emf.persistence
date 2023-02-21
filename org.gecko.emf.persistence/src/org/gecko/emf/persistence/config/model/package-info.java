@@ -14,4 +14,5 @@
  * @author mark
  * @since 17.02.2023
  */
+@org.osgi.annotation.bundle.Export
 package org.gecko.emf.persistence.config.model;

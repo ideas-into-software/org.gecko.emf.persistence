@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.Map;
 
-import org.gecko.emf.persistence.config.model.BasicConfiguration;
+import org.gecko.emf.persistence.config.model.BasicModel;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -33,19 +33,19 @@ public class BasicConfigurationTests {
 	
 	@Test
 	public void testGetPropertiesNPE() {
-		assertThrows(NullPointerException.class, ()->BasicConfiguration.createProperties(null, null));
-		assertThrows(NullPointerException.class, ()->BasicConfiguration.createProperties("test", null));
-		assertThrows(NullPointerException.class, ()->BasicConfiguration.createProperties(null, Collections.emptyMap()));
+		assertThrows(NullPointerException.class, ()->BasicModel.createProperties(null, null));
+		assertThrows(NullPointerException.class, ()->BasicModel.createProperties("test", null));
+		assertThrows(NullPointerException.class, ()->BasicModel.createProperties(null, Collections.emptyMap()));
 	}
 	
 	@Test
 	public void testGetPropertiesEmpty() {
-		Map<String, Object> props = BasicConfiguration.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+		Map<String, Object> props = BasicModel.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE"));
 		assertNotNull(props);
 		assertTrue(props.isEmpty());
 		
-		props = BasicConfiguration.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+		props = BasicModel.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE", "demo", "test"));
 		assertNotNull(props);
 		assertTrue(props.isEmpty());
@@ -53,13 +53,13 @@ public class BasicConfigurationTests {
 	
 	@Test
 	public void testGetProperties() {
-		Map<String, Object> props = BasicConfiguration.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+		Map<String, Object> props = BasicModel.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE", "foo.prop.Demo", "Test"));
 		assertNotNull(props);
 		assertEquals(1, props.size());
 		assertEquals("Test", props.get("Demo"));
 		
-		props = BasicConfiguration.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+		props = BasicModel.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE", "foo.prop.Demo", "Test", "foo.prop.foo", "Bar"));
 		assertNotNull(props);
 		assertEquals(2, props.size());
@@ -68,7 +68,7 @@ public class BasicConfigurationTests {
 	
 	@Test
 	public void testGetPropertiesEmptyPrefix() {
-		Map<String, Object> props = BasicConfiguration.createProperties("", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+		Map<String, Object> props = BasicModel.createProperties("", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE", "prop.Demo", "Test"));
 		assertNotNull(props);
 		assertEquals(3, props.size());
@@ -79,7 +79,7 @@ public class BasicConfigurationTests {
 	
 	@Test
 	public void testGetPropertiesNoAdd() {
-		Map<String, Object> props = BasicConfiguration.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
+		Map<String, Object> props = BasicModel.createProperties("foo.prop.", Map.of("foo." + PROP_AUTH_SOURCE, "authDB", 
 				"foo." + PROP_REPOSITORY_TYPE, "PROTOTYPE", "foo.prop.Demo", "Test"));
 		assertNotNull(props);
 		assertEquals(1, props.size());
