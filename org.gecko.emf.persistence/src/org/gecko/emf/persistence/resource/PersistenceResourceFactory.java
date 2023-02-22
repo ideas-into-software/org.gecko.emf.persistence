@@ -13,8 +13,10 @@ package org.gecko.emf.persistence.resource;
 
 import static java.util.Objects.isNull;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -27,6 +29,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.engine.PersistenceEngineFactory;
+import org.gecko.emf.persistence.resource.PersistenceResource.ActionType;
 
 /**
  * Persistence {@link ResourceFactoryImpl} that is registered to the Gecko EMF Framework
@@ -37,7 +40,8 @@ public abstract class PersistenceResourceFactory extends ResourceFactoryImpl imp
 
 	private final static Logger LOGGER = Logger.getLogger(PersistenceResourceFactory.class.getName());
 	private final List<PersistenceEngineFactory> engineFactories = new LinkedList<>();
-
+	private final Map<Object, Object> properties = new HashMap<>();
+	
 	/* 
 	 * (non-Javadoc)
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl#createResource(org.eclipse.emf.common.util.URI)
@@ -96,12 +100,21 @@ public abstract class PersistenceResourceFactory extends ResourceFactoryImpl imp
 				return null;
 			}
 			PersistenceResourceImpl resource = new PersistenceResourceImpl(this, engine, uri);
+			resource.updateDefaultOptions(getProperties(), ActionType.ALL);
 			engine.setResource(resource);
 			return resource;
 		} catch (PersistenceException e) {
 			LOGGER.log(Level.SEVERE, e, ()-> String.format("Error creating the Persistence Engine for URI '%s'.", uri.toString()));
 			return null;
 		}
+	}
+	
+	/**
+	 * Returns the properties.
+	 * @return the properties
+	 */
+	protected Map<Object, Object> getProperties() {
+		return properties;
 	}
 
 	/**
