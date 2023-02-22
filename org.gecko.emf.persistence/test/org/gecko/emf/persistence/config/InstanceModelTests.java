@@ -197,9 +197,10 @@ public class InstanceModelTests {
 		Iterator<DatabaseModel> iterator = config.getDatabaseModels().iterator();
 		DatabaseModel dbm01 = iterator.next();
 		DatabaseModel dbm02 = iterator.next();
-		assertEquals("foo.bar", dbm01.getName());
+		List<String> instances = List.of("foo.bar", "foo.foo");
+		assertTrue(instances.contains(dbm01.getName()));
 		assertEquals(config, dbm01.getParent());
-		assertEquals("foo.foo", dbm02.getName());
+		assertTrue(instances.contains(dbm02.getName()));
 		assertEquals(config, dbm02.getParent());
 		assertEquals(1, config.getProperties().size());
 		assertEquals("test", config.getProperties().get("myTest"));

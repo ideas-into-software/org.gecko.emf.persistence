@@ -15,6 +15,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,7 @@ public abstract class DefaultPersistenceConfigurator {
 	private volatile Map<String, Configuration> engineConfigMap = new ConcurrentHashMap<>();
 	private volatile Map<String, Configuration> dbConfigMap = new ConcurrentHashMap<>();
 	private volatile Map<String, DatabaseModel> dbModelMap = new ConcurrentHashMap<>();
+	private final Set<InstanceModel> instanceModels = new HashSet<>(); 
 	private ConfigurationAdmin configAdmin;
 
 	/**
@@ -65,11 +67,12 @@ public abstract class DefaultPersistenceConfigurator {
 	 */
 	protected void activate(Map<Object, Object> properties) throws ConfigurationException {
 		Map<Object, Object> props = doActivate(properties);
-		Set<InstanceModel> configs = createInstanceModel(props);
+		Set<InstanceModel> configs = createInstanceModels(props);
 		if (configs == null) {
 			throw new ConfigurationException("createInstanceConfigurations", "The returning Set, of the createInstanceConfigurations must not be null!");
 		}
-		configs.forEach(this::setupInstanceConfiguration);
+		instanceModels.addAll(configs);
+		instanceModels.forEach(this::setupInstanceConfiguration);
 	}
 	
 	/**
@@ -87,8 +90,18 @@ public abstract class DefaultPersistenceConfigurator {
 	 * @throws ConfigurationException
 	 */
 	protected void modified(Map<Object, Object> properties) throws ConfigurationException {
-		deactivate(properties);
-		activate(properties);
+		Map<Object, Object> props = doModified(properties);
+		deactivate(props);
+		activate(props);
+	}
+	
+	/**
+	 * User should extend this, to implement additional behavior for property modification
+	 * @param properties configuration properties
+	 * @return the modified properties or the original one
+	 */
+	protected Map<Object, Object> doModified(Map<Object, Object> properties) throws ConfigurationException {
+		return properties;
 	}
 
 	/**
@@ -97,14 +110,14 @@ public abstract class DefaultPersistenceConfigurator {
 	 * @throws ConfigurationException
 	 */
 	protected void deactivate(Map<Object, Object> properties) throws ConfigurationException {
-		Map<Object, Object> props = doDeactivate(properties);
-		Set<InstanceModel> configs = createInstanceModel(props);
-		if (configs == null) {
-			throw new ConfigurationException("createInstanceConfigurations", "The returning Set, of the createInstanceConfigurations must not be null!");
+		doDeactivate(properties);
+		synchronized (instanceModels) {
+			Set<InstanceModel> remove = new HashSet<>(instanceModels);
+			instanceModels.clear();
+			remove.forEach(this::teardownModel);
 		}
-		configs.forEach(this::teardownModel);
 	}
-
+	
 	/**
 	 * User should extend this, to implement additional behavior for de-activation
 	 * @param properties configuration properties
@@ -120,7 +133,7 @@ public abstract class DefaultPersistenceConfigurator {
 	 * @return {@link Set} of {@link InstanceModel} or emmpty set
 	 * @throws ConfigurationException
 	 */
-	protected Set<InstanceModel> createInstanceModel(Map<Object, Object> properties) throws ConfigurationException {
+	protected Set<InstanceModel> createInstanceModels(Map<Object, Object> properties) throws ConfigurationException {
 		return InstanceModel.createInstanceModels(properties);
 	}
 
@@ -191,6 +204,30 @@ public abstract class DefaultPersistenceConfigurator {
 	 * @param databaseConfiguration the database configuration
 	 */
 	protected void doTeardownEngineConfiguration(DatabaseModel databaseConfiguration) {
+	}
+	
+	/**
+	 * Returns the engineConfigMap.
+	 * @return the engineConfigMap
+	 */
+	protected Map<String, Configuration> getEngineConfigMap() {
+		return engineConfigMap;
+	}
+	
+	/**
+	 * Returns the dbConfigMap.
+	 * @return the dbConfigMap
+	 */
+	protected Map<String, Configuration> getDbConfigMap() {
+		return dbConfigMap;
+	}
+	
+	/**
+	 * Returns the dbModelMap.
+	 * @return the dbModelMap
+	 */
+	protected Map<String, DatabaseModel> getDbModelMap() {
+		return dbModelMap;
 	}
 
 	/**
