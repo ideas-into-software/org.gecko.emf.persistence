@@ -9,7 +9,7 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.tests;
+package org.gecko.emf.persistence.resource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -31,8 +31,6 @@ import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.engine.PersistenceEngineFactory;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
-import org.gecko.emf.persistence.resource.PersistenceResource;
-import org.gecko.emf.persistence.resource.PersistenceResourceFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,10 +39,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-import org.osgi.framework.BundleContext;
-import org.osgi.test.common.annotation.InjectBundleContext;
-import org.osgi.test.junit5.context.BundleContextExtension;
-import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
  * See documentation here: 
@@ -52,8 +46,6 @@ import org.osgi.test.junit5.service.ServiceExtension;
  * 	https://github.com/osgi/osgi-test/wiki
  * Examples: https://github.com/osgi/osgi-test/tree/main/examples
  */
-@ExtendWith(BundleContextExtension.class)
-@ExtendWith(ServiceExtension.class)
 @ExtendWith(MockitoExtension.class)
 public class PersistenceResourceFactoryTests {
 	
@@ -68,7 +60,7 @@ public class PersistenceResourceFactoryTests {
 	private PersistenceEngineFactory  ef02;
 
 	@BeforeEach
-	public void before(@InjectBundleContext BundleContext ctx) throws PersistenceException {
+	public void before() throws PersistenceException {
 		resourceFactory = Mockito.mock(PersistenceResourceFactory.class, 
 				Mockito.withSettings().
 					useConstructor().

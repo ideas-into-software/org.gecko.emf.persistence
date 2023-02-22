@@ -12,13 +12,10 @@
 package org.gecko.emf.persistence.resource;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +27,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.engine.PersistenceEngineFactory;
-import org.osgi.service.component.ComponentServiceObjects;
 
 /**
  * Persistence {@link ResourceFactoryImpl} that is registered to the Gecko EMF Framework
@@ -86,7 +82,7 @@ public abstract class PersistenceResourceFactory extends ResourceFactoryImpl imp
 	public void removeEngine(PersistenceEngineFactory engineFactory) {
 		engineFactories.remove(engineFactory);
 	}
-
+	
 	protected PersistenceResource doCreateResource(URI uri) {
 		Optional<PersistenceEngineFactory> engineFactoryOpt = getEngineFactory(uri);
 		if (engineFactoryOpt.isEmpty()) {
@@ -94,12 +90,13 @@ public abstract class PersistenceResourceFactory extends ResourceFactoryImpl imp
 			return null;
 		}
 		try {
-			PersistenceEngine engine = engineFactoryOpt.get().createEngine(uri);
+			PersistenceEngine<?, ?, ?, ?, ?> engine = engineFactoryOpt.get().createEngine(uri);
 			if (isNull(engine)) {
 				LOGGER.log(Level.SEVERE, ()-> String.format("No persistence engine was created for URI '%s'. This looks like an error", uri.toString()));
 				return null;
 			}
 			PersistenceResourceImpl resource = new PersistenceResourceImpl(this, engine, uri);
+			engine.setResource(resource);
 			return resource;
 		} catch (PersistenceException e) {
 			LOGGER.log(Level.SEVERE, e, ()-> String.format("Error creating the Persistence Engine for URI '%s'.", uri.toString()));

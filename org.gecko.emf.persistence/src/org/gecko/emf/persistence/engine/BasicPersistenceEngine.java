@@ -12,15 +12,12 @@
  */
 package org.gecko.emf.persistence.engine;
 
-import java.sql.ResultSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.swing.Action;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -33,13 +30,12 @@ import org.gecko.emf.persistence.helper.EMFHelper;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.mapping.InputContentHandler;
 import org.gecko.emf.persistence.resource.PersistenceResource;
-import org.gecko.emf.persistence.resource.PersistenceResource.ActionType;
 
 /**
  * This is a base component class for input and output streams
  * @param <DRIVER> Driver, Table or Collection type, whatever is the base to do something on the database
  * @param <QT> the query object type of you implementation
- * @param <RT> the result type {@link ResultSet} for jdbc or a FindIterable for MongoDB
+ * @param <RT> the result type {@link java.sql.ResultSet} for jdbc or a FindIterable for MongoDB
  * @param <ENGINE> the native query engine
  * @param <MAPPER> an mapper for result types to {@link EObject} and {@link EObject} to input type
  * @author Mark Hoffmann
@@ -54,19 +50,17 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 	/** handlerList mapper for the result type to EObject using an optional mapper*/
 	private volatile List<InputContentHandler<RESULTTYPE, MAPPER>> handlerList = new CopyOnWriteArrayList<>();
 	private final Map<Object, Object> mergedOptions = new HashMap<>();
+	private final Map<Object, Object> engineProperties = new HashMap<>();
 	private PersistenceResource resource;
-	private Map<Object, Object> properties;
 	
 	/* 
 	 * (non-Javadoc)
-	 * @see org.gecko.emf.persistence.engine.PersistenceEngine#configure(org.gecko.emf.persistence.resource.PersistenceResource, java.util.Map)
+	 * @see org.gecko.emf.persistence.engine.PersistenceEngine#setResource(org.gecko.emf.persistence.resource.PersistenceResource)
 	 */
 	@Override
-	public void configure(PersistenceResource resource, Map<Object, Object> properties) {
+	public void setResource(PersistenceResource resource) {
 		this.resource = resource;
-		this.properties = properties;
-		this.resource.updateDefaultOptions(properties, ActionType.ALL);
-		normalizeOptions(properties);
+		normalizeOptions(engineProperties);
 	}
 	
 	/**
@@ -114,7 +108,7 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 	 * @return the properties
 	 */
 	public Map<Object, Object> getProperties() {
-		return properties;
+		return engineProperties;
 	}
 	
 	/**

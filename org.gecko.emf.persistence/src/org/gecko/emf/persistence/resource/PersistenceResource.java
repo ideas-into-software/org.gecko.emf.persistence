@@ -73,6 +73,6 @@ public interface PersistenceResource extends Resource, AutoCloseable {
 	 * Returns the persistence engine. Must not return <code>null</code>
 	 * @return the persistence engine
 	 */
-	PersistenceEngine getEngine();
+	PersistenceEngine<?, ?, ?, ?, ?> getEngine();
 	
 }

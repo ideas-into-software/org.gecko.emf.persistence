@@ -570,6 +570,7 @@ public class PersistenceHelper {
 		public URI getUri() {
 			return uri;
 		}
+		
 	}
 
 }

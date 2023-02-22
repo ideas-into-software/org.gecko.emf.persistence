@@ -25,14 +25,10 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.URIConverter;
-import org.eclipse.emf.ecore.resource.Resource.IOWrappedException;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.gecko.emf.persistence.api.Countable;
 import org.gecko.emf.persistence.api.Deletable;
@@ -53,12 +49,10 @@ import org.osgi.util.promise.PromiseFactory;
 @SuppressWarnings("unchecked")
 public class PersistenceResourceImpl extends ResourceImpl implements PersistenceResource, AsyncPersistenceResource {
 
-	private final static Logger LOGGER = Logger.getLogger(PersistenceResourceImpl.class.getName());
-
 	private final ThreadFactory threadFactory = ConcurrentHelper.createThreadFactory("EMFAsync-Resource");
 	private final PromiseFactory pf = new PromiseFactory(Executors.newSingleThreadExecutor(threadFactory), Executors.newScheduledThreadPool(2, threadFactory));
 	private final Consumer<PersistenceResource> disposeHandler;
-	private final PersistenceEngine engine;
+	private final PersistenceEngine<?, ?, ?, ?, ?> engine;
 	/**
 	 * The storage for the default count options.
 	 */
@@ -68,7 +62,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	/**
 	 * Creates a new instance.
 	 */
-	public PersistenceResourceImpl(Consumer<PersistenceResource> disposeHandler, PersistenceEngine engine, URI uri){
+	public PersistenceResourceImpl(Consumer<PersistenceResource> disposeHandler, PersistenceEngine<?, ?, ?, ?, ?> engine, URI uri){
 		super(uri);
 		this.disposeHandler = disposeHandler;
 		this.engine = engine;
@@ -138,6 +132,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 		if (options == null) {
 			return;
 		}
+//		Map<Object, Object> filtered = filterSupportedOptions(options);
 		Objects.requireNonNull(types, "At least one action type must be provided");
 		for (ActionType type : types) {
 			switch (type) {
@@ -476,7 +471,7 @@ public class PersistenceResourceImpl extends ResourceImpl implements Persistence
 	 * @see org.gecko.emf.persistence.resource.PersistenceResource#getEngine()
 	 */
 	@Override
-	public PersistenceEngine getEngine() {
+	public PersistenceEngine<?, ?, ?, ?, ?> getEngine() {
 		return engine;
 	}
 

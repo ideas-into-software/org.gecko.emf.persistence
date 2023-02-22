@@ -11,8 +11,6 @@
  */
 package org.gecko.emf.persistence.engine;
 
-import java.util.Map;
-
 import org.gecko.emf.persistence.context.PersistenceContext;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.resource.PersistenceResource;
@@ -30,11 +28,10 @@ import org.gecko.emf.persistence.resource.PersistenceResource;
 public interface PersistenceEngine<DRIVER, MAPPER extends EObjectMapper, RESULTTYPE, QUERYTYPE, QUERYENGINE> {
 	
 	/**
-	 * Configures the engine
+	 * Sets the resource
 	 * @param resource the {@link PersistenceResource} to be used for configuration
-	 * @param properties a properties map
 	 */
-	void configure(PersistenceResource resource, Map<Object, Object> properties);
+	void setResource(PersistenceResource resource);
 	
 	/**
 	 * Returns the persistence context

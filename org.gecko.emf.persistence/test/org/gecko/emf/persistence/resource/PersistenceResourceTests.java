@@ -9,7 +9,7 @@
  * Contributors:
  *     Data In Motion - initial API and implementation
  */
-package org.gecko.emf.persistence.tests;
+package org.gecko.emf.persistence.resource;
 
 import static org.gecko.emf.persistence.helper.EMFHelper.getResponse;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -44,8 +45,6 @@ import org.gecko.emf.persistence.api.Updateable;
 import org.gecko.emf.persistence.engine.PersistenceEngine;
 import org.gecko.emf.persistence.engine.PersistenceEngineFactory;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
-import org.gecko.emf.persistence.resource.PersistenceResource;
-import org.gecko.emf.persistence.resource.PersistenceResourceFactory;
 import org.gecko.emf.persistence.resource.PersistenceResource.ActionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,10 +55,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
-import org.osgi.framework.BundleContext;
-import org.osgi.test.common.annotation.InjectBundleContext;
-import org.osgi.test.junit5.context.BundleContextExtension;
-import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
  * See documentation here: 
@@ -67,8 +62,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
  * 	https://github.com/osgi/osgi-test/wiki
  * Examples: https://github.com/osgi/osgi-test/tree/main/examples
  */
-@ExtendWith(BundleContextExtension.class)
-@ExtendWith(ServiceExtension.class)
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @ExtendWith(MockitoExtension.class)
 public class PersistenceResourceTests {
 
@@ -81,7 +75,7 @@ public class PersistenceResourceTests {
 	private PersistenceEngineFactory  ef02;
 
 	@BeforeEach
-	public void before(@InjectBundleContext BundleContext ctx) throws PersistenceException {
+	public void before() throws PersistenceException {
 		resourceFactory = Mockito.mock(PersistenceResourceFactory.class, 
 				Mockito.withSettings().
 				useConstructor().
@@ -113,6 +107,7 @@ public class PersistenceResourceTests {
 			verify(ef02, never()).canHandle(any(URI.class));
 
 			assertEquals(engine01, pr01.getEngine());
+			verify(engine01, times(1)).setResource(eq(pr01));
 
 			assertThrows(UnsupportedOperationException.class, ()->pr01.save(null));
 			assertThrows(UnsupportedOperationException.class, ()->pr01.load(null));
@@ -147,6 +142,7 @@ public class PersistenceResourceTests {
 			verify(ef02, times(1)).canHandle(any(URI.class));
 
 			assertEquals(engine02, pr02.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr02));
 
 			assertDoesNotThrow(()->pr02.load(null));
 			assertDoesNotThrow(()->pr02.save(null));
@@ -182,6 +178,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			
 			Readable re02 = (Readable) engine02;
 			doAnswer(defaultResoureActionAnswer(null, 1111)).when(re02).read(anyMap());
@@ -273,6 +270,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			
 			Readable re02 = (Readable) engine02;
 			doAnswer((i)-> {
@@ -362,6 +360,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			
 			Readable re02 = (Readable) engine02;
 			doAnswer(defaultResoureActionAnswer(null, 1111)).when(re02).read(anyMap());
@@ -423,6 +422,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			
 			Readable re02 = (Readable) engine02;
 			doAnswer(defaultResoureActionAnswer(null, 1111)).when(re02).read(anyMap());
@@ -484,6 +484,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			
 			assertDoesNotThrow(()->pr.save(null));
 			
@@ -585,6 +586,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.SAVE);
 			
 			assertDoesNotThrow(()->pr.save(null));
@@ -672,6 +674,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.LOAD);
 			
 			assertDoesNotThrow(()->pr.save(null));
@@ -759,6 +762,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.COUNT);
 			
 			assertDoesNotThrow(()->pr.save(null));
@@ -845,6 +849,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.EXIST);
 			
 			assertDoesNotThrow(()->pr.save(null));
@@ -931,6 +936,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.DELETE);
 			
 			assertDoesNotThrow(()->pr.save(null));
@@ -1017,6 +1023,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.ALL);
 			
 			assertDoesNotThrow(()->pr.save(null));
@@ -1113,6 +1120,7 @@ public class PersistenceResourceTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			assertEquals(engine02, pr.getEngine());
+			verify(engine02, times(1)).setResource(eq(pr));
 			pr.updateDefaultOptions(Collections.singletonMap("foo", "bar"), ActionType.LOAD, ActionType.COUNT);
 			
 			assertDoesNotThrow(()->pr.save(null));

@@ -2,4 +2,6 @@ eclipse.preferences.version=1
 encoding//src/org/gecko/emf/persistence/helper/package-info.java=UTF-8
 encoding//src/org/gecko/emf/persistence/package-info.java=UTF-8
 encoding//src/org/gecko/emf/persistence/streams/package-info.java=UTF-8
+encoding//test/org/gecko/emf/persistence/resource/PersistenceResourceFactoryTests.java=UTF-8
+encoding//test/org/gecko/emf/persistence/resource/PersistenceResourceTests.java=UTF-8
 encoding/bnd.bnd=UTF-8

@@ -42,7 +42,7 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationException;
 
 /**
- * Tests the abstract class with its functionality
+ * Tests the abstract {@link DefaultPersistenceConfigurator} with its functionality
  * @author Mark Hoffmann
  * @since 22.02.2023
  */
