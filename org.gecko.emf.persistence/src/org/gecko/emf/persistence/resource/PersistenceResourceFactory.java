@@ -113,7 +113,7 @@ public abstract class PersistenceResourceFactory extends ResourceFactoryImpl imp
 	 * Returns the properties.
 	 * @return the properties
 	 */
-	protected Map<Object, Object> getProperties() {
+	public Map<Object, Object> getProperties() {
 		return properties;
 	}
 
