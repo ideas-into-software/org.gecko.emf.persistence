@@ -127,7 +127,7 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 		}
 
 		try {
-			QueryContextBuilder<DRIVER, QT, MAPPER> qcb = new QueryContextBuilder<>();
+			QueryContextBuilder<DRIVER, QT, MAPPER> qcb = QueryContext.createContextBuilder(null);
 			DRIVER driver = driverPromise.getValue();
 			qcb.driver(driver);
 			long results = -1l;
@@ -225,7 +225,7 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 
 				}
 			}
-			QueryContextBuilder<DRIVER, QT, MAPPER> qcb = new QueryContextBuilder<>();
+			QueryContextBuilder<DRIVER, QT, MAPPER> qcb = QueryContext.createContextBuilder(null);
 			DRIVER driver = driverPromise.getValue();
 			qcb.driver(driver);
 			String tableName = getTable(uri, mergedOptions);
@@ -356,7 +356,7 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 	/**
 	 * Returns the countResults.
 	 * @return the countResults
-	 * @deprecated Use {@link QueryContext#countResult()} instead
+	 * @deprecated Use {@link QueryContext#countResponse()} instead
 	 */
 	public boolean isCountResults() {
 		return countResults;
@@ -477,15 +477,15 @@ public abstract class PersistenceInputStream<DRIVER, DRIVER_RAW, QT, RT, ENGINE,
 	 * @param mergedOptions
 	 */
 	private void readOptions(Map<Object, Object> mergedOptions) {
-		eClass = (EClass) mergedOptions.getOrDefault(Options.OPTION_ECLASS_HINT, null);
-		eClassUri = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
-		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
-		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_FIELD_ECLASS_URI, ECLASS_TYPE_COLUMN_NAME);
+		eClass = (EClass) mergedOptions.getOrDefault(Options.CAP_ECLASS, null);
+		eClassUri = (String) mergedOptions.getOrDefault(Options.CAP_ECLASS_URI, null);
+		idAttributeName = (String) mergedOptions.getOrDefault(Options.CAP_ID_FIELD_NAME, null);
+		typeColumn = (String) mergedOptions.getOrDefault(Options.CAP_FIELD_ECLASS_TYPE, ECLASS_TYPE_COLUMN_NAME);
 
 		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_ID_ATTRIBUTE, false));
 		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_URI_FILTER, false));
-		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
-		countResults = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
+		countOnly = false;//Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
+		countResults = false;//Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
 	}
 
 	/**

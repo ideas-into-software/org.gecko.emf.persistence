@@ -169,7 +169,7 @@ public class DefaultPersistenceEngineIntegrationTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			ArgumentCaptor<Map<Object, Object>> capturer = ArgumentCaptor.forClass(Map.class);
-			assertThrows(NullPointerException.class, ()-> pr.count(Map.of("emil", "test")));
+			assertThrows(IOException.class, ()-> pr.count(Map.of("emil", "test")));
 			
 			verify(engine, times(1)).count(capturer.capture());
 			Map<Object, Object> countMap = capturer.getValue();
@@ -194,7 +194,7 @@ public class DefaultPersistenceEngineIntegrationTests {
 		try (PersistenceResource pr = (PersistenceResource) resource) {
 			
 			ArgumentCaptor<Map<Object, Object>> capturer = ArgumentCaptor.forClass(Map.class);
-			assertThrows(NullPointerException.class, ()-> pr.exist(Map.of("emil", "test")));
+			assertThrows(IOException.class, ()-> pr.exist(Map.of("emil", "test")));
 			
 			verify(engine, times(1)).exist(capturer.capture());
 			Map<Object, Object> existMap = capturer.getValue();

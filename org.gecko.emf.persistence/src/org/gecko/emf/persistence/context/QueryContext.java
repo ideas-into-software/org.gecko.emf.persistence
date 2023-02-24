@@ -18,6 +18,7 @@ import java.util.Optional;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.gecko.emf.persistence.api.ConverterService;
+import org.gecko.emf.persistence.engine.EngineContext;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 
 /**
@@ -27,8 +28,8 @@ import org.gecko.emf.persistence.mapping.EObjectMapper;
  */
 public interface QueryContext<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	
-	public static <DRIVER, QUERY, MAPPER extends EObjectMapper> QueryContextBuilder<DRIVER, QUERY, MAPPER> createContextBuilder() {
-		return new QueryContextBuilder<DRIVER, QUERY, MAPPER>();
+	public static <DRIVER, QUERY, MAPPER extends EObjectMapper> QueryContextBuilder<DRIVER, QUERY, MAPPER> createContextBuilder(EngineContext context) {
+		return new QueryContextBuilder<DRIVER, QUERY, MAPPER>(context);
 	}
 	
 	/**
@@ -104,10 +105,10 @@ public interface QueryContext<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	Map<Object, Object> getResponse();
 	
 	/**
-	 * Returns <code>true</code>, if the elements should be only counted, <code>false</code>, if not 
-	 * @return <code>true</code>, if the elements should be only counted
+	 * Return the engine context
+	 * @return the engine context
 	 */
-	boolean countOnly();
+	EngineContext getEngineContext();
 	
 	/**
 	 * Returns <code>true</code>, if the result should be mapped for only projected fields, otherwise <code>false</code>
@@ -116,9 +117,9 @@ public interface QueryContext<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	boolean projectOnly();
 	
 	/**
-	 * Returns <code>true</code>, if the resulting elements should be counted as well. It returns <code>false</code>, if {@link QueryContext#countOnly()} returns <code>true</code>
+	 * Returns <code>true</code>, if the resulting mapped elements should be counted as well.
 	 * @return <code>true</code>, if the resulting elements should be counted as well.
 	 */
-	boolean countResult();
+	boolean countResponse();
 
 }

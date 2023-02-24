@@ -204,8 +204,7 @@ public class MongoURIHandlerImpl extends URIHandlerImpl {
 	 * @return the MongoDB collection corresponding to the URI
 	 * @throws IOException if the URI is malformed or the collection could not otherwise be resolved
 	 */
-	private MongoCollection<Document> doGetCollection(URI uri, Map<?, ?> options) throws IOException
-	{
+	private MongoCollection<Document> doGetCollection(URI uri, Map<?, ?> options) throws IOException {
 		MongoDatabase database = getDatabase(uri, options);
 		MongoCollection<Document> dbCollection = getMongoCollection(database, uri, options);
 

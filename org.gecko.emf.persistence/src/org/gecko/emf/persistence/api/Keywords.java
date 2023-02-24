@@ -11,6 +11,8 @@
  */
 package org.gecko.emf.persistence.api;
 
+import org.eclipse.emf.ecore.EAnnotation;
+
 /**
  * Keywords that are used in the persistence framework
  * @author Mark Hoffmann
@@ -23,17 +25,17 @@ public interface Keywords {
 	 */
 	public static final String ID_KEY = "_id";
 	/**
-	 * eClass field identifier. Not intended to be used by clients.
-	 */
-	public static final String ECLASS_KEY = "_type";
-	/**
-	 * eProxyURI field identifier. Not intended to be used by clients.
+	 * ProxyURI field identifier. Not intended to be used by clients.
 	 */
 	public static final String PROXY_KEY = "_eProxyURI";
 	/**
+	 * eClass field identifier. Not intended to be used by clients.
+	 */
+	public static final String ECLASS_TYPE_KEY = "_eType";
+	/**
 	 * super-type array field identifier. Not intended to be used by clients.
 	 */
-	public static final String SUPER_TYPES_KEY = "_superTypes";
+	public static final String ECLASS_SUPER_TYPES_KEY = "_eSuperTypes";
 	/**
 	 * Extrensic ID field identifier. Not intended to be used by clients.
 	 */
@@ -41,11 +43,19 @@ public interface Keywords {
 	/**
 	 * Timestamp field identifier. Not intended to be used by clients.
 	 */
-	public static final String TIME_STAMP_KEY = "_timeStamp";
+	public static final String TIMESTAMP_KEY = "_timeStamp";
+	/**
+	 * Source for persistence {@link EAnnotation}.
+	 */
+	public static final String PERSISTENCE_ANNOTATION_SOURCE = "http://org.geckoprojects.com/1.0.0/EMFPersistence";
+	/**
+	 * Name for persistence {@link EAnnotation} to define alias database, table or column name.
+	 */
+	public static final String PERSISTENCE_ANNOTATION_NAME = "name";
 
-	public static final String CAPABILITY_NAMESPACE = "org.geckoprojects.emf.persistence";
+	public static final String CAPABILITY_NAMESPACE = "org.gecko.emf.persistence";
 	
-	public static final String CAPABILITY_EXTENSION_NAMESPACE = "org.geckoprojects.emf.persistence.extension";
+	public static final String CAPABILITY_EXTENSION_NAMESPACE = "org.gecko.emf.persistence.extension";
 
 	public static final String CAPABILITY_VERSION = "1.0";
 

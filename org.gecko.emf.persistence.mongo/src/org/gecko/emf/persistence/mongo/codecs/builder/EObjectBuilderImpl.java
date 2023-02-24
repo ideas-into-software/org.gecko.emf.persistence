@@ -354,7 +354,7 @@ public class EObjectBuilderImpl implements EObjectBuilder {
 			} else {
 				currentFeatureName = reader.readName();
 			}
-			if(currentFeatureName.equals(Keywords.TIME_STAMP_KEY)){
+			if(currentFeatureName.equals(Keywords.TIMESTAMP_KEY)){
 				if(response != null){
 					response.put(URIConverter.ATTRIBUTE_TIME_STAMP, reader.readInt64());
 				} else {

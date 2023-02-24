@@ -83,7 +83,7 @@ public abstract class PersistenceOutputStream<DRIVER_RAW, DRIVER, MAPPER extends
 			DRIVER d = driver.getValue();
 
 			MAPPER mapper = createMapper();
-			QueryContext<DRIVER, ?, MAPPER> inputContext = QueryContext.<DRIVER, Object, MAPPER>createContextBuilder().
+			QueryContext<DRIVER, ?, MAPPER> inputContext = QueryContext.<DRIVER, Object, MAPPER>createContextBuilder(null).
 					converterService(converterService).
 					mapper(mapper).
 					driver(d).

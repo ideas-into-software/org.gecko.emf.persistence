@@ -196,7 +196,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 		// We will write the _timeStamp only for the rootObject 
 		if(eObject.eContainer() == null){
 			long timeStamp = System.currentTimeMillis();
-			writePrimitiveValue(Keywords.TIME_STAMP_KEY, timeStamp, writer);
+			writePrimitiveValue(Keywords.TIMESTAMP_KEY, timeStamp, writer);
 			if(response != null){
 				response.put(URIConverter.RESPONSE_TIME_STAMP_PROPERTY, timeStamp);
 			}

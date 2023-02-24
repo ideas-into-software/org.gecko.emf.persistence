@@ -22,6 +22,11 @@ import org.gecko.emf.persistence.mapping.InputContentHandler;
  * @author Juergen Albert
  * @since 15 Feb 2018
  */
+/**
+ * 
+ * @author mark
+ * @since 24.02.2023
+ */
 public class PersistenceConstants {
 
 	/** The namepace of the repository Capabilities */
@@ -65,6 +70,11 @@ public class PersistenceConstants {
 	 */
 	public static final String INPUT_CONTENT_HANDLER_PROP = "pushstream";
 	
+	
+	/** 
+	 * ECLASS_TYPE_COLUMN_NAME 
+	 * @deprecated Use {@link Keywords#ECLASS_TYPE_KEY} instead 
+	 */
 	public static final String ECLASS_TYPE_COLUMN_NAME = "ETYPE";
 	
 	public static final String PERSISTENCE_TYPE_PROPERTIES = "type=persistence";

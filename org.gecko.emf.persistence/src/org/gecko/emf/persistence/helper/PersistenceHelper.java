@@ -525,8 +525,8 @@ public class PersistenceHelper {
 		if (options == null) {
 			options = new HashMap<>();
 		}
-		options.put(Options.OPTION_ECLASS_HINT, eclass);
-		options.put(Options.OPTION_ECLASS_URI_HINT, EcoreUtil.getURI(eclass).toString());
+		options.put(Options.CAP_ECLASS, eclass);
+		options.put(Options.CAP_ECLASS_URI, EcoreUtil.getURI(eclass).toString());
 		return options;
 	}
 	

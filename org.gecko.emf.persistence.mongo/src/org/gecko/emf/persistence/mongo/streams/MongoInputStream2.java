@@ -101,7 +101,7 @@ public class MongoInputStream2 extends PersistenceInputStream<MongoCollection<EO
 		EMongoQuery mongoQuery = queryCtx.getQuery();
 		Bson filter = mongoQuery.getFilter();
 		Document projection = mongoQuery.getProjection();
-		boolean countResults = queryCtx.countResult();
+		boolean countResults = queryCtx.countResponse();
 
 		long elementCount = -1l;
 		FindIterable<EObject> resultIterable;
@@ -156,16 +156,16 @@ public class MongoInputStream2 extends PersistenceInputStream<MongoCollection<EO
 		FindIterable<EObject> resultIterable;
 		if (filter != null) {
 			resultIterable = collection.find(filter);
-			if (context.countResult()) {
+			if (context.countResponse()) {
 				elementCount = collection.countDocuments(filter);
 			}
 		} else {
 			resultIterable = collection.find();
-			if (context.countResult()) {
+			if (context.countResponse()) {
 				elementCount = collection.countDocuments();
 			}
 		}
-		if (context.countResult()) {
+		if (context.countResponse()) {
 			context.getResponse().put(Options.READ_COUNT_RESPONSE, Long.valueOf(elementCount));
 		}
 		return elementCount;

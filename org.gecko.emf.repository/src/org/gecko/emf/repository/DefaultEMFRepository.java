@@ -588,7 +588,7 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 			loadOptions.putAll(options);
 		}
 		
-		loadOptions.put(Options.OPTION_COUNT_ONLY, Boolean.TRUE);
+		//loadOptions.put(Options.OPTION_COUNT_ONLY, Boolean.TRUE);
 		URI uri = createEClassUri(eClass.getName(), loadOptions);
 		Resource loadedResource;
 		try {

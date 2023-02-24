@@ -26,22 +26,47 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 public interface Countable {
 	
 	/**
-	 * This option can be set to tell the count to create a filter over the uri-type column. Only instances of of the given EClass URI are counted then.
-	 * This may be used in combination with {@link Options#OPTION_ECLASS_URI_HINT}. This option must be set as well, to tell the counter implementation,
-	 * which class to filter against.
+	 * This option can be set to tell the count to create a filter over the uri-type column and in super-class columns, if available
+	 * Only instances of of the given EClass URI are counted then. This may be used in combination 
+	 * with {@link Options#CAP_ECLASS_URI} or {@link Options#CAP_ECLASS}. If none of these two hints are provided,
+	 * This option will have no effect.
+	 * 
+	 * This enables to filter the count certain EClass types in tables where no table per class inheritance is used. 
+	 * Provided queries are applied in addition to that filter.
+	 * 
+	 * WARNING: If this options is set {@link Countable#CAP_COUNT_ID_FIELD} has then no effect
 	 * 
 	 * value type: Boolean, default is <code>false</code>
 	 */
-	public static final String OPTION_COUNT_URI_FILTER = "COUNT_URI_FILTER";
+	public static final String CAP_COUNT_ECLASS_TYPE_FILTER = "COUNT_ECLASS_TYPE_FILTER";
 	
 	/**
-	 * This option can be set to tell the count to create a filter over the uri-type column. Only instances of of the given EClass URI are counted then.
-	 * This may be used in combination with {@link Options#OPTION_ECLASS_IDATTRIBUTE_HINT}. This option must be set as well, to tell the counter implementation,
-	 * which id-column to filter against.
+	 * This option can be set to tell the count operation to count over the primary-key field instead of all fields
+	 * like a SELECT COUNT(*). This may be used in combination with {@link Options#CAP_ID_FIELD_NAME},
+	 * {@link Options#CAP_ECLASS_URI} or {@link Options#CAP_ECLASS}.
+	 * {@link Options#CAP_ID_FIELD_NAME} provided the name of the id-column directly. the both EClass hints
+	 * would provide information about the EClass. The IDAttribute will be extracted then from this EClass
+	 * 
+	 * WARNING: If none of the hints are set, this option will have no effect. If {@link Countable#CAP_COUNT_ECLASS_TYPE_FILTER}
+	 * is set, this capability is useless, because the count will run over the type-columns instead
 	 * 
 	 * value type: Boolean, default is <code>false</code>
 	 */
-	public static final String OPTION_COUNT_ID_ATTRIBUTE = "COUNT_ID_ATTRIBUTE";
+	public static final String CAP_COUNT_ID_FIELD = "COUNT_ID_FIELD";
+	
+	/**
+	 * This option can be set to tell the count operation over which field to be counted.
+	 * 
+	 * If this capability is set in addition to {@link Countable#CAP_COUNT_ID_FIELD}, then this options
+	 * has a higher rank and the count will not be executed using the id field. It will be counted over the 
+	 * given count attribute.
+	 * 
+	 * WARNING:If {@link Countable#CAP_COUNT_ECLASS_TYPE_FILTER} is set, this capability is useless, 
+	 * because the count will run over the type-columns instead
+	 * 
+	 * value type: String
+	 */
+	public static final String CAP_COUNT_FIELD = "COUNT_FIELD";
 	
 	/**
 	 * Counts the elements that match the given {@link URI} and options

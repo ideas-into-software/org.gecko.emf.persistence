@@ -29,7 +29,7 @@ public interface CountableOld {
 	
 	/**
 	 * This option can be set to tell the count to create a filter over the uri-type column. Only instances of of the given EClass URI are counted then.
-	 * This may be used in combination with {@link Options#OPTION_ECLASS_URI_HINT}. This option must be set as well, to tell the counter implementation,
+	 * This may be used in combination with {@link Options#CAP_ECLASS_URI}. This option must be set as well, to tell the counter implementation,
 	 * which class to filter against.
 	 * 
 	 * value type: Boolean, default is <code>false</code>
@@ -38,7 +38,7 @@ public interface CountableOld {
 	
 	/**
 	 * This option can be set to tell the count to create a filter over the uri-type column. Only instances of of the given EClass URI are counted then.
-	 * This may be used in combination with {@link Options#OPTION_ECLASS_IDATTRIBUTE_HINT}. This option must be set as well, to tell the counter implementation,
+	 * This may be used in combination with {@link Options#CAP_ID_FIELD_NAME}. This option must be set as well, to tell the counter implementation,
 	 * which id-column to filter against.
 	 * 
 	 * value type: Boolean, default is <code>false</code>

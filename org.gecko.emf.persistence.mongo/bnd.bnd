@@ -38,4 +38,5 @@ Export-Package: \
 	org.gecko.emf.persistence.mongo.handler,\
 	org.gecko.emf.persistence.mongo.streams,\
 	org.gecko.emf.persistence.mongo.util,\
-	org.gecko.emf.persistence.mongo.query
+	org.gecko.emf.persistence.mongo.query,\
+	org.gecko.emf.persistence.mongo.engine

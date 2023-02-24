@@ -89,10 +89,10 @@ public class MongoStreamFactory extends DefaultStreamFactory<Promise<MongoCollec
 		} catch (InvocationTargetException | InterruptedException e) {
 			throw new PersistenceException("Cannot get collection", e);
 		}
-		boolean countResults = false;
-		Object optionCountResult = mergedOptions.get(Options.READ_COUNT_RESULT);
+		boolean countResponse = false;
+		Object optionCountResponse = mergedOptions.get(Options.READ_COUNT_RESPONSE);
 		long elementCount = -1l;
-		countResults = optionCountResult != null && Boolean.TRUE.equals(optionCountResult);
+		countResponse = optionCountResponse != null && Boolean.TRUE.equals(optionCountResponse);
 		DeleteResult deleteResult = null;
 
 		try {
@@ -107,22 +107,22 @@ public class MongoStreamFactory extends DefaultStreamFactory<Promise<MongoCollec
 
 				if (filter != null) {
 					deleteResult = collection.deleteMany(filter);
-					if (countResults) {
+					if (countResponse) {
 						elementCount = deleteResult.getDeletedCount();
 					}
 				} else {
 					deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
-					if (countResults) {
+					if (countResponse) {
 						elementCount = deleteResult.getDeletedCount();
 					}
 				}
-				if (countResults) {
+				if (countResponse) {
 					response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(elementCount));
 				}
 
 			} else {
 				deleteResult = collection.deleteOne(new BasicDBObject(Keywords.ID_KEY, MongoUtils.getID(uri)));
-				if (countResults) {
+				if (countResponse) {
 					elementCount = deleteResult.getDeletedCount();
 					response.put(Options.READ_COUNT_RESPONSE, Long.valueOf(elementCount));
 				}

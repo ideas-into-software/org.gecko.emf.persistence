@@ -11,7 +11,8 @@
  */
 package org.gecko.emf.persistence.engine;
 
-import org.gecko.emf.persistence.context.PersistenceContext;
+import java.util.Map;
+
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.resource.PersistenceResource;
 
@@ -34,15 +35,22 @@ public interface PersistenceEngine<DRIVER, MAPPER extends EObjectMapper, RESULTT
 	void setResource(PersistenceResource resource);
 	
 	/**
-	 * Returns the persistence context
-	 */
-	PersistenceContext<DRIVER, QUERYTYPE, RESULTTYPE, QUERYENGINE, MAPPER> getContext();
-	
-	/**
 	 * Returns the {@link PersistenceResource}
 	 * @return the {@link PersistenceResource}
 	 */
 	PersistenceResource getResource();
+	
+	/**
+	 * Returns the mergedOptions.
+	 * @return the mergedOptions
+	 */
+	public Map<Object, Object> getMergedOptions();
+	
+	/**
+	 * returns the response optins map
+	 * @return the response optins map
+	 */
+	public Map<Object, Object> getResponse();
 	
 	/**
 	 * Releases a resources

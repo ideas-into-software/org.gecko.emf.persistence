@@ -11,17 +11,20 @@
  */
 package org.gecko.emf.persistence.context;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.engine.EngineContext;
+import org.gecko.emf.persistence.engine.EngineContext.ActionType;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 
 /**
@@ -46,81 +49,98 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	private String table;
 	private boolean countOnly = false;
 	private boolean projectOnly = false;
+	private final ActionType action;
+	private final EngineContext context;
+
+	QueryContextBuilder(EngineContext context) {
+		requireNonNull(context);
+		this.action = context.action();
+		this.resource = context.resource();
+		this.eClass = context.eClass();
+		this.response = context.response();
+		this.mergedOptions = context.effectiveOptions();
+		this.context = context;
+	}
+
 
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> eClass(EClass eClass) {
-		Objects.requireNonNull(eClass);
+		requireNonNull(eClass);
 		this.eClass = eClass;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> query(QUERY query) {
-		Objects.requireNonNull(query);
+		requireNonNull(query);
 		this.query = query;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> idColumn(String idColumn) {
-		Objects.requireNonNull(idColumn);
+		requireNonNull(idColumn);
 		this.idColumn = idColumn;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> column(String column) {
-		Objects.requireNonNull(column);
+		requireNonNull(column);
 		this.column = column;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> table(String table) {
-		Objects.requireNonNull(table);
+		requireNonNull(table);
 		this.table = table;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> driver(DRIVER driver) {
-		Objects.requireNonNull(driver);
+		requireNonNull(driver);
 		this.driver = driver;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> mapper(MAPPER mapper) {
-		Objects.requireNonNull(mapper);
+		requireNonNull(mapper);
 		this.mapper = mapper;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> options(Map<Object, Object> options) {
 		this.options = options == null ? Collections.emptyMap() : options;
 		normalizeOptions(this.options);
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> response(Map<Object, Object> response) {
 		this.response = response;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> resource(Resource resource) {
-		Objects.requireNonNull(resource);
+		requireNonNull(resource);
 		this.resource = resource;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> resourceCache(List<Resource> resourceCache) {
 		this.resourceCache = resourceCache == null ? Collections.emptyList() : resourceCache;
 		return this;
 	}
-	
+
 	public QueryContextBuilder<DRIVER, QUERY, MAPPER> converterService(ConverterService converter) {
 		this.converter = converter;
 		return this;
 	}
-	
+
 	protected void verifyBuild() {
-		Objects.requireNonNull(getResource());
-		Objects.requireNonNull(getEClass());
+		requireNonNull(getResource());
+		if (ActionType.READ.equals(action) || 
+				ActionType.CREATE.equals(action) || 
+				ActionType.UPDATE.equals(action) ) {
+			requireNonNull(getEClass());
+		}
 	}
-	
+
 	public QueryContext<DRIVER, QUERY, MAPPER> build() {
 		verifyBuild();
 		return new QueryContext<>() {
@@ -148,7 +168,7 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 			public List<Resource> getResourceCache() {
 				return resourceCache == null ? Collections.emptyList() : resourceCache;
 			}
-			
+
 			/* 
 			 * (non-Javadoc)
 			 * @see org.gecko.emf.persistence.context.QueryContext#getEClass()
@@ -202,29 +222,24 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 				return table;
 			}
 			@Override
-			public boolean countOnly() {
-				
-				return countOnly;
-			}
-			@Override
 			public boolean projectOnly() {
 				return projectOnly;
 			}
 			@Override
-			public boolean countResult() {
-				if (countOnly()) {
-					return false;
-				}
-				Object optionCountResult = mergedOptions.get(Options.READ_COUNT_RESULT);
-				return optionCountResult != null && Boolean.TRUE.equals(optionCountResult);
+			public boolean countResponse() {
+				return context.countResponse();
 			}
 			@Override
 			public Map<Object, Object> getResponse() {
 				return response == null ? new HashMap<>() : response;
 			}
+			@Override
+			public EngineContext getEngineContext() {
+				return context;
+			}
 		};
 	}
-	
+
 	/**
 	 * Returns the driver.
 	 * @return the driver
@@ -264,7 +279,7 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	public List<Resource> getResourceCache() {
 		return resourceCache;
 	}
-	
+
 	/**
 	 * Returns the idColumn.
 	 * @return the idColumn
@@ -272,7 +287,7 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	public String getIdColumn() {
 		return idColumn;
 	}
-	
+
 	/**
 	 * Returns the column.
 	 * @return the column
@@ -280,7 +295,7 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	public String getColumn() {
 		return column;
 	}
-	
+
 	/**
 	 * Returns the table.
 	 * @return the table
@@ -288,7 +303,7 @@ public class QueryContextBuilder<DRIVER, QUERY, MAPPER extends EObjectMapper> {
 	public String getTable() {
 		return table;
 	}
-	
+
 	/**
 	 * Normalizes the load options
 	 * @param options the original options

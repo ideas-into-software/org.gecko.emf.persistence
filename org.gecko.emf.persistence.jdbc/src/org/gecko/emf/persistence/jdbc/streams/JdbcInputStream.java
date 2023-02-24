@@ -517,15 +517,15 @@ public class JdbcInputStream extends InputStream implements URIConverter.Loadabl
 	 * @param mergedOptions2
 	 */
 	private void readOptions(Map<Object, Object> mergedOptions2) {
-		eClass = (EClass) mergedOptions.getOrDefault(Options.OPTION_ECLASS_HINT, null);
-		eClassUri = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_URI_HINT, null);
-		idAttributeName = (String) mergedOptions.getOrDefault(Options.OPTION_ECLASS_IDATTRIBUTE_HINT, null);
-		typeColumn = (String) mergedOptions.getOrDefault(Options.OPTION_FIELD_ECLASS_URI, JdbcPersistenceConstants.ECLASS_TYPE_COLUMN_NAME);
+		eClass = (EClass) mergedOptions.getOrDefault(Options.CAP_ECLASS, null);
+		eClassUri = (String) mergedOptions.getOrDefault(Options.CAP_ECLASS_URI, null);
+		idAttributeName = (String) mergedOptions.getOrDefault(Options.CAP_ID_FIELD_NAME, null);
+		typeColumn = (String) mergedOptions.getOrDefault(Options.CAP_FIELD_ECLASS_TYPE, JdbcPersistenceConstants.ECLASS_TYPE_COLUMN_NAME);
 	
 		countIdAttributeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_ID_ATTRIBUTE, false));
 		countTypeFilter = Boolean.TRUE.equals(mergedOptions.getOrDefault(CountableOld.OPTION_COUNT_URI_FILTER, false));
-		countOnly = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
-		countResults = Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
+		countOnly = false;//Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
+		countResults = false;//Boolean.TRUE.equals(mergedOptions.getOrDefault(Options.READ_COUNT_RESULT, false));
 	}
 
 	/**

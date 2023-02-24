@@ -12,6 +12,9 @@
  */
 package org.gecko.emf.persistence.engine;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +26,17 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.gecko.emf.persistence.api.ConverterService;
 import org.gecko.emf.persistence.api.Options;
+import org.gecko.emf.persistence.api.PersistenceException;
 import org.gecko.emf.persistence.api.PrimaryKeyFactory;
 import org.gecko.emf.persistence.api.QueryEngine;
-import org.gecko.emf.persistence.context.PersistenceContext;
+import org.gecko.emf.persistence.context.QueryContext;
+import org.gecko.emf.persistence.context.QueryContextBuilder;
+import org.gecko.emf.persistence.engine.EngineContext.ActionType;
 import org.gecko.emf.persistence.helper.EMFHelper;
 import org.gecko.emf.persistence.mapping.EObjectMapper;
 import org.gecko.emf.persistence.mapping.InputContentHandler;
 import org.gecko.emf.persistence.resource.PersistenceResource;
+import org.osgi.util.promise.Promise;
 
 /**
  * This is a base component class for input and output streams
@@ -127,29 +134,13 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 		return Collections.unmodifiableList(handlerList);
 	}
 	
-	public PersistenceContext<DRIVER, QUERYTYPE, RESULTTYPE, QUERYENGINE, MAPPER> createContext() {
-		return new PersistenceContext<DRIVER, QUERYTYPE, RESULTTYPE, QUERYENGINE, MAPPER>() {
 
-			@Override
-			public ConverterService getConverterSevice() {
-				return converterService;
-			}
-
-			@Override
-			public QueryEngine<QUERYTYPE, QUERYENGINE> getQueryEngine() {
-				return queryEngine;
-			}
-
-			@Override
-			public List<InputContentHandler<RESULTTYPE, MAPPER>> getInputContentHandler() {
-				return handlerList;
-			}
-			
-			@Override
-			public Map<String, PrimaryKeyFactory> getKeyFactories() {
-				return idFactories;
-			}
-		};
+	/**
+	 * Returns the map with {@link PrimaryKeyFactory} for certain URI's
+	 * @return the map with {@link PrimaryKeyFactory} for certain URI's
+	 */
+	protected Map<String, PrimaryKeyFactory> getPrimaryKeyFactoryMap() {
+		return idFactories;
 	}
 	
 	/**
@@ -197,5 +188,35 @@ public abstract class BasicPersistenceEngine<DRIVER, MAPPER extends EObjectMappe
 			mergedOptions.put(Options.READ_FILTER_ECLASS, collectionEClass);
 		}
 	}
+	
+	protected EngineContext createEngineContext(Map<Object, Object> options, ActionType action) {
+		requireNonNull(action);
+		Map<Object, Object> effectiveOptions = new HashMap<>();
+		if (options != null) {
+			effectiveOptions.putAll(options);
+		}
+		effectiveOptions.putAll(getMergedOptions());
+		return EngineContext.createContext(this, action);
+	}
+	
+	protected QueryContextBuilder<DRIVER, QUERYTYPE, MAPPER>createQueryContextBuilder(EngineContext context) throws PersistenceException {
+		QueryContextBuilder<DRIVER, QUERYTYPE, MAPPER> qcb = QueryContext.createContextBuilder(context);
+		DRIVER driver;
+		try {
+			driver = getDriver(context).getValue();
+			return qcb.driver(driver).converterService(converterService);
+		} catch (InvocationTargetException e) {
+			throw new PersistenceException("Error getting driver becasue of InvocationTargetException", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new PersistenceException("Error getting driver becasue of InterruptedException", e);
+		}
+	}
 
+	/**
+	 * Returns the driver promise
+	 * @param context the engine context
+	 * @return the driver promise
+	 */
+	protected abstract Promise<DRIVER> getDriver(EngineContext context);
 }
