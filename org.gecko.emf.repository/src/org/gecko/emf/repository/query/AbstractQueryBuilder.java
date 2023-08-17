@@ -206,7 +206,7 @@ public abstract class AbstractQueryBuilder implements IQueryBuilder {
 	 * @see org.gecko.emf.repository.query.IQueryBuilder#in(java.util.Collection)
 	 */
 	@Override
-	public IQueryBuilder in(Collection<Object> valueList) {
+	public IQueryBuilder in(Collection<? extends Object> valueList) {
 		queryType = QUERY_TYPE_IN;
 		if (valueList != null && !valueList.isEmpty()) {
 			inValueList.addAll(valueList);

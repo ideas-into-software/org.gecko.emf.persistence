@@ -38,12 +38,19 @@ import org.gecko.emf.persistence.helper.PersistenceHelper;
 import org.gecko.emf.repository.DefaultEMFRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.platform.commons.annotation.Testable;
+import org.osgi.test.junit5.context.BundleContextExtension;
+import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
  * @author jalbert
  *
  */
+@Testable
+@ExtendWith(BundleContextExtension.class)
+@ExtendWith(ServiceExtension.class)
 public class TestDefaultRepository {
 	
 	private class SimpleDefaultRepository extends DefaultEMFRepository {

@@ -28,7 +28,11 @@ import org.gecko.emf.osgi.example.model.basic.BasicPackage;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
 import org.gecko.emf.repository.DefaultEMFRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.platform.commons.annotation.Testable;
+import org.osgi.test.junit5.context.BundleContextExtension;
+import org.osgi.test.junit5.service.ServiceExtension;
 
 /**
  * Tests to reproduce the bug reported in #17
@@ -36,6 +40,9 @@ import org.junit.jupiter.api.io.TempDir;
  * @author ilenia
  * @since Aug 9, 2019
  */
+@Testable
+@ExtendWith(BundleContextExtension.class)
+@ExtendWith(ServiceExtension.class)
 public class TestResource {
 
 	@Test

@@ -139,7 +139,7 @@ public interface IQueryBuilder {
    * @param valueList list with values
    * @return the {@link IQueryBuilder} instance
    */
-  public IQueryBuilder in(Collection<Object> valueList);
+  public IQueryBuilder in(Collection<? extends Object> valueList);
   
   /**
    * Creates a in-query
