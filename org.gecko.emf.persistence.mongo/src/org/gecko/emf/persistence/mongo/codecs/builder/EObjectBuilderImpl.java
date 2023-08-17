@@ -507,8 +507,8 @@ public class EObjectBuilderImpl implements EObjectBuilder {
 	private Object getPrimitiveValue(BsonReader reader, BsonType type, EDataType eDataType, String instanceClassName) {
 		
 		if (!isDatatypeCompatible(type, eDataType, instanceClassName)) {
-			logger.warning("Error detected invalid Mongo - Ecore data type combination: Mongo: " + type + ", Ecore: " + eDataType  + 
-					" InstanceClassName " + instanceClassName +". Maybe use the ValueConverter for that.");
+			logger.warning("Detected potential invalid Mongo - Ecore data type combination: Mongo: " + type + ", Ecore: " + eDataType  + 
+					" InstanceClassName " + instanceClassName +". Make sure you registered a ValueConverter for that or the object might not be saved properly.");
 		}
 		
 		instanceClassName = eDataType != null ? eDataType.getInstanceClassName() : instanceClassName != null ? instanceClassName : "";

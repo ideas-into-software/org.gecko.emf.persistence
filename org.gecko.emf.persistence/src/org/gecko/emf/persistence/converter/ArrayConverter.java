@@ -14,7 +14,6 @@ package org.gecko.emf.persistence.converter;
 import java.util.logging.Logger;
 
 import org.eclipse.emf.ecore.EDataType;
-import org.gecko.emf.persistence.converter.ValueConverter;
 
 /**
  * 
