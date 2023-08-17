@@ -26,6 +26,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.annotation.Testable;
 import org.osgi.framework.BundleContext;
 import org.osgi.test.common.annotation.InjectBundleContext;
 import org.osgi.test.junit5.context.BundleContextExtension;
@@ -37,6 +38,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
  * 	https://github.com/osgi/osgi-test/wiki
  * Examples: https://github.com/osgi/osgi-test/tree/main/examples
  */
+@Testable
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 public class ExampleTest {

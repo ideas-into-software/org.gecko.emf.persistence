@@ -11,10 +11,6 @@
 -runbundles.test: \
 	org.gecko.emf.persistence.jdbc.tests;version=snapshot
 
-#-runfw: org.apache.felix.framework
-
-#-runee: JavaSE-11
-
 -runfw: org.apache.felix.framework;version='[7.0.1,7.0.1]'
 -runee: JavaSE-11
 -runbundles: \
@@ -55,4 +51,4 @@
 	org.objenesis;version='[3.3.0,3.3.1)',\
 	org.postgresql.jdbc;version='[42.5.1,42.5.2)',\
 	org.gecko.emf.persistence.jdbc.dialect;version=snapshot,\
-	org.ops4j.pax.jdbc.derby;version='[1.5.3,1.5.4)'
+	org.ops4j.pax.jdbc.derby;version='[1.5.5,1.5.6)'

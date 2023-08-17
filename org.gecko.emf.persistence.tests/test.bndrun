@@ -1,34 +1,23 @@
--runbundles.junit5: \
-	${test.runbundles}
+-library: enableOSGi-Test
 
 -runrequires: \
-	bnd.identity;id='org.gecko.emf.persistence.api.tests',\
-	bnd.identity;id='org.gecko.emf.osgi.api'
-
-#-runfw: org.apache.felix.framework
-
-#-runee: JavaSE-11
+	bnd.identity;id='org.gecko.emf.osgi.api',\
+	bnd.identity;id='org.gecko.emf.persistence.tests'
 
 -runfw: org.apache.felix.framework;version='[7.0.1,7.0.1]'
 -runee: JavaSE-11
 -runbundles: \
-	assertj-core;version='[3.22.0,3.22.1)',\
-	junit-jupiter-api;version='[5.8.2,5.8.3)',\
-	junit-jupiter-params;version='[5.8.2,5.8.3)',\
-	junit-platform-commons;version='[1.8.2,1.8.3)',\
 	org.apache.commons.commons-io;version='[2.11.0,2.11.1)',\
-	org.apache.felix.configadmin;version='[1.9.22,1.9.23)',\
-	org.apache.felix.scr;version='[2.1.30,2.1.31)',\
 	org.eclipse.emf.common;version='[2.23.0,2.23.1)',\
 	org.eclipse.emf.ecore;version='[2.25.0,2.25.1)',\
-	org.eclipse.emf.ecore.xmi;version='[2.16.0,2.16.1)',\
-	org.gecko.emf.osgi.api;version='[4.1.1,4.1.2)',\
-	org.gecko.emf.osgi.component;version='[4.1.1,4.1.2)',\
-	org.gecko.emf.persistence.api;version=snapshot,\
-	org.gecko.emf.persistence.api.tests;version=snapshot,\
 	org.opentest4j;version='[1.2.0,1.2.1)',\
-	org.osgi.service.component;version='[1.4.0,1.4.1)',\
-	org.osgi.test.common;version='[1.1.0,1.1.1)',\
-	org.osgi.test.junit5;version='[1.1.0,1.1.1)',\
 	org.osgi.util.function;version='[1.1.0,1.1.1)',\
-	org.osgi.util.promise;version='[1.1.1,1.1.2)'
+	junit-jupiter-api;version='[5.9.1,5.9.2)',\
+	junit-jupiter-params;version='[5.9.1,5.9.2)',\
+	junit-platform-commons;version='[1.9.1,1.9.2)',\
+	org.gecko.emf.osgi.api;version='[4.4.0,4.4.1)',\
+	org.gecko.emf.persistence.tests;version=snapshot,\
+	org.osgi.service.component;version='[1.5.0,1.5.1)',\
+	org.osgi.test.common;version='[1.2.1,1.2.2)',\
+	org.osgi.test.junit5;version='[1.2.1,1.2.2)',\
+	org.osgi.util.promise;version='[1.2.0,1.2.1)'
