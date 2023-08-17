@@ -54,6 +54,7 @@ import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.Keywords;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.converter.ValueConverter;
+import org.gecko.emf.persistence.helper.PersistenceHelper;
 import org.gecko.emf.persistence.mongo.util.MongoUtils;
 
 /**
@@ -391,7 +392,7 @@ public class EObjectBuilderImpl implements EObjectBuilder {
 				List<EObject> children = new LinkedList<>();
 				reader.readStartArray();
 				while (!BsonType.END_OF_DOCUMENT.equals(reader.readBsonType())) {
-					EObject child = (EObject) codecRegistry.get(reference.getEReferenceType().getInstanceClass()).decode(reader, decoderContext);
+					EObject child = (EObject) codecRegistry.get(PersistenceHelper.getInstanceClassOrDefault(reference.getEReferenceType())).decode(reader, decoderContext);
 					if (child != null) {
 						children.add(child);
 					}
@@ -399,7 +400,7 @@ public class EObjectBuilderImpl implements EObjectBuilder {
 				result = children;
 				reader.readEndArray();
 			} else {
-				result = codecRegistry.get(reference.getEReferenceType().getInstanceClass()).decode(reader, decoderContext);
+				result = codecRegistry.get(PersistenceHelper.getInstanceClassOrDefault(reference.getEReferenceType())).decode(reader, decoderContext);
 			}
 			if (result != null) {
 				parent.eSet(reference, result);

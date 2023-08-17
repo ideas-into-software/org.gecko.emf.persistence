@@ -298,11 +298,10 @@ public abstract class BasicEObjectCodec<RESULT, T extends InputContext<RESULT>> 
 		//@formatter:on
 	}
 	
+	
 	/**
-	 * This function determines whether or not the given EDataType can be represented natively by MongoDB.
-	 * 
-	 * @param dataType the EMF data type to check
-	 * @return true if the data type can be represented natively by MongoDB; false otherwise
+	 * @param dataType
+	 * @return
 	 */
 	public static Class<?> toBoxedType(EDataType dataType) {
 		if (dataType == null || dataType.getInstanceClass() == null) {

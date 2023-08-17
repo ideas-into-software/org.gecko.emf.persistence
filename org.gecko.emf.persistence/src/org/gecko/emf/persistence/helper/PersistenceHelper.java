@@ -530,6 +530,10 @@ public class PersistenceHelper {
 		return options;
 	}
 	
+	public static Class<?> getInstanceClassOrDefault(EClass eClass) {
+		return eClass.getInstanceClass() != null ? eClass.getInstanceClass() : EObject.class;
+	}
+	
 	public static EMFPersistenceContext createPersistenceContext(String baseUri, EClass eclass, Map<String, Object> options) {
 		assert(eclass != null);
 		assert(baseUri != null);
@@ -571,5 +575,7 @@ public class PersistenceHelper {
 			return uri;
 		}
 	}
+	
+	
 
 }
