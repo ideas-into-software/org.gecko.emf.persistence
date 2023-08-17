@@ -32,6 +32,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.gecko.emf.osgi.ResourceSetFactory;
 import org.gecko.emf.osgi.example.model.basic.Address;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
+import org.gecko.emf.osgi.example.model.basic.BasicPackage;
 import org.gecko.emf.osgi.example.model.basic.Person;
 import org.gecko.emf.repository.EMFReadRepository;
 import org.gecko.emf.repository.EMFRepository;
@@ -269,6 +270,187 @@ public class FileRepositoryIntegrationTest {
 
 		config.delete();
 
+		Thread.sleep(200);
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+	}
+	
+	@Test
+	public void testEMFRepositorySaveExistsURI(
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFWriteRepository> writeRepositoryAware, 
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFReadRepository> readRepositoryAware, 
+			@InjectConfiguration("EMFFileRepository~1") Configuration config,
+			@TempDir Path tempDir) throws InterruptedException, IOException {
+		
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+		
+		Dictionary<String, Object> properties = new Hashtable<>();
+		
+		String repoId = "test_repo";
+		String baseFolder = "file:/"+tempDir.toString(); //the "file:/" is needed otherwise when looking for the URI it does not construct it properly
+		properties.put(EMFRepository.PROP_ID, repoId);
+		properties.put(EMFRepository.PROP_BASE_URI, baseFolder);
+		properties.put(EMFRepository.PROP_CONTENT_TYPE, "ecore");
+		config.update(properties);
+		
+		EMFWriteRepository writeRepository = writeRepositoryAware.waitForService(5000l);
+		EMFReadRepository readRepository = readRepositoryAware.waitForService(5000l);
+		assertNotNull(writeRepository);
+		assertNotNull(readRepository);
+		
+		Person person = BasicFactory.eINSTANCE.createPerson();
+		person.setId("test");
+		person.setFirstName("Emil");
+		person.setLastName("Tester");
+		URI uri = URI.createFileURI("/" + tempDir.toString() + "/Person/" + person.getId());
+		assertFalse(readRepository.exists(uri));		
+		writeRepository.save(person, uri);
+		assertTrue(readRepository.exists(uri));
+		
+		config.delete();
+		
+		Thread.sleep(200);
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+	}
+	
+	@Test
+	public void testEMFRepositorySaveExistsEClass(
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFWriteRepository> writeRepositoryAware, 
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFReadRepository> readRepositoryAware, 
+			@InjectConfiguration("EMFFileRepository~1") Configuration config,
+			@TempDir Path tempDir) throws InterruptedException, IOException {
+		
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+		
+		Dictionary<String, Object> properties = new Hashtable<>();
+		
+		String repoId = "test_repo";
+		
+		String baseFolder = "file:/"+tempDir.toString(); //the "file:/" is needed otherwise when looking for the URI it does not construct it properly
+		properties.put(EMFRepository.PROP_ID, repoId);
+		properties.put(EMFRepository.PROP_BASE_URI, baseFolder);
+		properties.put(EMFRepository.PROP_CONTENT_TYPE, "ecore");
+		config.update(properties);
+		
+		EMFWriteRepository writeRepository = writeRepositoryAware.waitForService(5000l);
+		EMFReadRepository readRepository = readRepositoryAware.waitForService(5000l);
+		assertNotNull(writeRepository);
+		assertNotNull(readRepository);
+		
+		Person person = BasicFactory.eINSTANCE.createPerson();
+		person.setId("test");
+		person.setFirstName("Emil");
+		person.setLastName("Tester");
+		URI uri = URI.createFileURI("/" + tempDir.toString() + "/Person/" + person.getId());
+		assertFalse(readRepository.exists(BasicPackage.eINSTANCE.getPerson(), "test"));		
+		writeRepository.save(person, uri);
+		assertTrue(readRepository.exists(BasicPackage.eINSTANCE.getPerson(), "test"));		
+		
+		config.delete();
+		
+		Thread.sleep(200);
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+	}
+	
+	@Test
+	public void testEMFRepositorySaveExistsWithReferenceURI(
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFWriteRepository> writeRepositoryAware, 
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFReadRepository> readRepositoryAware, 
+			@InjectConfiguration("EMFFileRepository~1") Configuration config,
+			@TempDir Path tempDir) throws InterruptedException, IOException {
+		
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+		
+		Dictionary<String, Object> properties = new Hashtable<>();
+		
+		String repoId = "test_repo";
+		properties.put(EMFRepository.PROP_ID, repoId);
+		String baseFolder = "file:/"+tempDir.toString(); //the "file:/" is needed otherwise when looking for the URI it does not construct it properly
+		properties.put(EMFRepository.PROP_BASE_URI, baseFolder);
+		properties.put(EMFRepository.PROP_CONTENT_TYPE, "ecore");
+		config.update(properties);
+		
+		EMFWriteRepository writeRepository = writeRepositoryAware.waitForService(5000l);
+		EMFReadRepository readRepository = readRepositoryAware.waitForService(5000l);
+		assertNotNull(writeRepository);
+		assertNotNull(readRepository);
+		
+		Address a = BasicFactory.eINSTANCE.createAddress();
+		a.setId("address");
+		
+		Person person = BasicFactory.eINSTANCE.createPerson();
+		person.setId("test");
+		person.setFirstName("Emil");
+		person.setLastName("Tester");
+		person.setAddress(a);
+		URI uriPerson = URI.createFileURI("/" + tempDir.toString() + "/Person/" + person.getId());
+		URI uriAddress = URI.createFileURI("/" + tempDir.toString() + "/Address/" + a.getId());
+
+		assertFalse(readRepository.exists(uriPerson));
+		assertFalse(readRepository.exists(uriAddress));
+		
+		writeRepository.save(a);
+		writeRepository.save(person);
+		
+		assertTrue(readRepository.exists(uriPerson));
+		assertTrue(readRepository.exists(uriAddress));
+		
+		config.delete();
+		
+		Thread.sleep(200);
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+	}
+	
+	@Test
+	public void testEMFRepositorySaveExistsWithReferenceEClass(
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFWriteRepository> writeRepositoryAware, 
+			@InjectService(filter = "(" + EMFRepository.PROP_ID + "=test_repo)", cardinality = 0) ServiceAware<EMFReadRepository> readRepositoryAware, 
+			@InjectConfiguration("EMFFileRepository~1") Configuration config,
+			@TempDir Path tempDir) throws InterruptedException, IOException {
+		
+		assertTrue(writeRepositoryAware.isEmpty());
+		assertTrue(readRepositoryAware.isEmpty());
+		
+		Dictionary<String, Object> properties = new Hashtable<>();
+		
+		String repoId = "test_repo";
+		properties.put(EMFRepository.PROP_ID, repoId);
+		String baseFolder = "file:/"+tempDir.toString(); //the "file:/" is needed otherwise when looking for the URI it does not construct it properly
+		properties.put(EMFRepository.PROP_BASE_URI, baseFolder);
+		properties.put(EMFRepository.PROP_CONTENT_TYPE, "ecore");
+		config.update(properties);
+		
+		EMFWriteRepository writeRepository = writeRepositoryAware.waitForService(5000l);
+		EMFReadRepository readRepository = readRepositoryAware.waitForService(5000l);
+		assertNotNull(writeRepository);
+		assertNotNull(readRepository);
+		
+		Address a = BasicFactory.eINSTANCE.createAddress();
+		a.setId("address");
+		
+		Person person = BasicFactory.eINSTANCE.createPerson();
+		person.setId("test");
+		person.setFirstName("Emil");
+		person.setLastName("Tester");
+		person.setAddress(a);
+		
+		assertFalse(readRepository.exists(BasicPackage.eINSTANCE.getPerson(), person.getId()));
+		assertFalse(readRepository.exists(BasicPackage.eINSTANCE.getAddress(), a.getId()));
+		
+		writeRepository.save(a);
+		writeRepository.save(person);
+		
+		assertTrue(readRepository.exists(BasicPackage.eINSTANCE.getPerson(), person.getId()));
+		assertTrue(readRepository.exists(BasicPackage.eINSTANCE.getAddress(), a.getId()));
+		
+		config.delete();
+		
 		Thread.sleep(200);
 		assertTrue(writeRepositoryAware.isEmpty());
 		assertTrue(readRepositoryAware.isEmpty());

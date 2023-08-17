@@ -114,5 +114,20 @@ public interface EMFReadRepository extends EMFRepository {
 	 * @return the number of elements or -1 on invalid queries
 	 */
 	public long count(EClass eClass, Map<String, Object> options); 
+	
+	/**
+	 * Checks whether the object of the {@link EClass} type with the provided id exists or not
+	 * @param eClass the {@link EClass} of the object to be checked
+	 * @param id the id value of the object
+	 * @return <code>true<code> whether the object exists, otherwise returns <code>false<code>
+	 */
+	public boolean exists(EClass eClass, String id);
+	
+	/**
+	 * Checks whether the {@link EObject} for a given {@link URI} exists or not
+	 * @param uri the {@link URI} of the object to check
+	 * @return <code>true<code> whether the object exists, otherwise returns <code>false<code>
+	 */
+	public boolean exists(URI uri);
 
 }

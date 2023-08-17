@@ -607,6 +607,25 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 	
 	/* 
 	 * (non-Javadoc)
+	 * @see org.gecko.emf.repository.EMFReadRepository#exists(org.eclipse.emf.ecore.EClass, java.lang.String)
+	 */
+	@Override
+	public boolean exists(EClass eClass, String id) {
+		return getEObject(eClass, id, Collections.emptyMap()) != null;
+	}
+	
+	
+	/* 
+	 * (non-Javadoc)
+	 * @see org.gecko.emf.repository.EMFReadRepository#exists(org.eclipse.emf.common.util.URI)
+	 */
+	@Override
+	public boolean exists(URI uri) {
+		return getEObject(uri) != null;
+	}
+	
+	/* 
+	 * (non-Javadoc)
 	 * @see org.gecko.emf.persistence.repository.EMFReadRepository#getEObject(org.eclipse.emf.common.util.URI, java.util.Map)
 	 */
 	@SuppressWarnings("unchecked")
@@ -672,7 +691,9 @@ public abstract class DefaultEMFRepository implements EMFRepositoryHelper, EMFWr
 			logger.log(Level.SEVERE, "Error getting EObject without class name or id parameters");
 			return null;
 		}
-		URI uri = createEClassUri(eClassName, options).appendSegment(id.toString()).appendFragment(id.toString());
+//		TODO: double check if this change is correct
+//		URI uri = createEClassUri(eClassName, options).appendSegment(id.toString()).appendFragment(id.toString());
+		URI uri = createEClassUri(eClassName, options).appendSegment(id.toString());
 		return getEObject(uri, options);
 	}
 
