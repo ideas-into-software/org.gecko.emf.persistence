@@ -12,6 +12,7 @@
 package org.gecko.emf.repository.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
@@ -35,6 +36,9 @@ import org.gecko.emf.osgi.example.model.basic.Person;
 import org.gecko.emf.persistence.ConstraintValidationException;
 import org.gecko.emf.persistence.PersistenceConstants;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
+import org.gecko.emf.persistence.test.Contact;
+import org.gecko.emf.persistence.test.PersonNoId;
+import org.gecko.emf.persistence.test.TestFactory;
 import org.gecko.emf.repository.DefaultEMFRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -263,6 +267,20 @@ public class TestDefaultRepository {
 			many.add(p);
 		}
 		PersistenceHelper.checkForAttachedNonContainmentReferences((Collection) many);
+	}
+	
+	@Test
+	public void testSetIdsError(@TempDir Path tempDir) throws Exception {
+		ResourceSet set = new ResourceSetImpl();
+		set.getResourceFactoryRegistry().getProtocolToFactoryMap().put("file", new XMIResourceFactoryImpl());
+
+		PersonNoId person = TestFactory.eINSTANCE.createPersonNoId();
+		Contact contact = TestFactory.eINSTANCE.createContact();
+		person.getContact().add(contact);
+		
+		try (SimpleDefaultRepository repository = new SimpleDefaultRepository(tempDir)) {
+			assertThrows(ConstraintValidationException.class, () -> repository.setIDs(person));
+		}
 	}
 
 }

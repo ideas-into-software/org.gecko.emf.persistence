@@ -54,7 +54,8 @@ import org.gecko.emf.persistence.Options;
 public class PersistenceHelper {
 
 	private static Diagnostic OK_INSTANCE = new BasicDiagnostic(Diagnostic.OK, "org.eclipse.emf.common", 0, "OK", null);
-
+	private static Diagnostic ERROR_INSTANCE =  new BasicDiagnostic("", 1, "ERROR", null);
+	
 	/**
 	 * Goes through the whole containment Reference Tree of the given Object 
 	 * and checks if set non-containment References are proxies or attached Objects 
@@ -281,7 +282,6 @@ public class PersistenceHelper {
 		TreeIterator<EObject> eAllContents = rootObject.eAllContents();
 		while (eAllContents.hasNext()) {
 			EObject eo = eAllContents.next();
-
 			if (eo.eClass().getEIDAttribute() != null 
 					&& EcoreUtil.getID(eo) == null
 					&& (
@@ -290,6 +290,9 @@ public class PersistenceHelper {
 									)
 							)
 					) {
+				if(rootObject.eClass().getEIDAttribute() == null) {
+					throw new ConstraintValidationException(String.format("Root Object %s from EPackage %s has no ID attribute set. Cannot saved contained object %s.", rootObject.eClass().getName(), rootObject.eClass().getEPackage().getNsURI(), eo.eClass().getName()), ERROR_INSTANCE);
+				}
 				EcoreUtil.setID(eo, EcoreUtil.convertToString((EDataType) rootObject.eClass().getEIDAttribute().getEType(), containedIdSupplier.get()));
 			}
 		}

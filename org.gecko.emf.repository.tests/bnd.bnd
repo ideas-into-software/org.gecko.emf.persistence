@@ -13,7 +13,8 @@ javac.target: 11
 	org.gecko.emf.persistence;version=project,\
 	org.osgi.util.tracker,\
 	org.gecko.emf.repository,\
-	org.osgi.test.junit5.cm
+	org.osgi.test.junit5.cm,\
+	org.gecko.emf.persistence.test.model;version=latest
 
 Private-Package: org.gecko.emf.repository.tests
 
