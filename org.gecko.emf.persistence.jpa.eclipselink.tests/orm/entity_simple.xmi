@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orm:EntityMappingsType
+    xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI"
+    xmlns:orm="https://jakarta.ee/xml/ns/persistence/orm">
+  <entity class="org.gecko.emf.persistence.jpa.orm.tests.model.base.Simple"/>
+</orm:EntityMappingsType>

@@ -1,0 +1,34 @@
+Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
+
+-library: enableOSGi-Test
+
+# sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
+-buildpath: \
+	osgi.core;version=latest,\
+	org.osgi.test.junit5.cm,\
+	jakarta.persistence-api,\
+	org.eclipse.emf.ecore,\
+	org.eclipse.persistence.jpa,\
+	org.eclipse.persistence.core,\
+	derby,\
+	org.eclipse.emf.common,\
+	org.gecko.emf.persistence.jpa.eclipselink,\
+	org.gecko.emf.persistence.jpa.orm,\
+	org.osgi.service.component,\
+	org.osgi.service.cm,\
+	org.gecko.emf.osgi.api,\
+	org.osgi.namespace.service,\
+	org.eclipse.emf.ecore.xmi
+	
+Private-Package: org.gecko.emf.persistence.jpa.eclipselink.tests
+
+Bundle-Version: 1.0.0.SNAPSHOT
+	
+-includeresource: \
+	orm=orm
+	
+Fragment-Host: org.gecko.emf.persistence.jpa.eclipselink
+
+# Sometimes without DynamicImport Mockito will not find certain classes
+#DynamicImport-Package: *
+-privatepackage: org.gecko.emf.persistence.jpa.eclipselink.tests.dynamicpackage

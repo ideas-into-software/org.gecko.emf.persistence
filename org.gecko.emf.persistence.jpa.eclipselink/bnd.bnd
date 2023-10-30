@@ -1,0 +1,12 @@
+-buildpath: \
+	jakarta.persistence-api,\
+	org.eclipse.emf.ecore,\
+	org.gecko.emf.persistence.jpa.orm,\
+	osgi.core,\
+	org.eclipse.persistence.core,\
+	org.eclipse.persistence.jpa,\
+	org.eclipse.emf.common,\
+	org.osgi.service.component
+	
+-includeresource.persist: \
+	META-INF/persistence.xml=persistence.xml
