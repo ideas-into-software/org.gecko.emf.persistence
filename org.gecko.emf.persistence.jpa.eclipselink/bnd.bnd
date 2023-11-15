@@ -10,3 +10,4 @@
 	
 -includeresource.persist: \
 	META-INF/persistence.xml=persistence.xml
+	

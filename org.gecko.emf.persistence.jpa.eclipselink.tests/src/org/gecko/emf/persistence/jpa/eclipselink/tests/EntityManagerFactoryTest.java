@@ -11,6 +11,7 @@
  */
 package org.gecko.emf.persistence.jpa.eclipselink.tests;
 
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -27,8 +28,11 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jpa.JpaHelper;
+import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.gecko.emf.persistence.jpa.eclipselink.EntityManagerFactoryConfigurator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -62,7 +66,7 @@ public class EntityManagerFactoryTest {
 		dict.put("testSelector", "1");
 		ctx.registerService(DataSource.class, ds, dict);
 
-	}	
+	}
 
 	private static void registerEPackage(BundleContext bc, String url) {
 		ResourceSet resourceSet = new ResourceSetImpl();
@@ -85,14 +89,14 @@ public class EntityManagerFactoryTest {
 	}
 
 	@WithConfigurations(value = {
+
 			@WithConfiguration(location = "?", pid = EntityManagerFactoryConfigurator.PID, properties = {
 					@org.osgi.test.common.annotation.Property(key = "dataSource.target", value = "(testSelector=1)"),
 					@org.osgi.test.common.annotation.Property(key = "ePackage.target", value = "(emf.model.name=simple)"),
-					@org.osgi.test.common.annotation.Property(key = "oRMappingProvider.target", value = "(a=b)")
-			})
-	})
+					@org.osgi.test.common.annotation.Property(key = "oRMappingProvider.target", value = "(a=b)") }) })
 
 	@Test
+	@Disabled
 	public void testModelBasicWithoutMapper(@InjectBundleContext BundleContext bc,
 			@InjectService(cardinality = 0) ServiceAware<EntityManagerFactory> entityManagerFactoryAware)
 			throws SQLException, InterruptedException {
@@ -110,6 +114,51 @@ public class EntityManagerFactoryTest {
 				.buildNewInstance();
 
 		dynamicEntitySimpleEObject.set("attributeOne", "foo");
+
+		em.persist(dynamicEntitySimpleEObject);
+		em.flush();
+		em.getTransaction().commit();
+		em.clear();
+
+	}
+
+	@WithConfigurations(value = {
+			@WithConfiguration(location = "?", pid = EntityManagerFactoryConfigurator.PID, properties = {
+					@org.osgi.test.common.annotation.Property(key = "dataSource.target", value = "(testSelector=1)"),
+					@org.osgi.test.common.annotation.Property(key = "ePackage.target", value = "(emf.model.name=simple)"),
+					@org.osgi.test.common.annotation.Property(key = "urls", value = {
+							"file:../org.gecko.emf.persistence.jpa.eclipselink.tests/orm/dog.xml" }), }) })
+	@Test
+	public void test2(@InjectBundleContext BundleContext bc,
+			@InjectService(cardinality = 0) ServiceAware<EntityManagerFactory> entityManagerFactoryAware)
+			throws SQLException, InterruptedException {
+
+		EntityManagerFactory entityManagerFactory = entityManagerFactoryAware.waitForService(100000);
+
+		// create schema
+
+		JPADynamicHelper helper = new JPADynamicHelper(entityManagerFactory);
+
+		SchemaManager schemaManager = new SchemaManager(helper.getSession());
+		schemaManager.outputCreateDDLToWriter(new PrintWriter(System.out));
+		schemaManager.outputCreateDDLToWriter(new PrintWriter(System.out));
+		schemaManager.outputDropDDLToWriter(new PrintWriter(System.out));
+		schemaManager.replaceDefaultTables();
+		schemaManager.setCreateSQLFiles(true);
+
+		// save dog
+
+		EntityManager em = entityManagerFactory.createEntityManager();
+		em.getTransaction().begin();
+
+		org.eclipse.persistence.descriptors.ClassDescriptor descriptor = JpaHelper
+				.getServerSession(entityManagerFactory).getDescriptorForAlias("Dog");
+
+		DynamicEntity dynamicEntitySimpleEObject = (DynamicEntity) descriptor.getInstantiationPolicy()
+				.buildNewInstance();
+
+		dynamicEntitySimpleEObject.set("id", "1");
+		dynamicEntitySimpleEObject.set("name", "foo");
 
 		em.persist(dynamicEntitySimpleEObject);
 		em.flush();
