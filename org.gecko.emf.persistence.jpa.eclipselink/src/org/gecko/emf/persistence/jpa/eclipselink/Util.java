@@ -3,16 +3,10 @@ package org.gecko.emf.persistence.jpa.eclipselink;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
-import javax.sql.DataSource;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.persistence.dynamic.DynamicType;
-import org.gecko.emf.persistence.jpa.orm.ORMappingProvider;
 
 public class Util {
 	public static Class convType(EAttribute eAttribute) {

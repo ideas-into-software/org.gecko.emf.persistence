@@ -23,12 +23,9 @@ Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.
 Private-Package: org.gecko.emf.persistence.jpa.eclipselink.tests
 
 Bundle-Version: 1.0.0.SNAPSHOT
-	
--includeresource: \
-	orm=orm
-	
+
 Fragment-Host: org.gecko.emf.persistence.jpa.eclipselink
 
 # Sometimes without DynamicImport Mockito will not find certain classes
 #DynamicImport-Package: *
--privatepackage: org.gecko.emf.persistence.jpa.eclipselink.tests.dynamicpackage
+-privatepackage: org.gecko.emf.persistence.jpa.eclipselink.tests
