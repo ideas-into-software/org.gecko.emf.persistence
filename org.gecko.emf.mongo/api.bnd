@@ -1,0 +1,11 @@
+Bundle-Copyright: Bryan Hunt, Data In Motion Consulting
+Bundle-License: Eclipse Public License v1.0
+Bundle-Name: EMF Mongo API bundle
+Bundle-Description: EMF Mongo API
+Bundle-Vendor: Data In Motion Consulting GmbH
+Export-Package: \
+	org.gecko.emf.mongo.model,\
+	org.gecko.emf.mongo.model.util,\
+	org.gecko.emf.mongo,\
+	org.gecko.emf.mongo.annotations
+#Require-Capability: org.gecko.osgi.emf.persistence;filter:="(org.gecko.osgi.emf.persistence=mongo)"	

@@ -1,0 +1,10 @@
+Export-Package: \
+	org.gecko.mongo.osgi,\
+	org.gecko.mongo.osgi.exceptions,\
+	org.gecko.mongo.osgi.configuration
+Bundle-Name: Mongo OSGi API
+Bundle-Copyright: bhunt
+Bundle-License: Eclipse Public License v1.0
+Bundle-Description: Mongo OSGi services for the MongoClient
+Bundle-Vendor: Data In Motion Consulting GmbH
+Require-Capability: org.gecko.osgi.persistence;filter:="(org.gecko.osgi.persistence=mongo)"

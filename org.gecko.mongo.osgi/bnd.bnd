@@ -1,0 +1,16 @@
+-buildpath: \
+	org.mongodb.mongo-java-driver;version=latest,\
+	org.osgi.service.log;version=latest,\
+	org.osgi.service.metatype;version=latest,\
+	org.osgi.framework;version=latest
+
+-maven-dependencies.mongo: \
+	org.mongodb.mongo-java-driver;\
+		groupId=org.mongodb;\
+		artifactId=mongo-java-driver;\
+		version=3.12.14
+
+Bundle-Name: Mongo OSGi API
+Bundle-Description: Mongo OSGi support
+Bundle-Copyright: bhunt
+-sub: *.bnd

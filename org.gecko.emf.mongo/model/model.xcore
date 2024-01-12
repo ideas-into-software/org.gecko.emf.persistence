@@ -1,0 +1,31 @@
+@GenModel(suppressInterfaces="true", containmentProxies="true")
+package org.gecko.emf.mongo.model
+
+import com.mongodb.client.MongoCursor
+import com.mongodb.client.MongoCollection
+import java.util.Iterator
+import org.bson.Document
+import org.eclipse.emf.ecore.EObject
+
+type EDocument wraps Document
+type ECursor wraps MongoCursor<EObject>
+type EMongoCollection wraps MongoCollection<EObject>
+type EIterator wraps Iterator<EObject>
+
+interface Iterable wraps java.lang.Iterable<EObject>
+{}
+
+class EMongoCursor {
+	ECursor cursor
+	EMongoCollection collection
+}
+
+class EMongoQuery {
+	EDocument filter
+	EDocument projection
+	EDocument projectionOnly
+	EDocument sort
+	Integer skip
+	Integer limit
+	Integer batchSize = "1000"
+}

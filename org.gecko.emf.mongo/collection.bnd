@@ -1,0 +1,7 @@
+Bundle-Copyright: Data In Motion Consulting
+Bundle-License: Eclipse Public License v1.0
+Bundle-Name: EMF Mongo Collections support
+Bundle-Description: EMF Mongo implementation for using gecko EMF collections as result
+Bundle-Vendor: Data In Motion Consulting GmbH
+Private-Package: org.gecko.emf.mongo.collection
+Require-Capability: org.gecko.osgi.emf.persistence;filter:="(org.gecko.osgi.emf.persistence=mongo)"	

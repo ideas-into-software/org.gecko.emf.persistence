@@ -1,0 +1,8 @@
+Bundle-Copyright: Data In Motion Consulting
+Bundle-License: Eclipse Public License v1.0
+Bundle-Name: EMF Mongo PushStreams support
+Bundle-Description: EMF Mongo implementation for using pushstreams as result
+Bundle-Vendor: Data In Motion Consulting GmbH
+Private-Package: org.gecko.emf.mongo.pushstream
+Require-Capability: org.gecko.osgi.emf.persistence;filter:="(org.gecko.osgi.emf.persistence=mongo)"	
+Export-Package: org.gecko.emf.mongo.pushstream.constants

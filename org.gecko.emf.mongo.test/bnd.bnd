@@ -1,0 +1,26 @@
+Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
+
+-library: enableOSGi-Test, enable-emf
+
+# sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
+-buildpath: \
+	org.osgi.framework;version=latest,\
+	org.osgi.service.cm;version=latest,\
+	org.mongodb.mongo-java-driver;version=latest,\
+	org.gecko.emf.osgi.api;version=latest,\
+	org.gecko.emf.osgi.example.model.basic;version=latest,\
+	org.gecko.emf.collections,\
+	org.gecko.mongo.osgi.api;version=latest,\
+	org.gecko.mongo.osgi.component;version=latest,\
+	org.gecko.emf.mongo.component;version=snapshot,\
+	org.gecko.emf.mongo.api;version=snapshot
+	
+Private-Package: \
+	org.gecko.emf.mongo.tests,\
+	org.gecko.emf.mongo.tests.codecs,\
+	org.gecko.emf.mongo.tests.converter,\
+
+Bundle-Version: 1.0.0.SNAPSHOT
+
+# Sometimes without DynamicImport Mockito will not find certain classes
+#DynamicImport-Package: *

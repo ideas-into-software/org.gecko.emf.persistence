@@ -1,0 +1,14 @@
+Bundle-Name: Mongo OSGi component bundle
+Bundle-Copyright: Data In Motion consulting GmbH
+Bundle-License: Eclipse Public License v1.0
+Bundle-Description: Mongo OSGi service components for the MongoClient
+Bundle-Vendor: Data In Motion Consulting GmbH
+Private-Package: \
+	org.gecko.mongo.osgi.helper,\
+	org.gecko.mongo.osgi.metatype,\
+	org.gecko.mongo.osgi.components
+Provide-Capability: org.gecko.osgi.persistence;org.gecko.osgi.persistence=mongo
+Export-Package: \
+	org.gecko.mongo.osgi,\
+	org.gecko.mongo.osgi.exceptions,\
+	org.gecko.mongo.osgi.configuration
