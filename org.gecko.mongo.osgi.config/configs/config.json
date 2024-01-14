@@ -1,0 +1,13 @@
+{
+  ":configurator:resource-version": 1,
+  "MongoClientProvider": 
+  {
+    "client_id": "test",
+    "uri": "mongodb://localhost:27017"
+  },
+  "MongoDatabaseProvider":
+  {
+    "alias": "TestDB",
+    "database": "test"
+ }
+}

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.gecko.emf.mongo.InputStreamFactory;
 import org.gecko.emf.mongo.OutputStreamFactory;
+import org.gecko.emf.osgi.annotation.require.RequireEMF;
 import org.gecko.emf.osgi.configurator.ResourceSetConfigurator;
 import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.gecko.mongo.osgi.MongoDatabaseProvider;
@@ -33,6 +34,7 @@ import org.osgi.service.component.annotations.ReferencePolicy;
  * @author bhunt
  * 
  */
+@RequireEMF
 @Component(name="MongoResourceSetConfiguratorComponent", immediate=true)
 public class MongoResourceSetConfiguratorComponent {
 

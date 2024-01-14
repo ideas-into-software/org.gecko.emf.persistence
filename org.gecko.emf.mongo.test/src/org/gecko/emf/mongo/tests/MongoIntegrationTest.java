@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.gecko.emf.mongo.handlers.MongoResourceSetConfigurator;
 import org.gecko.emf.osgi.ResourceSetFactory;
+import org.gecko.emf.osgi.annotation.require.RequireEMF;
 import org.gecko.emf.osgi.configurator.ResourceSetConfigurator;
 import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.test.common.annotation.InjectBundleContext;
 import org.osgi.test.common.annotation.InjectService;
 import org.osgi.test.common.service.ServiceAware;
@@ -53,9 +55,13 @@ import com.mongodb.client.MongoCollection;
  * @author Mark Hoffmann
  * @since 26.07.2017
  */
+@RequireEMF
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 public class MongoIntegrationTest extends MongoEMFSetting {
+	
+	@InjectService
+	public ConfigurationAdmin configAdmin;
 	
 	@BeforeEach
 	public void doBefore(@InjectBundleContext BundleContext ctx) {
@@ -413,10 +419,17 @@ public class MongoIntegrationTest extends MongoEMFSetting {
 	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testCreateContainmentSingle(@InjectService(timeout = 2000l, filter = "(" + EMFNamespaces.EMF_MODEL_NAME + "=mongo)") ServiceAware<ResourceSetFactory> rsAware) throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
+	public void testCreateContainmentSingle(@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetConfigurator> configuratorAware, 
+			@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetFactory> rsAware) throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
 
+		defaultSetup(configAdmin);
+		
+		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
+		assertFalse(configuratorAware.isEmpty());
+		assertTrue(rsc instanceof MongoResourceSetConfigurator);
+		
+		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
 		assertFalse(rsAware.isEmpty());
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.getService();
 		ResourceSet resourceSet = rsf.createResourceSet();
 
 		System.out.println("Dropping DB");
@@ -480,17 +493,17 @@ public class MongoIntegrationTest extends MongoEMFSetting {
 	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testCreateAndUpdateContainmentSingle(@InjectService(filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetConfigurator> configuratorAware, 
-			@InjectService(filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetFactory> rsAware) throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
+	public void testCreateAndUpdateContainmentSingle(@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetConfigurator> configuratorAware, 
+			@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetFactory> rsAware) throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
 
-//		defaultSetup();
+		defaultSetup(configAdmin);
 		
+		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
 		assertFalse(configuratorAware.isEmpty());
-		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.getService();
 		assertTrue(rsc instanceof MongoResourceSetConfigurator);
 		
+		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
 		assertFalse(rsAware.isEmpty());
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.getService();
 		ResourceSet resourceSet = rsf.createResourceSet();
 
 		System.out.println("Dropping DB");
@@ -585,15 +598,17 @@ public class MongoIntegrationTest extends MongoEMFSetting {
 	 * @throws InterruptedException 
 	 */
 	@Test
-	public void testCreateAndRemoveSingle(@InjectService(filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetConfigurator> configuratorAware, 
-			@InjectService(filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetFactory> rsAware) throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
+	public void testCreateAndRemoveSingle(@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetConfigurator> configuratorAware, 
+			@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)") ServiceAware<ResourceSetFactory> rsAware) throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
 		
+		defaultSetup(configAdmin);
+		
+		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
 		assertFalse(configuratorAware.isEmpty());
-		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.getService();
 		assertTrue(rsc instanceof MongoResourceSetConfigurator);
 		
+		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
 		assertFalse(rsAware.isEmpty());
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.getService();
 		ResourceSet resourceSet = rsf.createResourceSet();
 		
 		System.out.println("Dropping DB");
