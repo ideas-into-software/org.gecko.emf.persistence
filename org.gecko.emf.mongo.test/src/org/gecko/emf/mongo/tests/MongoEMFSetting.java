@@ -34,9 +34,10 @@ import com.mongodb.client.MongoCollection;
  */
 public abstract class MongoEMFSetting {
 
+	static protected String mongoHost = System.getProperty("mongo.host", "localhost");
+
 	protected MongoClient client;
 	protected MongoCollection<?> collection;
-	protected String mongoHost = System.getProperty("mongo.host", "localhost");
 //	private ServiceRegistration<?> BasicPackageRegistration = null;
 	
 	public void doBefore(BundleContext ctx) {
