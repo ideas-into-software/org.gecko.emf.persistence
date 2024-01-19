@@ -1,0 +1,11 @@
+-plugin.geckoEMFRepository: \
+	aQute.bnd.repository.maven.provider.MavenBndRepository;\
+		releaseUrl			= "https://repo.maven.apache.org/maven2/,https://devel.data-in-motion.biz/nexus/repository/dim-release/"; \
+		snapshotUrl			= "https://devel.data-in-motion.biz/nexus/repository/dim-snapshot/";\
+		index            = "${.}/geckoEMFRepository.maven" ;\
+		readOnly            = true;\
+		name="Gecko EMF Repository Dependencies"
+		
+-require-bnd: "(version>=7.0.0)"
+
+Warning: ${if; ${is;${indexof;"geckoEMF";${-library};-1}; }; "The library 'GeckoEMF' is needed to run the EMF Repository"}

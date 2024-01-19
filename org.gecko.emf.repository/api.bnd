@@ -1,0 +1,11 @@
+Bundle-Copyright: Data In Motion Consulting
+Bundle-License: Eclipse Public License v1.0
+Bundle-Name: EMF Repository API
+Bundle-Description: EMF Repository API
+Bundle-Vendor: Data In Motion Consulting GmbH
+Bundle-Version: 9.3.0.${tstamp}-SNAPSHOT
+Export-Package: \
+	org.gecko.emf.repository.query,\
+	org.gecko.emf.repository,\
+	org.gecko.emf.repository.helper,\
+	org.gecko.emf.repository.exception

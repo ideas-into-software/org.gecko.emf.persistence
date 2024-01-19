@@ -1,0 +1,11 @@
+-library: enable-emf
+
+-testpath: \
+	${junit},\
+	org.gecko.emf.osgi.example.model.basic;version=latest
+
+Bundle-Name: EMF Repository API
+Bundle-Description: EMF Repository API
+Private-Package: org.gecko.emf.repository
+-sub: *.bnd
+-buildpath: org.osgi.service.cm

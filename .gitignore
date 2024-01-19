@@ -5,3 +5,8 @@ generated/
 /bin
 /bin_test
 /cnf/cache
+/build/
+generated/
+bin/
+bin_test/
+testdir/

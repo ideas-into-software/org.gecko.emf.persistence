@@ -1,0 +1,22 @@
+Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
+
+-library: \
+	enableOSGi-Test,\
+	enable-emf
+	
+# Build dependencies 
+-buildpath: \
+	org.gecko.mongo.osgi.component;version=latest,\
+	org.mongodb.mongo-java-driver;version=latest,\
+	org.gecko.emf.collections;version=latest,\
+	org.gecko.emf.osgi.example.model.basic;version=latest,\
+	org.gecko.emf.mongo.api;version=latest,\
+	org.gecko.emf.repository;version=project,\
+	org.gecko.emf.repository.mongo;version=project,\
+	org.osgi.service.cm
+
+Bundle-Version: 2.2.0.${tstamp}-SNAPSHOT
+Private-Package: org.gecko.emf.repository.mongo.tests
+
+Bundle-Name: EMF Repository Mongo Integration Tests 
+Bundle-Description: EMF Mongo Repository Implementation Integration Tests

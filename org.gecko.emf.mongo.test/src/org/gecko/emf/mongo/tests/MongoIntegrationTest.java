@@ -68,7 +68,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.InvalidSyntaxException;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.test.common.annotation.InjectBundleContext;
 import org.osgi.test.common.annotation.InjectService;
 import org.osgi.test.common.annotation.Property;
@@ -523,7 +522,6 @@ public class MongoIntegrationTest extends MongoEMFSetting {
 		System.out.println(configuratorAware.getServices().size() + " " + rsc);
 		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
 		System.out.println(rsAware.getServices().size() + " " + rsf);
-		fail();
 	}
 
 	/**

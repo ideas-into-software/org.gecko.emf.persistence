@@ -1,0 +1,9 @@
+Bundle-Copyright: Data In Motion Consulting
+Bundle-License: Eclipse Public License v1.0
+Bundle-Name: EMF Repository File 
+Bundle-Description: EMF File Repository Implementation
+Bundle-Vendor: Data In Motion Consulting GmbH
+Bundle-Version: 4.1.0.${tstamp}-SNAPSHOT
+Private-Package: org.gecko.emf.repository.file
+Provide-Capability: emf.repository;emf.repository=file
+Export-Package: org.gecko.emf.repository.file.annotations

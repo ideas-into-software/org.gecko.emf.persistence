@@ -1,0 +1,5 @@
+-resourceonly: true
+-include: \
+	${.}/../org.gecko.emf.repository.bnd.library.workspace/buildpath.bnd
+
+-diffignore: */pom.properties
