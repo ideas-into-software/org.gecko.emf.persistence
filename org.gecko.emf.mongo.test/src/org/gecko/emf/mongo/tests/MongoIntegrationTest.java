@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,7 +58,6 @@ import org.gecko.emf.osgi.example.model.basic.ContactContextType;
 import org.gecko.emf.osgi.example.model.basic.ContactType;
 import org.gecko.emf.osgi.example.model.basic.GenderType;
 import org.gecko.emf.osgi.example.model.basic.Person;
-import org.gecko.mongo.osgi.MongoClientProvider;
 import org.gecko.mongo.osgi.MongoDatabaseProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -508,21 +506,6 @@ public class MongoIntegrationTest extends MongoEMFSetting {
 		personCollection.drop();
 	}
 
-	@Test
-	public void testBla(@InjectService(cardinality = 0) ServiceAware<MongoClientProvider> saClient,
-			@InjectService(cardinality = 0) ServiceAware<MongoDatabaseProvider> saDatabase,
-			@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME
-					+ "=mongo)") ServiceAware<ResourceSetConfigurator> configuratorAware,
-			@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME
-					+ "=mongo)") ServiceAware<ResourceSetFactory> rsAware)
-			throws InterruptedException {
-		System.out.println(saClient.getServices().size());
-		System.out.println(saDatabase.getServices().size());
-		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
-		System.out.println(configuratorAware.getServices().size() + " " + rsc);
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
-		System.out.println(rsAware.getServices().size() + " " + rsf);
-	}
 
 	/**
 	 * Test creation of object and returning results as well as updating
