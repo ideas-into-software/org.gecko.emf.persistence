@@ -2,3 +2,6 @@
 /.gradle/
 generated/
 /.metadata/
+/bin
+/bin_test
+/cnf/cache

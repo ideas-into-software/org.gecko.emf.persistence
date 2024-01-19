@@ -138,11 +138,12 @@ org.slf4j:slf4j-simple:1.7.36
 org.slf4j:slf4j-api:1.7.36
 org.freemarker:freemarker:2.3.32
 
-org.geckoprojects.bnd:org.gecko.bnd.dimc.library:1.4.1
-org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.4.1
-org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.4.1
+org.geckoprojects.bnd:org.gecko.bnd.dimc.library:1.4.4
+org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.4.4
+org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.4.4
 org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:6.0.0
 org.geckoprojects.emf:org.gecko.emf.osgi.example.model.basic:6.0.0
+org.geckoprojects.emf.utils:org.gecko.emf.collections:2.2.2
 org.mongodb:mongo-java-driver:3.12.14
 org.geckoprojects.emf:org.gecko.emf.pushstreams:1.0.15
 jakarta.json:jakarta.json-api:2.1.3

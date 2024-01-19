@@ -11,6 +11,7 @@
 # Needed because we enabled library 'gecko-dimc'
 # Activate baselining
 dimcBaselining: true
+mavenCentral: true
 github-project: org.gecko.persistence
 base-version: 1.0.0
 
