@@ -9,7 +9,7 @@
 	org.gecko.emf.pushstreams;version=latest,\
 	org.gecko.mongo.osgi;version=project
 
-src: src, src-gen
+src: src,src-gen
 
 Bundle-Name: EMF Mongo bundle
 Bundle-Description: EMF Mongo implementation
