@@ -1,6 +1,7 @@
-Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.annotation.Testable;CONCRETE}
+Fragment-Host: org.gecko.emf.mongo.pushstream
 
 -library: enableOSGi-Test, enable-emf
+
 
 # sets the usually required buildpath using the bnd library, you can extend it with the normal -buildpath to your liking
 -buildpath: \
@@ -14,7 +15,12 @@ Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.
 	org.gecko.mongo.osgi.api;version=latest,\
 	org.gecko.mongo.osgi.component;version=latest,\
 	org.gecko.emf.mongo.component;version=snapshot,\
-	org.gecko.emf.mongo.api;version=snapshot
+	org.gecko.emf.mongo.api;version=snapshot,\
+	org.gecko.emf.mongo.pushstream;version=snapshot,\
+	org.gecko.emf.pushstreams,\
+	org.osgi.util.promise,\
+	org.osgi.util.pushstream,\
+	org.osgi.service.component
 	
 Private-Package: \
 	org.gecko.emf.mongo.tests,\
