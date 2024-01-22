@@ -27,10 +27,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.gecko.emf.mongo.Options;
-import org.gecko.emf.mongo.handlers.MongoResourceSetConfigurator;
-import org.gecko.emf.osgi.ResourceSetFactory;
 import org.gecko.emf.osgi.annotation.require.RequireEMF;
-import org.gecko.emf.osgi.configurator.ResourceSetConfigurator;
 import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.BusinessPerson;
@@ -70,10 +67,9 @@ import com.mongodb.client.MongoCollection;
 @WithFactoryConfiguration(name = "mongoDatabase", location = "?", factoryPid = "MongoDatabaseProvider", properties = {
 		@Property(key = "alias", value = "TestDB"), @Property(key = "database", value = "test") })
 public class MongoExtendedMetadataIntegrationTest extends MongoEMFSetting {
-	@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)")
-	ServiceAware<ResourceSetConfigurator> configuratorAware;
-	@InjectService(cardinality = 0, filter = "(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)")
-	ServiceAware<ResourceSetFactory> rsAware;
+
+	@InjectService(cardinality = 0, filter = "(&(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=mongo)("+EMFNamespaces.EMF_MODEL_NAME+"=collection))")
+	ServiceAware<ResourceSet> rsAware;
 
 	@BeforeEach
 	public void doBefore(@InjectBundleContext BundleContext ctx) {
@@ -94,15 +90,7 @@ public class MongoExtendedMetadataIntegrationTest extends MongoEMFSetting {
 	 */
 	@Test
 	public void testSaveNoExtendedMetadataAttribute() throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
-		
-		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
-		assertFalse(configuratorAware.isEmpty());
-		assertTrue(rsc instanceof MongoResourceSetConfigurator);
-
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
-		assertFalse(rsAware.isEmpty());
-		ResourceSet resourceSet = rsf.createResourceSet();
-
+		ResourceSet resourceSet = rsAware.getService();
 		
 		System.out.println("Dropping DB");
 		MongoCollection<Document> bpCollection = client.getDatabase("test").getCollection("BusinessPerson");
@@ -162,14 +150,7 @@ public class MongoExtendedMetadataIntegrationTest extends MongoEMFSetting {
 	 */
 	@Test
 	public void testSaveExtendedMetadataAttribute() throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
-		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
-		assertFalse(configuratorAware.isEmpty());
-		assertTrue(rsc instanceof MongoResourceSetConfigurator);
-
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
-		assertFalse(rsAware.isEmpty());
-		ResourceSet resourceSet = rsf.createResourceSet();
-
+		ResourceSet resourceSet = rsAware.getService();
 		
 		System.out.println("Dropping DB");
 		MongoCollection<Document> bpCollection = client.getDatabase("test").getCollection("BusinessPerson");
@@ -232,13 +213,7 @@ public class MongoExtendedMetadataIntegrationTest extends MongoEMFSetting {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSaveNoExtendedMetadataReferences() throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
-		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
-		assertFalse(configuratorAware.isEmpty());
-		assertTrue(rsc instanceof MongoResourceSetConfigurator);
-
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
-		assertFalse(rsAware.isEmpty());
-		ResourceSet resourceSet = rsf.createResourceSet();
+		ResourceSet resourceSet = rsAware.getService();
 
 		System.out.println("Dropping DB");
 		MongoCollection<Document> bpCollection = client.getDatabase("test").getCollection("BusinessPerson");
@@ -314,14 +289,7 @@ public class MongoExtendedMetadataIntegrationTest extends MongoEMFSetting {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSaveExtendedMetadataReference() throws BundleException, InvalidSyntaxException, IOException, InterruptedException {
-		ResourceSetConfigurator rsc = (ResourceSetConfigurator) configuratorAware.waitForService(2000l);
-		assertFalse(configuratorAware.isEmpty());
-		assertTrue(rsc instanceof MongoResourceSetConfigurator);
-
-		ResourceSetFactory rsf = (ResourceSetFactory) rsAware.waitForService(2000l);
-		assertFalse(rsAware.isEmpty());
-		ResourceSet resourceSet = rsf.createResourceSet();
-
+		ResourceSet resourceSet = rsAware.getService();
 		
 		System.out.println("Dropping DB");
 		MongoCollection<Document> bpCollection = client.getDatabase("test").getCollection("BusinessPerson");

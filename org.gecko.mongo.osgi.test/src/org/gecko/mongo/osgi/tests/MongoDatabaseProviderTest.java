@@ -98,7 +98,7 @@ public class MongoDatabaseProviderTest {
 		dbp.put(MongoDatabaseProvider.PROP_ALIAS, dbAlias);
 		dbp.put(MongoDatabaseProvider.PROP_DATABASE, db);
 		Configuration dbConfig = ca.createFactoryConfiguration(ConfigurationProperties.DATABASE_PID, "?");
-		dbConfig.update(p);
+		dbConfig.update(dbp);
 		
 		MongoDatabaseProvider databaseProvider = dbProviderAware.waitForService(2000l);
 		MongoDatabase database = databaseProvider.getDatabase();
