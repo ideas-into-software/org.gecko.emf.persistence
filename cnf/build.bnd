@@ -12,18 +12,18 @@
 # Activate baselining
 dimcBaselining: true
 mavenCentral: true
-github-project: org.gecko.persistence
+github-project: org.gecko.emf.persistence
 base-version: 6.1.0
 repository-base-version: 9.3.0.${tstamp}-SNAPSHOT
 
 # Maven Central Group-Id
 # For Geckoprojects the groupid must start with org.geckoprojects
--groupid: org.geckoprojects.persistence
+-groupid: org.geckoprojects.emf.persistence
 
 javac.source: 11
 javac.target: 11
 
--require-bnd "(version>=6.3.1)"
+-require-bnd "(version>=6.4.0)"
 
 -jpms-module-info:
 
