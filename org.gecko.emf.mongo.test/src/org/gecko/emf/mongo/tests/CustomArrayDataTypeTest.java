@@ -77,7 +77,7 @@ public class CustomArrayDataTypeTest extends MongoEMFSetting {
 	@Test
 	public void testSimpleArray() throws IOException, InvalidSyntaxException, InterruptedException {
 
-		ResourceSet resourceSet = rsAware.getService();
+		ResourceSet resourceSet = rsAware.waitForService(2000l);
 
 		System.out.println("Dropping DB");
 		MongoCollection<Document> geoCollection = client.getDatabase("test").getCollection("Geometry");
@@ -135,8 +135,8 @@ public class CustomArrayDataTypeTest extends MongoEMFSetting {
 
 	@Test
 	public void testMultiDimensionalArray() throws IOException, InvalidSyntaxException, InterruptedException {
-		ResourceSet resourceSet = rsAware.getService();
-
+		ResourceSet resourceSet = rsAware.waitForService(2000l);
+		
 		System.out.println("Dropping DB");
 		MongoCollection<Document> geoCollection = client.getDatabase("test").getCollection("Geometry");
 		geoCollection.drop();

@@ -19,7 +19,6 @@
 	org.apache.felix.configadmin;version='[1.9.26,1.9.27)',\
 	org.eclipse.emf.common;version='[2.28.0,2.28.1)',\
 	org.eclipse.emf.ecore;version='[2.33.0,2.33.1)',\
-	org.gecko.emf.osgi.api;version='[6.0.0,6.0.1)',\
 	org.gecko.emf.repository.api;version=snapshot,\
 	junit-jupiter-api;version='[5.10.1,5.10.2)',\
 	junit-jupiter-params;version='[5.10.1,5.10.2)',\
@@ -27,7 +26,6 @@
 	net.bytebuddy.byte-buddy;version='[1.14.9,1.14.10)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.14.9,1.14.10)',\
 	org.eclipse.emf.ecore.xmi;version='[2.18.0,2.18.1)',\
-	org.gecko.emf.osgi.example.model.basic;version='[6.0.0,6.0.1)',\
 	org.gecko.emf.repository.tests;version=snapshot,\
 	org.mockito.junit-jupiter;version='[4.11.0,4.11.1)',\
 	org.mockito.mockito-core;version='[4.11.0,4.11.1)',\
@@ -36,7 +34,9 @@
 	org.osgi.test.common;version='[1.2.1,1.2.2)',\
 	org.osgi.test.junit5;version='[1.2.1,1.2.2)',\
 	org.apache.felix.metatype;version='[1.2.4,1.2.5)',\
-	org.gecko.emf.osgi.component;version='[6.0.0,6.0.1)',\
 	org.osgi.service.log;version='[1.5.0,1.5.1)',\
 	org.osgi.util.converter;version='[1.0.9,1.0.10)',\
-	org.gecko.emf.repository.file;version=snapshot
+	org.gecko.emf.repository.file;version=snapshot,\
+	org.gecko.emf.osgi.api;version='[6.0.2,6.0.3)',\
+	org.gecko.emf.osgi.component;version='[6.0.2,6.0.3)',\
+	org.gecko.emf.osgi.example.model.basic;version='[6.0.2,6.0.3)'
