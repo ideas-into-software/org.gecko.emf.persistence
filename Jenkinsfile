@@ -37,9 +37,9 @@ pipeline  {
             steps  {
                 echo "I am building on ${env.JOB_NAME}"
                 sh "./gradlew clean build release --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
-                sh "mkdir -p $JENKINS_HOME/repo.gecko/snapshot/org.gecko.persistence_gitlab"
-                sh "rm -rf $JENKINS_HOME/repo.gecko/snapshot/org.gecko.persistence_gitlab/*"
-                sh "cp -r cnf/release/* $JENKINS_HOME/repo.gecko/snapshot/org.gecko.persistence_gitlab"
+                sh "mkdir -p $JENKINS_HOME/repo.gecko/snapshot/org.gecko.emf.persistence_gitlab"
+                sh "rm -rf $JENKINS_HOME/repo.gecko/snapshot/org.gecko.emf.persistence_gitlab/*"
+                sh "cp -r cnf/release/* $JENKINS_HOME/repo.gecko/snapshot/org.gecko.emf.persistence_gitlab"
             }
         }
         stage('Main Gitlab branch release') {
@@ -48,7 +48,7 @@ pipeline  {
             }
             steps {
                 echo "I am building on ${env.BRANCH_NAME}"
-                sh "./gradlew clean build release -x testOSGi -Drelease.dir=$JENKINS_HOME/repo.gecko/release/org.gecko.persistence --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
+                sh "./gradlew clean build release -x testOSGi -Drelease.dir=$JENKINS_HOME/repo.gecko/release/org.gecko.emf.persistence --info --stacktrace -Dmaven.repo.local=${WORKSPACE}/.m2"
             }
         }
     }
