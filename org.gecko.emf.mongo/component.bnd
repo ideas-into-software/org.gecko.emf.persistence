@@ -7,6 +7,7 @@ Export-Package: \
 	org.gecko.emf.mongo.model,\
 	org.gecko.emf.mongo.model.util,\
 	org.gecko.emf.mongo,\
+	org.gecko.emf.mongo.resource,\
 	org.gecko.emf.mongo.annotations,\
 	org.gecko.emf.mongo.converter,\
 	org.gecko.emf.mongo.util,\
