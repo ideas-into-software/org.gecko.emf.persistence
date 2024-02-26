@@ -9,7 +9,7 @@
 	geckoEMFUtil
 # Needed because we enabled library 'gecko-dimc' 	
 github-project: org.gecko.emf.persistence
-base-version: 1.0.0
+base-version: 1.1.0
 
 # Maven Central Group-Id
 -groupid: org.geckoprojects.emf.persistence
