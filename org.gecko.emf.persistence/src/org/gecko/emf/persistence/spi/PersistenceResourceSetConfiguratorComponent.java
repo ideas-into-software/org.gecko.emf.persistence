@@ -17,9 +17,9 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
-import org.gecko.emf.osgi.EMFNamespaces;
-import org.gecko.emf.osgi.ResourceSetConfigurator;
 import org.gecko.emf.osgi.UriHandlerProvider;
+import org.gecko.emf.osgi.configurator.ResourceSetConfigurator;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;

@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
+import org.gecko.emf.persistence.PersistenceConstants;
 import org.gecko.emf.persistence.helper.PersistenceHelper;
 import org.gecko.emf.persistence.helper.PersistenceHelper.EMFPersistenceContext;
 import org.gecko.emf.persistence.jdbc.JdbcHelper;
@@ -44,6 +46,7 @@ import org.osgi.test.junit5.service.ServiceExtension;
 import de.jena.mdo.model.dbtree.DBTree;
 import de.jena.mdo.model.dbtree.DbtreeFactory;
 import de.jena.mdo.model.dbtree.DbtreePackage;
+import org.osgi.service.cm.annotations.RequireConfigurationAdmin;
 
 //import org.mockito.Mock;
 //import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,6 +60,7 @@ import de.jena.mdo.model.dbtree.DbtreePackage;
 @ExtendWith(BundleContextExtension.class)
 @ExtendWith(ServiceExtension.class)
 @ExtendWith(ConfigurationExtension.class)
+@RequireConfigurationAdmin
 //@ExtendWith(MockitoExtension.class)
 public class TreeExampleDerbyTest {
 	
@@ -74,6 +78,7 @@ public class TreeExampleDerbyTest {
 	@WithFactoryConfigurations ({
 		@WithFactoryConfiguration(name="test", location = "?", factoryPid = "org.gecko.datasource", properties = {
 				@Property(key = "datasource.name", value = "DerbyTest"),
+				@Property(key = PersistenceConstants.PROPERTY_PERSISTENCE_NAME, value = "DerbyTest"),
 				@Property(key = "datasource.delegate.target", value = "(" + OSGI_JDBC_DRIVER_NAME + "=derby)"),
 				@Property(key = "datasource.dialect", value = "derby"),
 				@Property(key = "datasource.databaseName", value = "TEST"),
@@ -88,8 +93,8 @@ public class TreeExampleDerbyTest {
 				@Property(key = "persistence.jdbc.ds.target", value = "(datasource.name=DerbyTest)")
 		})
 	})
-	public void testSaveTree(@InjectService(filter = "(&(emf.configurator.name=emf.persistence.jdbc.derbytest)(emf.model.name=dbtree))") ResourceSet resourceSet,
-			@InjectService(filter = "(name=DerbyTest)") DataSourceFactory dsFactory) {
+	public void testSaveTree(@InjectService(filter = "(&(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=emf.persistence.jdbc)(" + EMFNamespaces.EMF_MODEL_NAME + "=dbtree))", timeout = 5000) ResourceSet resourceSet,
+			@InjectService(filter = "(datasource.name=DerbyTest)", timeout = 5000) DataSourceFactory dsFactory) {
 		assertNotNull(resourceSet);
 		assertNotNull(dsFactory);
 		String dbUrl = String.format(DB_TEMPLATE, "TEST");
@@ -122,6 +127,7 @@ public class TreeExampleDerbyTest {
 	@WithFactoryConfigurations ({
 		@WithFactoryConfiguration(name="test", location = "?", factoryPid = "org.gecko.datasource", properties = {
 				@Property(key = "datasource.name", value = "DerbyTest"),
+				@Property(key = PersistenceConstants.PROPERTY_PERSISTENCE_NAME, value = "DerbyTest"),
 				@Property(key = "datasource.delegate.target", value = "(" + OSGI_JDBC_DRIVER_NAME + "=derby)"),
 				@Property(key = "datasource.dialect", value = "derby"),
 				@Property(key = "datasource.databaseName", value = "TEST"),
@@ -131,11 +137,15 @@ public class TreeExampleDerbyTest {
 				@Property(key = "datasource.password", value = "1234")
 		}),
 		@WithFactoryConfiguration(name="Derby-Test", location = "?", factoryPid = "org.gecko.persistence.jdbc", properties = {
-				@Property(key = "name", value = "derbytest"),
-				@Property(key = "dataSource.target", value = "(datasource.name=DerbyTest)")
+				@Property(key = "persistence.name", value = "derbytest"),
+				@Property(key = "persistence.jdbc.ds.target", value = "(datasource.name=DerbyTest)")
 		})
 	})
-	public void testLoadTree(@InjectService(filter = "(&(emf.configurator.name=emf.persistence.jdbc.derbytest)(emf.model.name=dbtree))") ResourceSet resourceSet) {
+	public void testLoadTree(
+			@InjectService(filter = "(&(" + EMFNamespaces.EMF_CONFIGURATOR_NAME + "=emf.persistence.jdbc)(" + EMFNamespaces.EMF_MODEL_NAME + "=dbtree))", timeout = 5000) 
+			ResourceSet resourceSet,
+			@InjectService(filter = "(datasource.name=DerbyTest)", timeout = 5000) DataSourceFactory dsFactory
+			) {
 		assertNotNull(resourceSet);
 		EMFPersistenceContext context = PersistenceHelper.createPersistenceContext(TREE_BASE_URI, DbtreePackage.Literals.DB_TREE, null);
 		

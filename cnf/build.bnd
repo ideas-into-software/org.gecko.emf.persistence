@@ -5,8 +5,8 @@
 -library: \
 	geckoEMF,\
 	geckoOSGi-Test,\
-	geckoDIMC
-
+	geckoDIMC,\
+	geckoEMFUtil
 # Needed because we enabled library 'gecko-dimc' 	
 github-project: org.gecko.emf.persistence
 base-version: 1.0.0.SNAPSHOT
@@ -19,23 +19,10 @@ base-version: 1.0.0.SNAPSHOT
 		restrict:=error;\
     	is:=warning
 
-javac.source: 11
-javac.target: 11
+javac.source: 17
+javac.target: 17
 
 -require-bnd "(version>=6.2.0)"
-
-# This can be removed with geckoEMF > 4.1.1, because it should be then included in the library
--enable-emf: false
--buildpath.emf: ${if;${-enable-emf};${emf.lib}}
-	
-# Default build path when using EMF and Gecko EMF
-emf.lib: \
-	org.osgi.service.component.annotations;version=1.4,\
-	org.osgi.framework;version=1.9,\
-	org.gecko.emf.osgi.api;version=latest,\
-	org.eclipse.emf.common;version=latest,\
-	org.eclipse.emf.ecore;version=latest,\
-	org.eclipse.emf.ecore.xmi;version=latest
 
 -plugin.Central: \
     aQute.bnd.repository.maven.provider.MavenBndRepository; \

@@ -12,7 +12,9 @@ Test-Cases: ${classes;HIERARCHY_INDIRECTLY_ANNOTATED;org.junit.platform.commons.
 	org.gecko.emf.persistence;version=snapshot,\
 	org.osgi.service.jdbc,\
 	org.gecko.emf.persistence.jdbc,\
-	org.postgresql.jdbc
+	org.postgresql.jdbc,\
+	org.gecko.emf.osgi.api,\
+	org.osgi.service.cm
 	
 Private-Package: org.gecko.emf.persistence.jdbc.tests
 

@@ -11,8 +11,11 @@
  */
 package org.gecko.emf.persistence.pushstreams;
 
+import java.util.concurrent.ExecutorService;
+
 import org.gecko.emf.persistence.PersistenceConstants;
 import org.gecko.emf.persistence.input.InputContentHandler;
+import org.gecko.emf.pushstream.EPushStreamProvider;
 
 /**
  * Constants for the PushStream supports

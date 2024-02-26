@@ -39,7 +39,6 @@ org.apache.felix:org.apache.felix.cm.json:1.0.6
 org.apache.felix:org.apache.felix.log.extension:1.0.0
 org.apache.felix:org.apache.felix.log:1.2.4
 org.apache.felix:org.apache.felix.metatype:1.2.4
-org.apache.felix:org.apache.felix.scr:2.1.30
 org.apache.felix:org.apache.felix.shell.remote:1.2.0
 org.apache.felix:org.apache.felix.threaddump:1.0.0
 org.apache.felix:org.apache.felix.useradmin:1.0.4
@@ -147,14 +146,12 @@ org.eclipse.jdt:org.eclipse.jdt.core:3.26.0
 org.freemarker:freemarker:2.3.31
 org.apiguardian:apiguardian-api:1.1.1
 
-org.geckoprojects.bnd:org.gecko.bnd.dimc.library:1.2.0
-org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.2.0
-org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.2.0
+org.geckoprojects.bnd:org.gecko.bnd.dimc.library:1.5.0
+org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.5.0
+org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.5.0
 
-#org.geckoprojects.emf:org.gecko.emf.osgi.api:4.4.0
-#org.geckoprojects.emf:org.gecko.emf.osgi.component:4.4.0
-org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:4.4.0
-org.geckoprojects.emf:org.gecko.emf.osgi.example.model.basic:4.4.0
+org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:6.1.0
+org.geckoprojects.emf.utils:org.gecko.emf.util.jakartars.bnd.library.workspace:2.3.0
 
 org.geckoprojects.emf.utils:org.gecko.emf.util.model:2.1.0
 
@@ -171,3 +168,5 @@ org.ops4j.pax.jdbc:pax-jdbc-derby:1.5.5
 
 #PostgresQL
 org.postgresql:postgresql:42.5.1
+org.geckoprojects.emf:org.gecko.emf.osgi.example.model.basic:6.1.1
+org.apache.felix:org.apache.felix.scr:2.2.10

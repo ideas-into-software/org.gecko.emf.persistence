@@ -1,0 +1,10 @@
+-buildpath: \
+	org.gecko.emf.persistence;version=latest,\
+	org.gecko.emf.osgi.api;version=latest,\
+	org.osgi.service.cm;version=latest,\
+	org.mongodb.driver-sync;version=latest,\
+	org.gecko.emf.repository,\
+	org.gecko.persistence.mongo,\
+	org.eclipse.emfcloud.emfjson-jackson;version=latest,\
+	com.fasterxml.jackson.core.jackson-core;version=latest,\
+	com.fasterxml.jackson.core.jackson-databind;version=latest

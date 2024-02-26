@@ -1,9 +1,7 @@
 -runbundles.junit5: \
 	${test.runbundles}
 
--runrequires: \
-	bnd.identity;id='org.gecko.emf.persistence.api.tests',\
-	bnd.identity;id='org.gecko.emf.osgi.api'
+-runrequires: bnd.identity;id='org.gecko.emf.osgi.api'
 
 #-runfw: org.apache.felix.framework
 

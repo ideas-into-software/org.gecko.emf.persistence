@@ -11,7 +11,7 @@
  */
 package org.gecko.emf.persistence.jdbc;
 
-import org.gecko.emf.osgi.EMFNamespaces;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
 
 /**
  * 

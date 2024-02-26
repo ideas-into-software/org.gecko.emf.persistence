@@ -25,7 +25,6 @@ import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 
 import org.eclipse.emf.common.util.URI;
-import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PROP_DATASOURCE_NAME;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.gecko.emf.persistence.PersistenceConstants;
 import org.gecko.emf.persistence.PersistenceURIHandlerImpl;

@@ -310,7 +310,6 @@ public class MongoPackage extends EPackageImpl {
 	private MongoPackage() {
 		super(eNS_URI, MongoFactory.eINSTANCE);
 	}
-
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

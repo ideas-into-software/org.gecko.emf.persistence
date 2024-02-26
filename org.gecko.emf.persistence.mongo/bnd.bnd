@@ -1,3 +1,5 @@
+-library: enable-emf
+
 src: src,src-gen
 
 # The code generation takes a bit of time and makes the build a bit slower.
@@ -9,7 +11,6 @@ src: src,src-gen
 		output=src-gen
 		
 -buildpath: \
-	${emf.lib},\
 	org.mongodb.driver-sync,\
 	org.mongodb.bson,\
 	org.gecko.emf.persistence;version=latest,\

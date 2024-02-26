@@ -22,9 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -32,18 +30,13 @@ import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.util.InternalEList;
 import org.gecko.emf.persistence.ConverterService;
 import org.gecko.emf.persistence.Options;
 import org.gecko.emf.persistence.PrimaryKeyFactory;
 import org.osgi.util.promise.Promise;
-import org.gecko.emf.collection.CollectionFactory;
-import org.gecko.emf.collection.ECollection;
-import org.gecko.emf.collection.EReferenceCollection;
 
 /**
  * Mongo output stream, that can save a {@link Resource}

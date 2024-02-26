@@ -22,10 +22,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
-import org.gecko.emf.osgi.EMFNamespaces;
-import org.gecko.emf.osgi.ResourceSetConfigurator;
+import org.gecko.emf.osgi.configurator.ResourceSetConfigurator;
+import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.gecko.emf.persistence.input.InputStreamFactory;
+import org.gecko.persistence.mongo.InfoMongoDatabase;
+import org.gecko.persistence.mongo.MongoConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -37,8 +39,6 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.gecko.persistence.mongo.InfoMongoDatabase;
-import org.gecko.persistence.mongo.MongoConstants;
 
 /**
  * This implementation of the ResourceSetConfigurator service will attach all

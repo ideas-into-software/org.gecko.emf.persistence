@@ -15,7 +15,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.URIHandler;
-import org.gecko.emf.osgi.ResourceSetConfigurator;
+import org.gecko.emf.osgi.configurator.ResourceSetConfigurator;
 
 /**
  * {@link ResourceSetConfigurator} just handling the mongo stuff

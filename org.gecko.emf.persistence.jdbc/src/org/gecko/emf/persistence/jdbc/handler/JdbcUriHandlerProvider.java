@@ -11,8 +11,8 @@
  */
 package org.gecko.emf.persistence.jdbc.handler;
 
-import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.RESOURCESET_CONFIG_PROP;
 import static org.gecko.emf.persistence.PersistenceConstants.PROPERTY_PERSISTENCE_NAME;
+import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.RESOURCESET_CONFIG_PROP;
 
 import java.sql.Connection;
 import java.util.Map;
@@ -21,6 +21,7 @@ import java.util.concurrent.Executors;
 
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.gecko.emf.osgi.UriHandlerProvider;
+import org.gecko.emf.osgi.annotation.require.RequireEMF;
 import org.gecko.emf.persistence.OutputStreamFactory;
 import org.gecko.emf.persistence.input.InputStreamFactory;
 import org.gecko.emf.persistence.jdbc.handler.JdbcURIHandlerImpl.DataSourceFactoryHolder;
@@ -28,7 +29,12 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.jdbc.DataSourceFactory;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.osgi.util.promise.Promise;
 import org.osgi.util.promise.PromiseFactory;
 
@@ -39,6 +45,8 @@ import org.osgi.util.promise.PromiseFactory;
  * Change Generic type of the In- and Outputstreams from DataSourceFactory to Connection
  */
 @Component(name = "org.gecko.persistence.jdbc", configurationPolicy = ConfigurationPolicy.REQUIRE, service = UriHandlerProvider.class, property = { RESOURCESET_CONFIG_PROP, "type=persistence"})
+@RequireEMF
+@Designate(ocd = org.gecko.emf.persistence.jdbc.handler.JdbcUriHandlerProvider.JdbcUriHandlerConfig.class, factory = true)
 public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	
 	private volatile JdbcURIHandlerImpl uriHandler;
@@ -48,14 +56,18 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 	private final Map<String,Object> properties = new ConcurrentHashMap<>();
 	private final PromiseFactory pf = new PromiseFactory(Executors.newCachedThreadPool(), Executors.newScheduledThreadPool(2));
 	
-	@interface JdbcUriHandlerConfig {
-		static final String PREFIX_ = "persistence.jdbc.";
-		String name();
+	
+	@ObjectClassDefinition
+	public @interface JdbcUriHandlerConfig {
+		public static final String PREFIX_ = "persistence.";
+		String name() default "test";
 		String dsType() default "Driver";
 	}
 	
 	@Activate
 	public void activate(JdbcUriHandlerConfig config, Map<String, Object> properties) {
+		System.out.println(config.name());
+		System.out.println(config.dsType());
 		this.properties.put(PROPERTY_PERSISTENCE_NAME, config.name());
 		this.properties.putAll(properties);
 	}
@@ -72,7 +84,7 @@ public class JdbcUriHandlerProvider implements UriHandlerProvider {
 		return uriHandler;
 	}
 	
-	@Reference(name="persistence.jdbc.ds")
+	@Reference(name="persistence.jdbc.ds", cardinality = ReferenceCardinality.AT_LEAST_ONE, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
 	public void setDataSourceFactory(DataSourceFactory dataSourceFactory, Map<String, Object> properties) {
 		String name = (String) properties.getOrDefault(PROPERTY_PERSISTENCE_NAME, "default");
 		connections.put(name, new DataSourceFactoryHolder(dataSourceFactory, properties));

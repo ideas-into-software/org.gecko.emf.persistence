@@ -11,6 +11,10 @@
  */
 package org.gecko.emf.persistence.jdbc.datasource;
 
+import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.DATASOURCE_PREFIX;
+import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PROP_DATASOURCE_NAME;
+import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PROP_DIALECT_NAME;
+
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -24,9 +28,6 @@ import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
-import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.DATASOURCE_PREFIX;
-import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PROP_DATASOURCE_NAME;
-import static org.gecko.emf.persistence.jdbc.JdbcPersistenceConstants.PROP_DIALECT_NAME;
 import org.gecko.emf.persistence.jdbc.dialect.Dialect;
 import org.gecko.emf.persistence.jdbc.dialect.DialectProvider;
 import org.osgi.framework.BundleContext;
