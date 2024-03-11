@@ -27,6 +27,8 @@ import org.gecko.emf.osgi.annotation.require.RequireEMF;
 import org.gecko.emf.osgi.constants.EMFNamespaces;
 import org.gecko.emf.osgi.example.model.basic.BasicFactory;
 import org.gecko.emf.osgi.example.model.basic.Geometry;
+import org.gecko.emf.osgi.example.model.extended.ExtendedFactory;
+import org.gecko.emf.osgi.example.model.extended.ExtendedGeometry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -196,5 +198,100 @@ public class CustomArrayDataTypeTest extends MongoEMFSetting {
 		geoCollection.drop();
 
 	}
+	
+	@Test
+	public void testExtendedGeometryOneCoordinate() throws IOException, InvalidSyntaxException, InterruptedException {
+		ResourceSet resourceSet = rsAware.waitForService(2000l);
 
+		System.out.println("Dropping DB");
+		MongoCollection<Document> geoCollection = client.getDatabase("test").getCollection("ExtendedGeometry");
+		geoCollection.drop();
+
+		assertEquals(0, geoCollection.countDocuments());
+		Resource resource = resourceSet
+				.createResource(URI.createURI("mongodb://" + mongoHost + ":27017/test/ExtendedGeometry/"));
+
+		// Create the ExtendedGeometry object
+		ExtendedGeometry extendedGeometry = ExtendedFactory.eINSTANCE.createExtendedGeometry();
+		extendedGeometry.setOneCoordinate(new Double[] { 11.23, 58.98 });
+
+		String geoId = UUID.randomUUID().toString();
+		extendedGeometry.setId(geoId);
+
+		// save the ExtendedGeometry object
+		resource.getContents().add(extendedGeometry);
+		resource.save(null);
+
+		resource.getContents().clear();
+		resource.unload();
+
+		// load the ExtendedGeometry object from the db
+		Resource findResource = resourceSet.createResource(
+				URI.createURI("mongodb://" + mongoHost + ":27017/test/ExtendedGeometry/" + extendedGeometry.getId()));
+		findResource.load(null);
+		assertNotNull(findResource);
+		assertFalse(findResource.getContents().isEmpty());
+		assertEquals(1, findResource.getContents().size());
+
+		assertTrue(findResource.getContents().get(0) instanceof ExtendedGeometry);
+		ExtendedGeometry retrievedExtendedGeometry = (ExtendedGeometry) findResource.getContents().get(0);
+		assertEquals(geoId, retrievedExtendedGeometry.getId());
+
+		assertNotNull(retrievedExtendedGeometry.getOneCoordinate());
+		assertTrue(retrievedExtendedGeometry.getOneCoordinate().getClass().isArray());
+		assertEquals(2, retrievedExtendedGeometry.getOneCoordinate().length);
+		assertEquals(11.23, retrievedExtendedGeometry.getOneCoordinate()[0], 0.001);
+		assertEquals(58.98, retrievedExtendedGeometry.getOneCoordinate()[1], 0.001);
+
+		geoCollection.drop();
+	}
+
+	@Test
+	public void testExtendedGeometryOneMultiDimensionalCoordinate()
+			throws IOException, InvalidSyntaxException, InterruptedException {
+		ResourceSet resourceSet = rsAware.waitForService(2000l);
+
+		System.out.println("Dropping DB");
+		MongoCollection<Document> geoCollection = client.getDatabase("test").getCollection("ExtendedGeometry");
+		geoCollection.drop();
+
+		assertEquals(0, geoCollection.countDocuments());
+		Resource resource = resourceSet
+				.createResource(URI.createURI("mongodb://" + mongoHost + ":27017/test/ExtendedGeometry/"));
+
+		// Create the ExtendedGeometry object
+		ExtendedGeometry extendedGeometry = ExtendedFactory.eINSTANCE.createExtendedGeometry();
+		extendedGeometry.setOneMultiDimensionalCoordinate(new Double[][] { new Double[] { 11.23, 58.98 } });
+
+		String geoId = UUID.randomUUID().toString();
+		extendedGeometry.setId(geoId);
+
+		// save the ExtendedGeometry object
+		resource.getContents().add(extendedGeometry);
+		resource.save(null);
+
+		resource.getContents().clear();
+		resource.unload();
+
+		// load the ExtendedGeometry object from the db
+		Resource findResource = resourceSet.createResource(
+				URI.createURI("mongodb://" + mongoHost + ":27017/test/ExtendedGeometry/" + extendedGeometry.getId()));
+		findResource.load(null);
+		assertNotNull(findResource);
+		assertFalse(findResource.getContents().isEmpty());
+		assertEquals(1, findResource.getContents().size());
+
+		assertTrue(findResource.getContents().get(0) instanceof ExtendedGeometry);
+		ExtendedGeometry retrievedExtendedGeometry = (ExtendedGeometry) findResource.getContents().get(0);
+		assertEquals(geoId, retrievedExtendedGeometry.getId());
+
+		assertNotNull(retrievedExtendedGeometry.getOneMultiDimensionalCoordinate());
+		assertTrue(retrievedExtendedGeometry.getOneMultiDimensionalCoordinate().getClass().isArray());
+		assertEquals(1, retrievedExtendedGeometry.getOneMultiDimensionalCoordinate().length);
+		assertEquals(2, retrievedExtendedGeometry.getOneMultiDimensionalCoordinate()[0].length);
+		assertEquals(11.23, retrievedExtendedGeometry.getOneMultiDimensionalCoordinate()[0][0], 0.001);
+		assertEquals(58.98, retrievedExtendedGeometry.getOneMultiDimensionalCoordinate()[0][1], 0.001);
+
+		geoCollection.drop();
+	}
 }

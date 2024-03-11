@@ -13,15 +13,18 @@
 dimcBaselining: true
 mavenCentral: true
 github-project: org.gecko.emf.persistence
-base-version: 6.1.0
+base-version: 6.1.1
 repository-base-version: 9.3.0.${tstamp}-SNAPSHOT
 
 # Maven Central Group-Id
 # For Geckoprojects the groupid must start with org.geckoprojects
 -groupid: org.geckoprojects.emf.persistence
 
-javac.source: 11
-javac.target: 11
+java: java
+javac: javac
+javac.source: 17
+javac.target: 17
+javac.debug:  on
 
 -require-bnd "(version>=6.4.0)"
 
@@ -35,13 +38,13 @@ javac.target: 11
         readOnly=true; \
         poll.time=-1; \
         name="Central"
-        
+
 -plugin.0.Local: \
 	aQute.bnd.deployer.repository.LocalIndexedRepo; \
 		name = Local; \
 		pretty = true; \
 		local = ${build}/local
-		
+
 -plugin.2.Templates: \
 	aQute.bnd.deployer.repository.LocalIndexedRepo; \
 		name = Templates; \

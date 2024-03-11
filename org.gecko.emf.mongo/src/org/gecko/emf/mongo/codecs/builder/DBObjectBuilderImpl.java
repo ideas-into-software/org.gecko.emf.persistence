@@ -510,16 +510,15 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 		}
 		assert name != null;
 		assert writer != null;
-		
-		if(!(value instanceof byte[]) && value.getClass().isArray()) {
+
+		if (!(value instanceof byte[]) && value.getClass().isArray()) {
 			Object[] array = (Object[]) value;
-			writer.writeStartArray();
+			writer.writeStartArray(name);
 			for (Object object : array) {
 				writePrimitiveValueNoName(object, writer);
 			}
 			writer.writeEndArray();
-		}
-		else if (value instanceof String) {
+		} else if (value instanceof String) {
 			writer.writeString(name, value.toString());
 		} else if (value instanceof Character) {
 			writer.writeString(name, value.toString());
@@ -538,7 +537,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 		} else if (value instanceof Double) {
 			Double doubleValue = (Double) value;
 			writer.writeDouble(name, doubleValue.doubleValue());
-		} else if (value instanceof Float ) {
+		} else if (value instanceof Float) {
 			Float floatValue = (Float) value;
 			writer.writeDouble(name, floatValue.doubleValue());
 		} else if (value instanceof Boolean) {
@@ -546,17 +545,17 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 			writer.writeBoolean(name, booleanValue.booleanValue());
 		} else if (value instanceof Byte) {
 			byte byteValue = (byte) value;
-			writer.writeBinaryData(name, new BsonBinary(new byte[]{byteValue}));
+			writer.writeBinaryData(name, new BsonBinary(new byte[] { byteValue }));
 		} else if (value instanceof byte[]) {
 			byte[] byteValue = (byte[]) value;
 			writer.writeBinaryData(name, new BsonBinary(byteValue));
 		} else if (value instanceof Enum<?>) {
 			Enum<?> enumValue = (Enum<?>) value;
 			String writeValue = enumValue.name();
-			if( enumValue instanceof Enumerator) {
+			if (enumValue instanceof Enumerator) {
 				writeValue = ((Enumerator) enumValue).getName();
 				if (Boolean.TRUE.equals(options.get(Options.OPTION_USE_ENUM_LITERAL))) {
-					writeValue = ((Enumerator)enumValue).getLiteral();
+					writeValue = ((Enumerator) enumValue).getLiteral();
 				}
 			}
 			writer.writeString(name, writeValue);

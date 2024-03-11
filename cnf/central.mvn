@@ -141,10 +141,12 @@ org.freemarker:freemarker:2.3.32
 org.geckoprojects.bnd:org.gecko.bnd.dimc.library:1.5.0
 org.geckoprojects.bnd:org.gecko.bnd.jacoco.library:1.5.0
 org.geckoprojects.bnd:org.gecko.bnd.osgitest.library:1.5.0
-org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:6.0.2
-org.geckoprojects.emf:org.gecko.emf.osgi.example.model.basic:6.0.2
+org.geckoprojects.emf:org.gecko.emf.osgi.bnd.library.workspace:6.1.3
+org.geckoprojects.emf:org.gecko.emf.osgi.example.model.basic:6.1.3
 org.geckoprojects.emf.utils:org.gecko.emf.collections:2.2.2
 org.mongodb:mongo-java-driver:3.12.14
 org.geckoprojects.emf:org.gecko.emf.pushstreams:1.0.15
 jakarta.json:jakarta.json-api:2.1.3
 org.eclipse.parsson:jakarta.json:1.1.5
+
+org.eclipse.emf:org.eclipse.emf.common:2.29.0
