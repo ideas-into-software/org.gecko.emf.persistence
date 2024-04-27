@@ -513,7 +513,7 @@ public class DBObjectBuilderImpl implements DBObjectBuilder {
 		
 		if(!(value instanceof byte[]) && value.getClass().isArray()) {
 			Object[] array = (Object[]) value;
-			writer.writeStartArray();
+			writer.writeStartArray(name);
 			for (Object object : array) {
 				writePrimitiveValueNoName(object, writer);
 			}
